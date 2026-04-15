@@ -1,0 +1,73 @@
+---
+name: frontend-workmate-project-skill
+description: 当前仓库的工具包维护技能。用于在 frontend-workmate 中继续定位根级编排技能、项目模板、共享公共技能、自建流程技能与目录文档模板，并在修改流程编排、项目扫描、模板契约、验证规则或目录文档时复用本仓库知识。
+---
+
+# frontend-workmate 工具包维护技能
+
+> 说明：当前文件保留在仓库内作为维护副本；这里描述的是 Stage 1 项目扫描后生成或刷新出的项目技能产物 `frontend-workmate-project-skill`，而不是说仓库天然自带一个同名技能。
+
+## 项目定位
+
+- 本仓库不是业务前端应用，而是“前端研发流程工具包”。
+- 主目标是沉淀可复用的前端研发编排技能、项目扫描技能、需求分析模板、执行模板、验证模板与目录说明规范。
+- 后续围绕本仓库的修改，优先视为“编排协议、模板、技能库”层面的维护，而不是页面业务开发。
+
+## 目录路由
+
+| 研发对象 | 优先目录 | 说明 |
+| --- | --- | --- |
+| 主编排入口 | `SKILL.md` | 当前仓库的总编排协议 |
+| 通用模板 | `templates/` | 放需求、项目、分析、任务、验证、文档模板 |
+| 共享公共技能 | 公共技能包 | Stage 0 初始化后可直接按技能名调用的公共能力 |
+| 自建流程技能 | `frontend-orchestrator`、`project-scan-profile`、`frontend-change-scope`、`frontend-implementation`、`frontend-verification`、`directory-doc-sync` | 主流程各阶段技能 |
+| 项目级技能 | `frontend-workmate-project-skill` | Stage 1 项目扫描后形成的标准项目技能产物 |
+| 任务续跑记录 | `skills/runtime/task-runs/` | 仅在长任务或断点续跑时创建的临时记录 |
+| 目录文档模板 | `templates/docs/directory-readme-template.md` | 目录说明文档生成模板 |
+
+## 当前研发约束
+
+- 根级 `SKILL.md` 是实际可执行的编排协议，后续要继续围绕它打磨。
+- Stage 0 若存在 `scripts/init-skills.js`，应先把仓库内 `skills/curated/`、`skills/external/` 下的技能整理为可直接调用的公共技能包，再进入正式阶段扫描。
+- Stage 1 应先检查是否已存在项目扫描产物 `frontend-workmate-project-skill`；只有找不到合适候选时，才生成或刷新该产物。
+- 若用户提供项目 skills、项目文档、UI 框架 skills 或 UI 框架文档，应优先吸收并归档，再决定是否继续内部生成。
+- 若工作区为空白项目或不存在前端工程，Stage 1 需要先确认是否协助初始化；用户跳过时流程终止。
+- 凡是需要用户提供的信息，都必须等待用户明确回答；不能由 AI 直接假设并执行初始化、选型或技能生成。
+- Stage 1 生成或刷新项目技能后，需要向用户展示项目结构、底层框架、语言框架、语言、UI 库与关键约束，并等待确认；用户若纠正，则留在 Stage 1 继续修正。
+- Stage 2 形成任务类型、修改范围、风险与技能路线后，需要先让用户确认分析结论是否正确；若用户补充，则继续留在分析回路中合并修正。
+- 若只是完成项目初始化或依赖安装，但尚未形成项目 skill 或尚未完成 Stage 2 确认，仍不得进入研发。
+- 若已安装的是私有/自研 UI 库，且组件规则尚不清晰，需要先得到“提供文档/skills/说明”或“明确不提供”的结论，再进入研发。
+- Stage 5 在正式执行前负责按任务类型吸收前置资料：`feature` 默认确认，`bug` 仅在涉及接口、联调、权限、设计或三方库时确认，`refactor` 默认可跳过。
+- Stage 5 依赖的公共技能优先直接按技能名调用，如 `systematic-debugging`、`task-plan-checkpoint`、`code-analysis-doc`。
+- Stage 6 内部验证输出后，应先等待用户确认；用户确认后再进入 Stage 7 与 Stage 8，若用户提出问题再回退修正。
+- 所有路径统一使用仓库内相对路径。
+- 若某项逻辑当前不存在，必须标记 `not_applicable`，不能为了完整性补虚构信息。
+- 当前阶段不保留 `skills/external/` 扩展技能层。
+- 历史样例目录不属于主流程依赖，目录说明文档统一以 `templates/docs/directory-readme-template.md` 与 `directory-doc-sync` 为准。
+
+## 研发优先级
+
+- 修改根级编排协议时，优先同步 `skills/core/frontend-orchestrator/SKILL.md` 与相关阶段技能。
+- 修改 Stage 1 逻辑时，优先同步 `project-scan-profile`、`templates/project/` 与 `frontend-workmate-project-skill` 的产物约定。
+- 修改阶段产物契约时，优先同步对应 `templates/` 文件。
+- 修改交付规则或续跑规则时，优先同步 `task-plan-checkpoint` 与 `skills/runtime/task-runs/` 的约定。
+
+## 回归重点
+
+- 根级 `SKILL.md` 与阶段技能是否一致。
+- Stage 1 是否体现“先查当前工作区已有项目技能候选，再决定是否扫描并标准化归档”。
+- Stage 1 是否体现“先吸收用户提供资料、再处理空白初始化、再决定是否内部扫描与生成”。
+- Stage 1 项目技能结论是否增加了显式用户确认闭环。
+- Stage 2 范围分析结论是否增加了显式用户确认闭环。
+- Stage 5 执行前资料确认是否按任务类型触发，而不是默认全量询问。
+- Stage 6 是否体现“内部验证通过后仍需用户审查”的门禁。
+- 所有“由用户提供”的字段是否都存在明确等待门禁，而不是被 AI 自动补齐。
+- 模板契约与编排协议是否一致。
+- 任务记录中的版本号与实际改动是否一致。
+
+## 技能有效性与刷新条件
+
+- 当前技能覆盖的项目边界：`frontend-workmate` 根级编排协议、模板目录、技能目录、项目技能发现规则与任务记录约定。
+- 可直接复用的条件：根级流程阶段未发生结构性调整，`templates/` 与 `skills/` 的主目录职责未发生明显变化，项目技能发现与标准化归档机制仍然成立。
+- 必须刷新的信号：新增或删除关键阶段技能、模板契约发生明显变化、项目技能发现顺序变化、空白初始化分支变化、UI 框架技能接入规则变化、主编排协议调整了 Stage 含义、用户确认闭环或技能调用规则。
+- 刷新时优先检查的目录或配置：`SKILL.md`、`templates/`、`scripts/init-skills.js`、`skills/core/`、`skills/projects/`、`skills/analysis/`、`skills/execution/`、`skills/verification/`、`skills/docs/` 与 `frontend-workmate-project-skill`。
