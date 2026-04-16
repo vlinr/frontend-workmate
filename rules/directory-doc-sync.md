@@ -1,13 +1,8 @@
----
-name: directory-doc-sync
-description: Sync or create directory-level frontend documentation after analysis or implementation using stable usage patterns, contracts, and examples. Use when users ask to update module docs, generate directory readme files, summarize frontend directory usage, or complete documentation handoff after frontend changes.
----
-
 # Directory Doc Sync
 
 ## Outputs
 
-- `../../../templates/docs/directory-readme-template.md`
+- 【当前技能目录】下的 `templates/docs/directory-readme-template.md`
 
 ## Workflow
 

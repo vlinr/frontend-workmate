@@ -20,8 +20,8 @@ description: 长任务分步执行与断点续跑技能。用于 feature 实现�
 
 ## 1) 初始化任务临时目录
 
-- 在技能目录下创建任务运行目录：
-  - `skills/runtime/task-runs/<task-id>/`
+- 在技能目录的上层目录创建任务运行目录：
+  - `temp/task-runs/<task-id>/`
 - `<task-id>` 规则：
   - 优先：`YYYYMMDD-HHMMSS-任务短名`
   - 无短名时：`YYYYMMDD-HHMMSS-task`
@@ -83,9 +83,9 @@ description: 长任务分步执行与断点续跑技能。用于 feature 实现�
   - `rerun_prompt`
   - `revise_prompt`
 - 模板示例：
-  - `continue_prompt`: `请读取 skills/runtime/task-runs/<task-id>/TASK_PLAN.md 与 STEP_INDEX.md，继续执行 S03。`
-  - `rerun_prompt`: `请读取 skills/runtime/task-runs/<task-id>/TASK_PLAN.md 与 PROGRESS_LOG.md，重跑 S03，并记录差异。`
-  - `revise_prompt`: `请读取 skills/runtime/task-runs/<task-id>/TASK_PLAN.md，将 S03 按以下要求修改后以新版本执行：<变更要求>`
+  - `continue_prompt`: `请读取 temp/task-runs/<task-id>/TASK_PLAN.md 与 STEP_INDEX.md，继续执行 S03。`
+  - `rerun_prompt`: `请读取 temp/task-runs/<task-id>/TASK_PLAN.md 与 PROGRESS_LOG.md，重跑 S03，并记录差异。`
+  - `revise_prompt`: `请读取 temp/task-runs/<task-id>/TASK_PLAN.md，将 S03 按以下要求修改后以新版本执行：<变更要求>`
 
 ## 4) 上下文关键词沉淀
 

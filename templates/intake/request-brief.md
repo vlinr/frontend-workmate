@@ -7,9 +7,9 @@
 - 交付方式：`仅分析 | 修改代码 | 修改代码并补文档 | 其他`
 - 优先级：`高 | 中 | 低`
 - 任务类型初判：`bug | feature | refactor | pending`
-- 当前阶段：`stage0_alignment | stage1_project_scan | stage2_scope | stage3_plan | stage4_inputs | stage5_implementation | stage6_verification | stage7_docs | stage8_delivery`
+- 当前阶段：`stage0 | stage1 | stage2 | stage3 | stage4 | stage5 | stage6 | stage7 | stage8`
 - 当前阶段状态：`pending | in_progress | waiting_user | completed | blocked`
-- 下一阶段：`stage0_alignment | stage1_project_scan | stage2_scope | stage3_plan | stage4_inputs | stage5_implementation | stage6_verification | stage7_docs | stage8_delivery | not_applicable`
+- 下一阶段：`stage0 | stage1 | stage2 | stage3 | stage4 | stage5 | stage6 | stage7 | stage8 | not_applicable`
 - 当前阶段目标：
 - 当前阶段进入条件：
 - 当前阶段完成条件：
@@ -18,7 +18,7 @@
 - 下一阶段用户确认语句：
 - 用户补充诉求后是否已合并：`yes | no | pending`
 - 合并后回显提示语：
-- 当前步骤被否定时回退目标：`stay_current | previous_stage | stage5_implementation | stage6_verification | stage2_scope | not_applicable`
+- 当前步骤被否定时回退目标：`stay_current | previous_stage | stage5 | stage6 | stage2 | not_applicable`
 - 以上阶段状态字段默认用于内部记录，不要求原样展示给用户；尤其在 Stage 0，不应直接输出成字段列表。
 
 ## 2. 用户原始描述

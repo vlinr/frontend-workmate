@@ -7,9 +7,9 @@
 - 执行模式：`直接执行 | 长任务`
 - 负责人：
 - 任务标识：
-- 当前阶段：`stage0_alignment | stage1_project_scan | stage2_scope | stage3_plan | stage4_inputs | stage5_implementation | stage6_verification | stage7_docs | stage8_delivery`
+- 当前阶段：`stage0 | stage1 | stage2 | stage3 | stage4 | stage5 | stage6 | stage7 | stage8`
 - 当前阶段状态：`pending | in_progress | waiting_user | completed | blocked`
-- 下一阶段：`stage0_alignment | stage1_project_scan | stage2_scope | stage3_plan | stage4_inputs | stage5_implementation | stage6_verification | stage7_docs | stage8_delivery | not_applicable`
+- 下一阶段：`stage0 | stage1 | stage2 | stage3 | stage4 | stage5 | stage6 | stage7 | stage8 | not_applicable`
 - 当前阶段目标：
 - 当前阶段进入条件：
 - 当前阶段完成条件：

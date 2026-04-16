@@ -5,7 +5,7 @@
 - 项目名称：
 - 项目定位：
 - 是否多前端子项目：`是 | 否`
-- 目标项目根目录：
+- 【工作目录】下的前端项目根目录：
 - 主要技术栈：
 - 底层框架：
 - 底层框架版本：
@@ -31,7 +31,7 @@
 
 | 逻辑域 | 是否存在 | 判断条件 | 若不存在如何处理 |
 | --- | --- | --- | --- |
-| 多前端子项目 | `yes | no` | 工作区内存在多个可独立启动/构建的前端项目 | 标记 `not_applicable`，仅维护单项目画像 |
+| 多前端子项目 | `yes | no` | 【工作目录】内存在多个可独立启动/构建的前端项目 | 标记 `not_applicable`，仅维护单项目画像 |
 | 路由层 | `yes | no` | 项目存在集中式或约定式路由入口 | 标记 `not_applicable`，说明页面直连或轻路由模式 |
 | 状态管理层 | `yes | no` | 存在 store、model、context、redux/rematch、zustand 等 | 标记 `not_applicable`，说明以局部状态为主 |
 | 国际化层 | `yes | no` | 存在 locale、语言包、翻译函数、多语言配置 | 标记 `not_applicable`，说明项目无国际化要求 |
@@ -40,7 +40,7 @@
 | alias | `yes | no` | 存在 tsconfig paths、webpack alias、vite alias | 标记 `not_applicable`，按相对路径说明 |
 | Mock / 联调环境 | `yes | no` | 存在 mock 脚本、代理配置、联调环境约定 | 标记 `not_applicable`，仅保留基础启动方式 |
 | UI 框架 | `yes | no` | 存在通用 UI 库或自研 UI 组件体系 | 标记 `not_applicable`，不要虚构框架约束 |
-| 自研 UI 框架 | `yes | no` | UI 能力主要来自工作区内自研组件库或设计系统 | 标记 `not_applicable`，只保留通用框架信息 |
+| 自研 UI 框架 | `yes | no` | UI 能力主要来自【工作目录】内自研组件库或设计系统 | 标记 `not_applicable`，只保留通用框架信息 |
 
 ## 3. 子项目清单
 

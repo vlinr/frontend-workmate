@@ -96,4 +96,4 @@ node scripts/init-skills.js --dirs curated,external  # 指定源目录
 - 技能来源优先级: 用户提供 > 项目技能 > 公共技能包
 - 现有 AGENTS.md: `skills/curated/react-best-practices/AGENTS.md` (React 性能优化规则)
 - `skills/external/` 当前为空，不保留扩展技能目录
-- 项目技能产物名统一为 `frontend-workmate-project-skill`
+- 项目技能产物名统一为 `fw-project-develop`

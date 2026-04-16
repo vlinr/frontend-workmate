@@ -1,8 +1,3 @@
----
-name: frontend-implementation
-description: Implement frontend changes according to task type, project playbook, and capability matrix. Use when users ask to fix a frontend bug, build a frontend feature, refactor frontend code, request interface-doc-aware implementation, or execute a prepared frontend plan with optional skill and MCP coordination.
----
-
 # Frontend Implementation
 
 ## Preconditions
@@ -16,24 +11,25 @@ description: Implement frontend changes according to task type, project playbook
 
 ## Workflow
 
-1. Verify again before implementation that the fixed project skill name exists, Stage 2 scope is user-confirmed, and any private/custom UI library input has reached a stable conclusion
-2. Read the fixed project skill before implementation and treat its routing, permission, API, state, style, i18n, and build rules as hard constraints
+1. Verify again before implementation that the fixed project skill exists, Stage 2 scope is user-confirmed, and any private/custom UI library input has reached a stable conclusion
+2. **必须先调用项目技能 `fw-project-develop`**：
+   - 项目技能包含项目结构、技术栈、路由、权限、API、状态、样式、构建规则等关键信息
+   - 调用后获取的约束作为实现的硬约束，不得违背
 3. If not, stop and return to Stage 1 or Stage 2 instead of implementing
 4. Start Stage 5 with an execution-input check based on task type and dependency analysis
 5. `feature`: ask for interface docs, Swagger, OpenAPI, mock data, design draft, 联调信息, or third-party docs when relevant
 6. `bug`: ask for external docs only when the agreed scope shows the issue depends on interface, 联调, permission, design, or third-party behavior
 7. `refactor`: default to proceed without extra external docs unless the scope explicitly introduces such dependencies
 8. If the user skips requested inputs, continue with repository evidence and mark the risk
-9. Choose execution strategy by task type:
-   - `bug`: call `systematic-debugging` first, then isolate root cause
-   - `feature`: prioritize project conventions and call React-related skills when the stack requires them
-   - `refactor`: preserve behavior first unless the user explicitly allows behavior changes
-10. If the task involves complex type constraints, call `typescript-advanced-types`
-11. If the task is React-oriented, call `react-best-practices` or `react-components` when relevant
-12. Use the capability matrix to decide which skills or MCP-backed abilities should be invoked
-13. Execute skills in the order confirmed during scope analysis; if Stage 2 already marked a skill as required, do not skip it
-14. If a critical dependency is missing, call `find-skills` and output an explicit install list
-15. After implementation, automatically hand off to Stage 6 verification; do not stop only to ask whether verification should start
+9. **技能强制调用（必须执行）**：
+   - **`bug` 任务** → **必须调用 `systematic-debugging`**，找到根因后再修复
+   - **技术栈为 React**（项目技能中标记） → **必须调用 `react-best-practices`**（仅适用于 React 技术栈）
+   - **技术栈为 React 且涉及组件开发或修改** → **必须调用 `react-components`**（仅适用于 React 技术栈）
+   - **涉及复杂类型约束或类型问题** → **必须调用 `typescript-advanced-types`**
+   - **发现缺失关键技能** → **必须调用 `find-skills`** 并输出安装建议
+   - **禁止在非 React 技术栈下调用 React 技能**
+10. If a critical dependency is missing, call `find-skills` and output an explicit install list
+11. After implementation, automatically hand off to Stage 6 verification; do not stop only to ask whether verification should start
 
 ## Rules
 
@@ -47,6 +43,6 @@ description: Implement frontend changes according to task type, project playbook
 - 若用户已经给出自定义 UI 库名称，则默认先按该名称继续；未给版本时按最新版处理，不预先追问安装地址、本地路径或来源
 - 仅当后续依赖安装、导入解析或构建校验实际失败，且证据表明问题来自包名、版本或来源不可解析时，才回头请用户修正依赖来源或路径
 - 若依赖安装已经成功，但发现该 UI 库是私有/自研组件库且组件规则不清晰，不能直接开始页面研发；必须先回到 Stage 2，确认是否需要用户提供文档、skills 或关键组件说明
-- 不得绕过 Stage 2 的用户确认直接开始实现；“项目创建成功”“依赖安装成功”都不构成研发许可
-- Stage 5 完成后，必须直接进入 Stage 6 做代码验证；对用户的汇报应放到验证与交付汇总中，而不是把“是否进入验证”做成额外确认点
+- 不得绕过 Stage 2 的用户确认直接开始实现；"项目创建成功""依赖安装成功"都不构成研发许可
+- Stage 5 完成后，必须直接进入 Stage 6 做代码验证；对用户的汇报应放到验证与交付汇总中，而不是把"是否进入验证"做成额外确认点
 - If local run/lint/type/build/test is blocked by environment problems, do not report Stage 5 as finished; instead output the exact environment fix steps and remain in Stage 5

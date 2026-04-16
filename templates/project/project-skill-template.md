@@ -1,8 +1,12 @@
 # Project Skill Template
 
+## 目录概念说明
+
+项目技能存放位置详见 `SKILL.md` 中的"目录概念映射表"。项目技能存放于【技能目录】（和【当前技能目录】同级），而非【工作目录】或【代码改动目录】。
+
 ## Frontmatter
 
-- `name`: 固定项目技能名，当前默认使用 `frontend-workmate-project-skill`
+- `name`: 固定项目技能名，当前默认使用 `fw-project-develop`
 - `description`: 项目说明技能，用于继续定位目录、路由、接口、状态、样式、构建、验证与文档更新规则。
 
 ## 建议结构
@@ -69,20 +73,21 @@
 
 ## 使用要求
 
-- 项目技能产物文件名固定为 `SKILL.md`。
-- frontmatter `name` 固定为 `frontend-workmate-project-skill`，后续阶段默认直接按该固定技能名引用。
+- 项目技能产物必须是一个**目录**（符合技能目录结构），目录名固定为 `fw-project-develop/`，入口文件为 `SKILL.md`
+- **存放位置**：存放于【技能目录】（和【当前技能目录】同级），而非【工作目录】或【代码改动目录】。详见 `SKILL.md` 中的"目录概念映射表"
+- frontmatter `name` 固定为 `fw-project-develop`，后续阶段默认直接按该固定技能名引用。
 - 先用 `project-architecture-profile` 与 `project-dev-playbook` 模板完成项目分析。
 - 若用户已提供项目 skills，则优先吸收并归档，再判断是否需要刷新。
 - 若用户已提供项目文档，则优先基于文档生成项目 skill，再补充仓库证据。
-- 若当前已存在 `frontend-workmate-project-skill` 对应技能，Stage 1 的默认目标是检查是否需要更新该文件，而不是额外产出一份扫描总结。
-- 若用户后续补充项目文档、项目 skills 或项目约束，这些内容应继续合并到固定技能名产物 `frontend-workmate-project-skill` 中，而不是另起临时结论。
-- 若未发现现有项目 skills，Stage 1 必须先询问用户是否愿意提供项目 skills 或项目文档；只有在用户明确不提供后，才允许基于仓库证据内部分析生成首版 `frontend-workmate-project-skill`。
+- 若当前已存在 `fw-project-develop` 对应技能，Stage 1 的默认目标是检查是否需要更新该文件，而不是额外产出一份扫描总结。
+- 若用户后续补充项目文档、项目 skills 或项目约束，这些内容应继续合并到固定技能名产物 `fw-project-develop` 中，而不是另起临时结论。
+- 若未发现现有项目 skills，Stage 1 必须先询问用户是否愿意提供项目 skills 或项目文档；只有在用户明确不提供后，才允许基于仓库证据内部分析生成首版 `fw-project-develop`。
 - 在该询问场景下，默认提示语使用：`你可以直接回复提供的内容，我将优先采用您提供的资料生成项目的技能；如果你不提供，我再基于仓库内容继续分析并生成。`
 - 若项目不存在前端工程且用户要求初始化，必须在用户明确给出底层框架、语言框架、语言、UI 库等初始化组合后，先创建项目并回填到项目技能；若版本缺失，可按最新版暂记。
-- 仅完成项目初始化或依赖安装，不构成 Stage 1 完成；必须先形成 `frontend-workmate-project-skill`，并让用户确认项目基线是否正确，才能离开 Stage 1。
+- 仅完成项目初始化或依赖安装，不构成 Stage 1 完成；必须先形成 `fw-project-develop`，并让用户确认项目基线是否正确，才能离开 Stage 1。
 - 若用户尚未明确回答项目资料、初始化方案或 UI 库文档/skills 结论，对应字段保留 `待确认`，不能由 AI 自行推断。
 - 若项目使用自研 UI 库，可配合 `project-ui-skill-template` 沉淀关联 UI 技能产物。
-- 再将稳定项目知识沉淀为 `frontend-workmate-project-skill`，并保证后续默认通过固定技能名引用。
+- 再将稳定项目知识沉淀为 `fw-project-develop`，并保证后续默认通过固定技能名引用。
 - 不把一次性任务结论写入项目技能，只保留可复用的稳定知识。
 - 不把当前单次任务的临时目标、页面级实现方案、样式迁移偏好、局部技术选型写入项目技能。
-- 若用户在 Stage 1 补充的是“这次任务怎么做”，应记录到当前任务上下文，而不是记录到 `frontend-workmate-project-skill`。
+- 若用户在 Stage 1 补充的是“这次任务怎么做”，应记录到当前任务上下文，而不是记录到 `fw-project-develop`。
