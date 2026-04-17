@@ -12,7 +12,7 @@
 - 是否确认“新增约束不会覆盖最初需求”：`yes | no | pending`
 - 当前阶段：`stage2_scope`
 - 当前阶段状态：`pending | in_progress | waiting_user | completed | blocked`
-- 下一阶段：`stage3_plan | stage5_implementation | not_applicable`
+- 下一阶段：`stage3_plan | stage4_supply | not_applicable`
 - 当前阶段目标：
 - 当前阶段进入条件：
 - 当前阶段完成条件：
@@ -41,7 +41,7 @@
 - 依赖文档：
 - 依赖接口或设计稿：
 - 依赖环境：
-- Stage 5 执行前资料确认策略：`feature 默认确认 | bug 按需确认 | refactor 默认跳过 | not_applicable`
+- Stage 5 执行前资料补充策略：`feature 默认补充 | bug 按需补充 | refactor 默认跳过 | not_applicable`
 
 ## 4. 技能调用计划
 
@@ -71,7 +71,7 @@
 - [ ] 修改范围一致
 - [ ] 技能路线一致
 - [ ] 风险接受
-- [ ] Stage 5 执行前资料确认策略一致
+- [ ] Stage 5 执行前资料补充策略一致
 - [ ] 可以进入任务编排或直接研发
 
 ## 8. 阶段切换规则

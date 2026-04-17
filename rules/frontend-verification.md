@@ -7,15 +7,17 @@
 ## Workflow
 
 1. **Stage 5 完成后自动进入本阶段**，无需询问用户是否开始验证
-2. **必须先调用项目技能 `fw-project-develop`**：
-   - 项目技能包含验证约束（路由、权限、构建规则、回归路径等）
-   - 调用后获取的约束作为验证的硬标准
+2. **先扫描技能列表是否有可用技能**，然后根据实际条件建议调用：
+   - 检查【技能目录】中是否存在项目技能 `fw-project-develop`
+   - 若存在，建议调用获取验证约束（路由、权限、构建规则、回归路径等）
+   - 调用后获取的约束作为验证的参考标准
 3. Execute functional validation against the agreed scope
 3. Run lint, type, build, and available test commands when the project provides them
 4. Check route, permission, OEM, alias, and regression-sensitive paths when they are relevant
-5. **技能强制调用（必须执行）**：
-   - **改动涉及页面、组件、表单、键盘交互、焦点流、用户交互体验** → **必须调用 `accessibility`**
-   - **改动涉及布局、样式、间距、交互呈现、UI 一致性** → **必须调用 `web-design-guidelines`**
+5. **技能建议调用（满足条件时建议执行）**：
+   - **改动涉及页面、组件、表单、键盘交互、焦点流、用户交互体验** → 建议调用 `accessibility`
+   - **改动涉及布局、样式、间距、交互呈现、UI 一致性** → 建议调用 `web-design-guidelines`
+   - 禁止在不满足触发条件时强行调用
 6. Mark unrelated verification domains as `not_applicable`
 7. **验证执行完成后，向用户输出验证结果**：modified files, validation results, and remaining risks
 8. If validation passes, **等待用户确认**；only after user confirmation can enter Stage 7
