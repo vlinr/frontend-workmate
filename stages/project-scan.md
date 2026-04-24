@@ -161,7 +161,8 @@
    - **禁止**：跳过说明文档直接分析代码
 
 2. **必须调用代码分析技能**：
-   - 项目扫描**必须调用** `调用 code-analysis-doc 技能` 辅助分析
+   - 项目扫描**必须调用** `fw-code-analysis-doc` 技能辅助分析
+  - 调用方式：**先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，动态拼接 `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md`
    - 调用时机：需要分析目录结构、提取技术栈、理解模块关系时
    - 调用目的：提升分析准确度，减少遗漏
    - **禁止**：跳过技能调用直接分析代码
@@ -193,7 +194,7 @@
    - 输出：`已检测到现有项目技能 [fw-project-develop]，但项目关键锚点已变化（具体变化点），需要更新技能。我将执行增量扫描并刷新技能。`
    - **执行增量扫描流程**：
      - 1) 优先读取变化目录下的说明文档
-     - 2) **必须调用** `code-analysis-doc` 分析变化部分
+     - 2) **必须先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，动态拼接 `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` 分析变化部分
      - 3) 合并新旧信息，刷新技能
    - 刷新技能后输出摘要，等待用户确认
    - **用户确认循环机制**：若用户提出修改或问题 → 理解并合并用户反馈 → 更新技能 → 再次输出摘要等待确认 → 直到用户回复"继续"
@@ -364,11 +365,12 @@
    - **禁止**：发问后继续分析、设计、实现
 
 2. **用户答复后，必须继续当前阶段（项目扫描），不得跳到其他阶段**
-   - 用户提供资料 → **优先读取用户资料**，**必须调用** `调用 code-analysis-doc 技能` 补充分析 → 基于资料和分析结果生成 `fw-project-develop`
+    - 用户提供资料 → **优先读取用户资料**
+    - **先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，获取三核心目录，**动态拼接路径** `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` 补充分析 → 基于资料和分析结果生成 `fw-project-develop`
    - 用户明确"不提供"/"跳过" → **执行项目扫描流程**：
      - 1) 优先读取各目录说明文档
-     - 2) **必须调用** `调用 code-analysis-doc 技能` 分析项目结构
-     - 3) 生成 `fw-project-develop`
+- 2) **先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，动态拼接 `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` 并执行分析项目结构
+      - 3) 生成 `fw-project-develop`
    - **禁止**：用户答复后跳到范围分析、实施研发等阶段
 
 3. **生成项目技能后，输出摘要，等待用户确认**
@@ -467,9 +469,9 @@
    ```
 
 2. **扫描流程**：
-   - 1) 优先读取各目录下的说明文档
-   - 2) **必须调用** `调用 code-analysis-doc 技能` 分析项目结构
-   - 3) 提取：目录结构、入口文件、构建命令、技术栈、UI 库、耦合约束
+    - 1) 优先读取各目录下的说明文档
+- 2) **先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，动态拼接 `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` 并执行分析项目结构
+    - 3) 提取：目录结构、入口文件、构建命令、技术栈、UI 库、耦合约束
 
 3. **扫描完成后**，生成项目技能
 

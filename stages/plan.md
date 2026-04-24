@@ -62,7 +62,7 @@
 
 ### 编辑指令
 
-1. **先读取配置文件**：使用 read 工具读取 `<技能包目录>/.fw-session-config.json`
+1. **先读取配置文件**：使用 read 工具读取 `{project_ide_dir}/.fw-session-config.json`
 2. **获取 rules 文件路径**：从配置中读取 `rules_file_path` 字段
 3. **读取 rules 文件**：使用 read 工具读取该路径的文件
 4. **编辑 rules 文件**：**根据当前任务ID（从上下文获取 `current_task_id`）找到对应的状态块**：
@@ -92,7 +92,7 @@
 
 - 禁止不读取配置文件就猜测路径
 
-1. 调用 `task-plan-checkpoint`。
+1. **先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，动态拼接 `{static_config_dir}/skills/fw-task-plan-checkpoint/SKILL.md` 并调用。
 2. 建立任务运行目录与任务文件。
 3. 为步骤分配稳定 ID、状态、版本与重跑模板。
 4. 后续每推进一步，都同步回写任务文件。

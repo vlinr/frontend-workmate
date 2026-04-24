@@ -1,6 +1,8 @@
 ---
 name: frontend-workmate
 description: 前端研发全流程编排技能，覆盖需求研发、Bug修复、重构优化、项目初始化等前端任务的完整执行链路（9阶段：初始化→项目扫描→范围分析→执行计划→资料补充→实施研发→内部验证→文档同步→交付续跑）。当用户任务涉及前端代码修改（React/Vue/Angular/TypeScript/JavaScript/CSS/HTML）或提示词包含 `/frontend-workmate` 时自动调用。
+user-invocable: true
+layer: 1
 ---
 
 # 前端研发编排技能
@@ -35,7 +37,7 @@ description: 前端研发全流程编排技能，覆盖需求研发、Bug修复�
 **显式确认点**（需等待用户答复才能进入下一阶段）：
 - **项目扫描完成后** → 输出项目技能摘要，等待用户确认
 - **范围分析完成后** → 输出分析结论，等待用户确认
-- **内部验证完成后** → **Stage 6 执行完成**并输出验证结果（修改文件、验证通过项、剩余风险），等待用户确认；若用户指出问题 → 回退 Stage 5 → 自动执行 Stage 6 → 再次等待确认，循环直到用户确认通过
+- **交付续跑完成后** → 输出交付结果，等待用户确认；用户可补充修改或明确指定回退阶段
 
 **显式确认点的标准提示语**：
 
@@ -46,7 +48,7 @@ description: 前端研发全流程编排技能，覆盖需求研发、Bug修复�
 **提示语使用场景**：
 - 项目扫描确认：输出项目技能摘要后 → 附加提示语
 - 范围分析确认：输出分析结论后 → 附加提示语
-- 内部验证确认：输出验证结果后 → 附加提示语
+- 交付续跑确认：输出交付结果后 → 附加确认提示语（包含智能回退选项）
 
 **禁止事项**：
 - 禁止只输出"请确认"或"回复继续"
@@ -57,7 +59,8 @@ description: 前端研发全流程编排技能，覆盖需求研发、Bug修复�
 - 初始化 → 自动进入项目扫描
 - 执行计划 → 自动进入资料补充
 - 资料补充（用户已答复 `provided | not_provided | skipped | not_applicable`） → 自动进入实施研发
-- **实施研发 → 自动进入内部验证**（Stage 5 完成后直接执行 Stage 6，不询问是否进入验证）
+- **实施研发 → 自动进入内部验证**（Stage 5 完成后直接执行 Stage 6）
+- **内部验证 → 自动进入文档同步**（Stage 6 完成后直接执行 Stage 7）
 - 文档同步 → 自动进入交付续跑
 
 **等待期间禁止事项**：
@@ -66,32 +69,74 @@ description: 前端研发全流程编排技能，覆盖需求研发、Bug修复�
 
 ---
 
-## 目录概念映射表
+## 目录概念映射表（三核心目录设计）
 
-本技能包使用以下目录概念名称，各阶段引用时必须使用概念名称而非具体路径：
+本技能包使用**三核心目录**设计，配置文件仅存储这3个路径，其他路径通过拼接：
 
-| 概念名称 | 含义 | 示例说明 |
+| 概念名称 | 配置字段 | 说明 |
 | --- | --- | --- |
-| **【工作目录】** | 当前用户打开的根目录 | 用户在 IDE/终端中打开的目录，可能是目标项目根目录或任意目录 |
-| **【代码改动目录】** | 文件改动所在的目录 | 本次任务实际修改的代码文件所在的目录，可能是【工作目录】的子目录 |
-| **【当前技能目录】** | 当前被调用的技能的根目录 | 即 `frontend-workmate` 所在目录，本技能包的根目录 |
-| **【技能目录】** | 被调用技能所在的父目录 | 【当前技能目录】的父目录，所有技能（包括项目技能）存放于此 |
+| **【项目工作目录】** | `project_work_dir` | 用户打开的目录，研发改动参考依据 |
+| **【项目IDE配置目录】** | `project_ide_dir` | 存放项目配置、项目技能、项目规则、项目状态 |
+| **【静态资源根目录】** | `static_config_dir` | IDE配置根目录（如 ~/.qoder），存放静态技能、静态规则 |
+
+**路径拼接规则**：
+
+| 引用类型 | 拼接方式 |
+| --- | --- |
+| 静态技能 | `{static_config_dir}/skills/{技能名}/SKILL.md` |
+| 静态规则 | `{static_config_dir}/rules/{规则名}.md` |
+| 项目技能 | `{project_ide_dir}/skills/fw-project-develop/SKILL.md` |
+| 项目规则 | `{project_ide_dir}/rules/fw-skill-rule.md` |
+| 项目状态 | `{project_ide_dir}/rules/fw-session-state.md` |
+| 改动代码 | `{project_work_dir}/src/...` |
 
 **关键规则**：
-- **项目技能 `fw-project-develop` 存放于【技能目录】**，和【当前技能目录】（`frontend-workmate`）同级
-- **禁止将项目技能存放于【工作目录】或【代码改动目录】**
-- 各阶段描述时使用概念名称（如"存放于【技能目录】"），不使用具体路径
+- **配置文件存放于【项目IDE配置目录】**：`.fw-session-config.json`
+- **静态技能存放于【静态资源根目录】/skills/**：与 `frontend-workmate` 同级
+- **项目技能存放于【项目IDE配置目录】/skills/**：`fw-project-develop/`
 
-**示例关系**：
+**示例（全局安装，IDE配置目录 ~/.qoder）**：
 ```
-【技能目录】/
-├── frontend-workmate/     # 【当前技能目录】（本技能包）
-│   ├── SKILL.md
+# 【静态资源根目录】
+~/.qoder/                                        # static_config_dir
+├── skills/
+│   ├── frontend-workmate/                       # 本技能包
+│   │   ├── rules/
+│   │   │   ├── frontend-implementation.md
+│   │   │   └── frontend-verification.md
+│   │   └── templates/
+│   ├── fw-react-best-practices/                    # 静态技能
+│   ├── fw-systematic-debugging/                    # 静态技能
 │   └── ...
-└── fw-project-develop/    # 项目技能（Stage 1 产物）
-    ├── SKILL.md
-    └── ...
+├── rules/
+│   └── ...
+└── ...
+
+# 【项目IDE配置目录】（跟随项目）
+/home/user/my-project/.qoder/                    # project_ide_dir
+├── .fw-session-config.json                      # 配置文件（仅3个路径）
+├── skills/
+│   └── fw-project-develop/                      # 项目技能
+├── rules/
+│   ├── fw-skill-rule.md                         # 项目规则
+│   └── fw-session-state.md                      # 项目状态
+└── output/
+
 ```
+
+**示例（项目内安装）**：
+当技能安装在项目内时，`static_config_dir` = `<项目>/<IDE>/`（如 `/home/user/my-project/.qoder/`）。
+└── output/
+
+# 【项目工作目录】（用户打开的目录）
+/home/user/my-project/
+├── src/
+├── package.json
+└── ...
+```
+
+**示例关系（项目内安装）**：
+当技能安装在项目内时，【静态配置目录】和【项目IDE配置目录】可能相同或相邻。
 
 ---
 
@@ -118,15 +163,15 @@ description: 前端研发全流程编排技能，覆盖需求研发、Bug修复�
 ### 阶段流转概览
 
 ```
-初始化 → 项目扫描 → [用户确认] → 范围分析 → [用户确认] → 执行计划（可选） → 资料补充 → [用户提供] → 实施研发 → 内部验证 → [用户确认] → 文档同步 → 交付续跑
+初始化 → 项目扫描 → [用户确认] → 范围分析 → [用户确认] → 执行计划（可选） → 资料补充 → [用户提供] → 实施研发 → 内部验证 → 文档同步 → 交付续跑 → [用户确认]
 ```
 
 **显式确认点**：
 - 项目扫描完成后需用户确认项目技能是否正确
 - 范围分析完成后需用户确认分析结论是否正确
-- 内部验证完成后需用户确认验证结果
+- 交付续跑完成后需用户确认交付结果（用户可补充修改或明确指定回退阶段）
 
-**自动衔接点**：初始化、执行计划、资料补充、文档同步完成后自动进入下一阶段
+**自动衔接点**：实施研发、内部验证、文档同步完成后自动进入下一阶段（Stage 5→6→7→8 全自动衔接）
 
 ### 阶段完成输出规范
 
@@ -190,13 +235,13 @@ description: 前端研发全流程编排技能，覆盖需求研发、Bug修复�
 | --- | --- | --- | --- |
 | **Stage 2（范围分析）** | 项目技能存在 | `fw-project-develop` | 建议调用项目技能，获取项目结构、技术栈、路由、权限等约束 |
 | **Stage 5（实施研发）** | 项目技能存在 | `fw-project-develop` | 建议先调用项目技能，理解项目约束后再开始实现 |
-| **Stage 5（实施研发）** | 任务类型为 `bug` | `systematic-debugging` | bug 任务建议先找到根因 |
-| **Stage 5（实施研发）** | 技术栈为 React（项目技能中标记） | `react-best-practices` | **仅适用于 React 技术栈** |
-| **Stage 5（实施研发）** | 技术栈为 React 且涉及组件开发 | `react-components` | **仅适用于 React 技术栈** |
-| **Stage 5（实施研发）** | 涉及复杂类型约束 | `typescript-advanced-types` | TypeScript 复杂类型场景 |
+| **Stage 5（实施研发）** | 任务类型为 `bug` | `fw-systematic-debugging` | bug 任务建议先找到根因 |
+| **Stage 5（实施研发）** | 技术栈为 React（项目技能中标记） | `fw-react-best-practices` | **仅适用于 React 技术栈** |
+| **Stage 5（实施研发）** | 技术栈为 React 且涉及组件开发 | `fw-react-components` | **仅适用于 React 技术栈** |
+| **Stage 5（实施研发）** | 涉及复杂类型约束 | `fw-typescript-advanced-types` | TypeScript 复杂类型场景 |
 | **Stage 6（内部验证）** | 项目技能存在 | `fw-project-develop` | 建议调用项目技能，获取验证约束（路由、权限、构建规则等） |
-| **Stage 6（内部验证）** | 改动涉及页面/组件/表单/键盘交互/焦点流 | `accessibility` | WCAG 2.2 可访问性检查 |
-| **Stage 6（内部验证）** | 改动涉及布局/样式/间距/UI 一致性 | `web-design-guidelines` | Web 界面规范检查 |
+| **Stage 6（内部验证）** | 改动涉及页面/组件/表单/键盘交互/焦点流 | `fw-accessibility` | WCAG 2.2 可访问性检查 |
+| **Stage 6（内部验证）** | 改动涉及布局/样式/间距/UI 一致性 | `fw-web-design-guidelines` | Web 界面规范检查 |
 
 **项目技能说明**：
 - `fw-project-develop` 是项目技能，包含项目结构、技术栈、路由、权限、状态管理、构建规则等关键信息
@@ -204,7 +249,7 @@ description: 前端研发全流程编排技能，覆盖需求研发、Bug修复�
 - 调用目的：让 AI 理解项目约束，避免违背项目已有规则
 
 **技术栈说明**：
-- `react-best-practices`、`react-components` **仅适用于 React 技术栈**（项目技能中标记）
+- `fw-react-best-practices`、`fw-react-components` **仅适用于 React 技术栈**（项目技能中标记）
 - 其他技术栈（Vue、Angular、Svelte 等）目前暂无对应技能，后续可扩展
 - 技术栈判断依据：调用 `fw-project-develop` 后获取的技术栈字段
 
@@ -234,14 +279,14 @@ description: 前端研发全流程编排技能，覆盖需求研发、Bug修复�
 
 | 技能 | 用途 | 调用时机 |
 | --- | --- | --- |
-| `systematic-debugging` | 系统化调试 | bug 修复 |
-| `react-best-practices` | React 最佳实践 | React 相关实现 |
-| `react-components` | React 组件规范 | 组件开发 |
-| `typescript-advanced-types` | TypeScript 高级类型 | 复杂类型问题 |
-| `task-plan-checkpoint` | 长任务续跑 | 多步骤任务 |
-| `code-analysis-doc` | 代码分析文档 | 目录关系提炼 |
-| `accessibility` | 可访问性检查 | 界面验证 |
-| `web-design-guidelines` | UI 规范检查 | 界面验证 |
+| `fw-systematic-debugging` | 系统化调试 | bug 修复 |
+| `fw-react-best-practices` | React 最佳实践 | React 相关实现 |
+| `fw-react-components` | React 组件规范 | 组件开发 |
+| `fw-typescript-advanced-types` | TypeScript 高级类型 | 复杂类型问题 |
+| `fw-task-plan-checkpoint` | 长任务续跑 | 多步骤任务 |
+| `fw-code-analysis-doc` | 代码分析文档 | 目录关系提炼 |
+| `fw-accessibility` | 可访问性检查 | 界面验证 |
+| `fw-web-design-guidelines` | UI 规范检查 | 界面验证 |
 | `find-skills` | 技能发现 | 缺少关键技能时 |
 
 ---

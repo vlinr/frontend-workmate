@@ -156,19 +156,22 @@
 ## 输入
 
 - `request-brief`
-- 项目技能 `fw-project-develop`（**必须调用**）
+- 项目技能（**动态读取**）：
+  - **先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，获取三核心目录
+  - **项目技能引用**：`{project_ide_dir}/skills/fw-project-develop/SKILL.md`（**必须调用**）
 - 【代码改动目录】现有说明文档
 
 ## 执行动作
 
 1. **必须先调用技能**：
-   - **必须调用** `fw-project-develop` 获取项目约束
-   - 若【代码改动目录】缺少说明文档，**必须调用** `code-analysis-doc` 补充理解
+   - **先读取配置文件** `{project_ide_dir}/.fw-session-config.json`
+   - **项目技能引用**：`{project_ide_dir}/skills/fw-project-develop/SKILL.md`（若存在）
+   - 若【代码改动目录】缺少说明文档，**必须先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` 补充理解
    - 调用后获取的约束作为范围分析参考
 2. 先读 `request-brief` 中的"用户原始描述""最初需求锚点"与截图/附件摘要；只要这些字段非空，就必须把它们视为当前任务主目标输入。
 3. 结合项目技能与【代码改动目录】现有说明文档进行范围分析。
 3. 只有当"用户原始描述""最初需求锚点""截图/附件摘要"同时为空、且当前任务目标确实无法判定时，才允许向用户追问"这次要做什么"；否则不得在 Stage 2 重问主需求。
-4. 若【代码改动目录】缺少说明文档，或实现关系不清晰，调用 `code-analysis-doc` 补充理解。
+4. 若【代码改动目录】缺少说明文档，或实现关系不清晰，**先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，动态拼接 `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` 补充理解。
 5. 重点分析项目当前使用的 UI 框架，并区分通用框架与自研框架。
 6. 若是通用 UI 框架，明确记录框架名、版本、主要组件入口与替代边界。
 7. 若是自研 UI 框架，先确认 Stage 1 是否已命中对应框架 skill；若没有，则必须回到 Stage 1 先向用户询问是否提供框架文档或框架 skills。
@@ -185,14 +188,13 @@
     - 输出时必须明确标注任务类型
 14. 无论任务是否复杂，都必须形成最小 Stage 2 过站产物；复杂任务再额外补充完整 `templates/analysis/change-scope.md` 或 `templates/analysis/capability-matrix.md`。
 15. 只分析本任务实际需要的能力，不为临时任务额外沉淀长期文档。
-16. **必须明确后续技能调用计划**（Stage 5 必须执行）：
-    - `bug` 任务 → **必须规划** `systematic-debugging`（Stage 5 必须调用）
-    - React 技术栈（项目技能中标记） → **必须规划** `vercel-react-best-practices`（Stage 5 必须调用）
-    - React 技术栈且涉及组件开发 → **必须规划** `react:components`（Stage 5 必须调用）
-    - 复杂类型问题 → **必须规划** `typescript-advanced-types`（Stage 5 必须调用）
-    - 页面/组件改动 → **必须规划** `accessibility`（Stage 6 必须调用）
-    - 页面/组件改动 → 建议规划 `accessibility`（Stage 6 实际调用）
-    - 样式/UI 改动 → 建议规划 `web-design-guidelines`（Stage 6 实际调用）
+16. **必须明确后续技能调用计划**（Stage 5 必须执行，动态读取）：
+- `bug` 任务 → **先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-systematic-debugging/SKILL.md`（Stage 5 必须执行）
+- React 技术栈（项目技能中标记） → **先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-react-best-practices/SKILL.md`（Stage 5 必须执行）
+- React 技术栈且涉及组件开发 → **先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-react-components/SKILL.md`（Stage 5 必须执行）
+- 复杂类型问题 → **先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-typescript-advanced-types/SKILL.md`（Stage 5 必须执行）
+- 页面/组件改动 → **先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-accessibility/SKILL.md`（Stage 6 必须执行）
+- 样式/UI 改动 → **先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-web-design-guidelines/SKILL.md`（Stage 6 实际调用）
 17. 若存在关键技能缺失，调用 `find-skills`，输出补充建议。
 18. **必须明确输出以下详细信息**：
     - **改动文件数**：预估需要修改的文件数量（具体数字）

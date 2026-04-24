@@ -100,16 +100,17 @@
 1. 参考 `rules/frontend-verification.md` 执行验证流程。
 2. **Stage 5 完成后自动进入本阶段，无需用户确认即可开始验证**。
 3. **开始验证前，必须先调用技能**：
-   - **必须调用** `fw-project-develop` 获取验证约束
+   - **先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，获取三核心目录
+   - **项目技能引用**：`{project_ide_dir}/skills/fw-project-develop/SKILL.md` 获取验证约束
    - 将约束作为验证参考，避免违背项目规则
 4. 最少覆盖：
    - 功能正确性
    - lint / type / build 基础校验
    - 关键交互和回归路径
-5. **根据改动类型，必须调用对应技能**：
-- **项目技能存在** → **必须调用** `fw-project-develop`
-- **改动涉及页面、组件、表单、键盘交互** → **必须调用** `accessibility`
-   - **改动涉及布局、样式、UI 一致性** → **必须调用** `调用 web-design-guidelines 技能`
+5. **根据改动类型，必须调用对应技能**（动态读取）：
+- **项目技能存在** → **先读取配置文件**，动态拼接 `{project_ide_dir}/skills/fw-project-develop/SKILL.md`
+- **改动涉及页面、组件、表单、键盘交互** → **先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-accessibility/SKILL.md`
+- **改动涉及布局、样式、UI 一致性** → **先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-web-design-guidelines/SKILL.md`
 6. 仅在需要留痕、进入长任务记录或验证过程较复杂时，填写 `templates/verification/verification-report.md`。
 7. 只有在功能验证、关键回归以及可执行的 lint/type/build/test 校验都达到"通过"或"有明确合理的 not_applicable 结论"时，才可视为内部验证通过。
 8. 若校验失败的根因是代码问题，回到 Stage 5 修复 → **自动进入 Stage 6 → Stage 7 → Stage 8**。

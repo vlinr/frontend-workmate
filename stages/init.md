@@ -100,15 +100,15 @@
 
 - 检查 `scripts/init-skills.js` 是否存在
 - 若存在，立即执行该脚本
-- 脚本会生成配置文件 `.fw-session-config.json`（包含 `rules_file_path`）
+- 脚本会生成配置文件 `.fw-session-config.json`（存放在 `{project_ide_dir}`）
 
 ### 3. 更新状态文件（必须执行）
 
 **脚本执行完成后**：
 
-1. **读取配置文件**：使用 read 工具读取 `<技能包目录>/.fw-session-config.json`
-2. **获取 rules 文件路径**：从配置中读取 `rules_file_path` 字段
-3. **读取 rules 文件**：使用 read 工具读取该路径的文件
+1. **读取配置文件**：使用 read 工具读取 `{project_ide_dir}/.fw-session-config.json`
+2. **获取三个核心目录**：从配置中读取 `static_config_dir`、`project_ide_dir`、`project_work_dir`
+3. **读取状态文件**：使用 read 工具读取 `{project_ide_dir}/rules/fw-session-state.md`
 4. **编辑 rules 文件**：使用 edit 工具，在任务列表中新增任务状态块：
 
 ```

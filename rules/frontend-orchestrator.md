@@ -38,18 +38,18 @@
 19. Stage 3 仅在执行计划本身需要用户核对拆分、优先级或风险时才停住；否则可直接进入 Stage 4（执行前确认资料）
 20. Stage 4 按任务类型确认接口、权限、设计、联调等前置资料：`feature` 默认确认，`bug` 仅在涉及外部依赖时确认，`refactor` 默认可跳过
 21. 若 Stage 2 已确认任务类型和技能路线，Stage 5 必须根据实际条件调用对应技能：
-    - `bug` 任务 → 必须调用 `systematic-debugging`
-    - React 技术栈（项目技能中标记） → 必须调用 `react-best-practices`（仅适用于 React）
-    - React 技术栈且涉及组件开发 → 必须调用 `react-components`（仅适用于 React）
-    - 复杂类型问题 → 必须调用 `typescript-advanced-types`
+- `bug` 任务 → **先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-systematic-debugging/SKILL.md`
+- React 技术栈（项目技能中标记） → **先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-react-best-practices/SKILL.md`（仅适用于 React）
+- React 技术栈且涉及组件开发 → **先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-react-components/SKILL.md`（仅适用于 React）
+- 复杂类型问题 → **先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-typescript-advanced-types/SKILL.md`
     - 禁止以"Stage 2 没有指定"为由跳过技能调用
     - 禁止在非 React 技术栈下调用 React 技能
 22. Stage 4 在用户已明确"提供 / 不提供 / 跳过"资料后，直接进入 Stage 5 正式实现；不再额外询问是否继续
 23. 参考 `rules/frontend-implementation.md`
 24. Stage 5 只有在代码实现完成且不存在未解决的运行/lint/type/build/test 阻塞时，才允许自动进入 Stage 6；若存在环境问题，必须先停留在 Stage 5 并向用户输出修复建议
 25. 参考 `rules/frontend-verification.md`，并根据代码改动调用验证技能：
-    - 改动涉及页面/组件/表单/键盘交互/焦点流 → 必须调用 `accessibility`
-    - 改动涉及布局/样式/间距/UI 一致性 → 必须调用 `web-design-guidelines`
+- 改动涉及页面/组件/表单/键盘交互/焦点流 → **先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-accessibility/SKILL.md`
+- 改动涉及布局/样式/间距/UI 一致性 → **先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-web-design-guidelines/SKILL.md`
     - 禁止以"时间紧迫"为由跳过技能调用
 26. Stage 6 输出验证结果后，必须等待用户确认是否继续；若验证失败、环境阻塞或用户要求调整，回到 Stage 5；只有用户确认后才进入 Stage 7
 27. 参考 `rules/directory-doc-sync.md`，并按实际改动目录逐个生成或更新目录说明文档

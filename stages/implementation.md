@@ -109,27 +109,27 @@
 **进入本阶段后，必须先执行以下技能扫描和调用流程**：
 
 1. **扫描技能列表**：检查【技能目录】中是否存在可用技能
-2. **优先调用项目技能**：若存在 `fw-project-develop`，**必须先调用**获取项目约束
-3. **根据条件调用其他技能**：满足触发条件时，**必须调用**对应技能
+2. **优先调用项目技能**：若存在 `fw-project-develop`，**必须先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，动态拼接 `{project_ide_dir}/skills/fw-project-develop/SKILL.md`
+3. **根据条件调用其他技能**：满足触发条件时，**必须先读取配置文件**，动态拼接对应技能路径
 
 ### 必须调用清单
 
-| 触发条件 | 必须调用的技能 | 调用时机 | 说明 |
+| 触发条件 | 必须调用的技能路径 | 调用时机 | 说明 |
 | --- | --- | --- | --- |
-| 项目技能存在 | `fw-project-develop` | **必须首先调用** | 获取项目结构、技术栈、路由、权限、构建规则等约束 |
-| 任务类型为 `bug` | `systematic-debugging` | **必须在修复前调用** | 先找到根因，再执行修复 |
-| 技术栈为 React | `react-best-practices` | **实现时必须调用** | React 项目实现必须遵循最佳实践 |
-| 技术栈为 React 且涉及组件 | `react-components` | **组件开发时必须调用** | 创建/修改组件必须遵循规范 |
-| 涉及复杂类型问题 | `typescript-advanced-types` | 类型实现时调用 | 复杂类型场景 |
+| 项目技能存在 | `{project_ide_dir}/skills/fw-project-develop/SKILL.md` | **必须首先调用** | 获取项目结构、技术栈、路由、权限、构建规则等约束 |
+| 任务类型为 `bug` | `{static_config_dir}/skills/fw-systematic-debugging/SKILL.md` | **必须在修复前调用** | 先找到根因，再执行修复 |
+| 技术栈为 React（项目技能中标记） | `{static_config_dir}/skills/fw-react-best-practices/SKILL.md` | **实现时必须调用** | React 项目实现必须遵循最佳实践 |
+| 技术栈为 React 且涉及组件开发或修改 | `{static_config_dir}/skills/fw-react-components/SKILL.md` | **组件开发时必须调用** | 创建/修改组件必须遵循规范 |
+| 涉及复杂类型问题 | `{static_config_dir}/skills/fw-typescript-advanced-types/SKILL.md` | 类型实现时调用 | 复杂类型场景 |
 
 ### 调用执行方式
 
-**使用 skill 工具调用技能（查看可用技能：使用 skill 工具加载）**：
+**读取技能 SKILL.md 文件（按条件执行）**：
 
-- 调用项目技能：`fw-project-develop`
-- 调用调试技能：`systematic-debugging`
-- 调用 React 最佳实践：`vercel-react-best-practices`
-- 调用组件规范：`react:components`
+- 项目技能：**先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，动态拼接 `{project_ide_dir}/skills/fw-project-develop/SKILL.md`
+- 调试技能（bug 任务）：**先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-systematic-debugging/SKILL.md`
+- React 最佳实践：**先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-react-best-practices/SKILL.md`
+- 组件规范：**先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-react-components/SKILL.md`
 
 ### 禁止事项
 
@@ -143,31 +143,31 @@
 **根据任务类型，必须执行以下技能调用顺序**：
 
 - `bug` 任务：
-   - **必须先调用** `systematic-debugging` 找到根因
-   - 根因确认后再执行修复
-   - 若涉及复杂类型问题，**必须调用** `typescript-advanced-types`
+    - **必须先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-systematic-debugging/SKILL.md` 找到根因
+    - 根因确认后再执行修复
+    - 若涉及复杂类型问题，**必须先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-typescript-advanced-types/SKILL.md`
 
 - `feature` 任务：
-   - **必须先调用** `fw-project-develop` 获取项目约束
-   - 若技术栈为 React，**必须调用** `vercel-react-best-practices`
-   - 若涉及组件开发，**必须调用** `react:components`
+    - **必须先读取配置文件**，动态拼接 `{project_ide_dir}/skills/fw-project-develop/SKILL.md` 获取项目约束
+    - 若技术栈为 React，**必须先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-react-best-practices/SKILL.md`
+    - 若涉及组件开发，**必须先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-react-components/SKILL.md`
 
 - `refactor` 任务：
-   - **必须先调用** `fw-project-develop` 获取项目约束
-   - 默认先保持行为不变
-   - 先拆影响范围，再分批实施
+    - **必须先读取配置文件**，动态拼接 `{project_ide_dir}/skills/fw-project-develop/SKILL.md` 获取项目约束
+    - 默认先保持行为不变
+    - 先拆影响范围，再分批实施
 
 - `optimize` 任务：
-   - **必须先调用** `fw-project-develop` 获取项目约束
-   - 分析性能瓶颈后再优化
+    - **必须先读取配置文件**，动态拼接 `{project_ide_dir}/skills/fw-project-develop/SKILL.md` 获取项目约束
+    - 分析性能瓶颈后再优化
 
 ## 通用动作
 
 **按以下顺序严格执行**：
 
 1. **开始正式实现前，必须先调用技能**：
-   - **必须调用** `fw-project-develop` 获取项目约束
-   - 调用后获取的约束作为实现参考，避免违背项目已有规则
+    - **必须先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，动态拼接 `{project_ide_dir}/skills/fw-project-develop/SKILL.md` 获取项目约束
+    - 调用后获取的约束作为实现参考，避免违背项目已有规则
 2. **根据本阶段"技能调用规则"执行技能调用**：
    - 满足触发条件时，**必须调用**对应技能
    - 不满足条件时不强行调用
@@ -182,10 +182,34 @@
 
 ## 输出
 
-- 代码修改
-- 配置修改
-- 必要的任务状态更新
-- 若存在环境问题导致 lint/type/build/test 无法在当前环境完成，则输出明确的修复建议并保持在 Stage 5，不得把该结果当成可进入 Stage 6/7 的完成态
+**代码修改完成后，必须输出衔接提示语**：
+
+```
+[实施研发] 任务ID: {当前任务ID}
+代码修改完成。
+
+修改内容：
+- {修改文件列表}
+- {简要修改说明}
+
+接下来进入下一阶段：[内部验证]。
+```
+
+**禁止事项**：
+- 禁止输出"请确认功能是否正确"
+- 禁止输出"是否进入验证"
+- 禁止等待用户确认（自动衔接 stage6）
+
+---
+
+## 自动衔接流程
+
+**Stage 5 完成后**：
+1. 更新状态文件：`**阶段**: stage6`、`**状态**: in_progress`
+2. 输出衔接提示语
+3. 自动进入 Stage 6 执行验证
+
+---
 
 ## 回退条件
 

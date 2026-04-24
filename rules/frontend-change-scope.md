@@ -14,7 +14,9 @@
    - 检查【技能目录】中是否存在项目技能 `fw-project-develop`
    - 若存在，建议调用获取项目约束（结构、技术栈、路由、权限等）
    - 调用后获取的约束作为范围分析参考
-4. 若【代码改动目录】缺少说明文档或实现关系不清晰，调用 `code-analysis-doc`
+4. 若【代码改动目录】缺少说明文档或实现关系不清晰：
+   - **先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，获取三核心目录
+   - 动态拼接 `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md`
 5. 优先确认项目当前使用的 UI 框架，并区分通用 UI 框架与自研 UI 框架
 6. 若是通用 UI 框架，记录框架名、版本、主入口、替代边界与使用约束
 7. 若是自研 UI 框架，优先读取 Stage 1 已生成或吸收的 UI 框架 skill；若不存在，则回退 Stage 1 先向用户询问框架文档或框架 skills；该轮问题属于 `provide`，且必须使用普通文本回复引导，发问后立即结束当前回合
@@ -25,13 +27,15 @@
 12. Determine task type: `bug`, `feature`, or `refactor`
 13. Fill the change scope with modified modules, risk points, and regression range
 14. Fill the capability matrix with only task-relevant capability domains
-15. 明确后续**可能需要调用**的技能（仅供参考，实际调用由各阶段根据条件判定）：
-    - `bug` 任务 → 建议规划 `systematic-debugging`（Stage 5 实际调用）
-    - React 技术栈（项目技能中标记） → 建议规划 `react-best-practices`（仅适用于 React，Stage 5 实际调用）
-    - React 技术栈且涉及组件开发 → 建议规划 `react-components`（仅适用于 React，Stage 5 实际调用）
-    - 复杂类型问题 → 建议规划 `typescript-advanced-types`（Stage 5 实际调用）
-    - 页面/组件改动 → 建议规划 `accessibility`（Stage 6 实际调用）
-    - 样式/UI 改动 → 建议规划 `web-design-guidelines`（Stage 6 实际调用）
+15. 明确后续**可能需要调用**的技能（仅供参考，实际调用由各阶段根据条件判定，动态读取）：
+   - **先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，获取三核心目录
+   - **项目技能**：`{project_ide_dir}/skills/fw-project-develop/SKILL.md`
+- `bug` 任务 → 建议规划 `{static_config_dir}/skills/fw-systematic-debugging/SKILL.md`（Stage 5 实际调用）
+- React 技术栈（项目技能中标记） → 建议规划 `{static_config_dir}/skills/fw-react-best-practices/SKILL.md`（仅适用于 React，Stage 5 实际调用）
+- React 技术栈且涉及组件开发 → 建议规划 `{static_config_dir}/skills/fw-react-components/SKILL.md`（仅适用于 React，Stage 5 实际调用）
+- 复杂类型问题 → 建议规划 `{static_config_dir}/skills/fw-typescript-advanced-types/SKILL.md`（Stage 5 实际调用）
+- 页面/组件改动 → 建议规划 `{static_config_dir}/skills/fw-accessibility/SKILL.md`（Stage 6 实际调用）
+- 样式/UI 改动 → 建议规划 `{static_config_dir}/skills/fw-web-design-guidelines/SKILL.md`（Stage 6 实际调用）
 16. 形成当前任务的技能路线建议，并输出"要做什么 / 为什么这样做 / 暂不做什么 / 还缺什么证据"的清晰分析结论
 17. Stage 2 默认先内部完成分析，再向用户展示简短范围摘要、关键风险、技能路线与下一步方向；不要反向把分析责任推给用户，也不要原样展示内部阶段字段
 18. Stage 2 对用户只做一个核心确认：`我的理解是否正确`；若用户补充、纠正或拒绝，则必须留在本阶段，先判断新增内容属于"最初需求修正"还是"实现约束补充"，再与现有分析对比合并，回显新的分析结论继续确认；不得默认把新增约束改写成新的主需求；不得推进到 Stage 3 或 Stage 5

@@ -1,5 +1,5 @@
 ---
-name: task-plan-checkpoint
+name: fw-task-plan-checkpoint
 description: 长任务分步执行与断点续跑技能。用于 feature 实现、refactor、排障、迁移等多步骤任务；要求先在技能包内的临时运行目录生成详细计划，再按步骤执行并持续回写状态。支持用户按步骤 ID 直接引用文档重跑某一步或修改某一步；若上下文或 token 预算接近上限，自动输出任务交接文件，记录关键词、已完成项、未完成项与下一步执行指令，便于继续执行。
 ---
 

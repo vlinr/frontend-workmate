@@ -102,10 +102,10 @@
 
 **必须先执行此任务，再执行任务2**：
 
-1. **读取现有项目技能**：读取【技能目录】下的 `fw-project-develop`
+1. **读取现有项目技能**：**先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，读取 `{project_ide_dir}/skills/fw-project-develop/SKILL.md`
 2. **分析本次代码改动**：
    - 提取 Stage 5 实际修改的代码内容
-   - **必须调用** `调用 code-analysis-doc 技能` 分析改动影响
+   - **必须先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，动态拼接 `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` 分析改动影响
 3. **判断是否需要更新项目技能**：
    - **需要更新**的条件：
      - 新增了长期稳定的项目知识（如新的目录结构、新的技术栈、新的路由规则等）
@@ -133,7 +133,8 @@
    - 例如：改动 `src/pages/Home.tsx`、`src/components/Header.tsx` → 目录集合为 `src/pages/`、`src/components/`
 
 2. **对每个改动目录执行以下步骤**：
-   - 若目录实现关系复杂，**必须调用** `code-analysis-doc` 分析该目录
+   - **先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，获取三核心目录
+   - 若目录实现关系复杂，**动态拼接路径** `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` 分析该目录
    - 检查目录下是否已有说明文档（README.md 或类似文档）
    - 若有 → 更新该文档内容
    - 若无 → 使用 `templates/docs/directory-readme-template.md` 创建新文档

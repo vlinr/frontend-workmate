@@ -22,12 +22,14 @@
 6. `bug`: ask for external docs only when the agreed scope shows the issue depends on interface, 联调, permission, design, or third-party behavior
 7. `refactor`: default to proceed without extra external docs unless the scope explicitly introduces such dependencies
 8. If the user skips requested inputs, continue with repository evidence and mark the risk
-9. **技能建议调用（满足条件时建议执行）**：
-   - **`bug` 任务** → 建议调用 `systematic-debugging`，找到根因后再修复
-   - **技术栈为 React**（项目技能中标记） → 建议调用 `react-best-practices`（仅适用于 React 技术栈）
-   - **技术栈为 React 且涉及组件开发或修改** → 建议调用 `react-components`（仅适用于 React 技术栈）
-   - **涉及复杂类型约束或类型问题** → 建议调用 `typescript-advanced-types`
-   - **发现缺失关键技能** → 建议调用 `find-skills` 并输出安装建议
+9. **技能建议调用（满足条件时建议执行，动态读取）**：
+   - **先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，获取三核心目录
+   - **项目技能引用**：`{project_ide_dir}/skills/fw-project-develop/SKILL.md` 获取项目约束
+- **`bug` 任务** → 建议动态拼接 `{static_config_dir}/skills/fw-systematic-debugging/SKILL.md`，找到根因后再修复
+- **技术栈为 React**（项目技能中标记） → 建议动态拼接 `{static_config_dir}/skills/fw-react-best-practices/SKILL.md`（仅适用于 React 技术栈）
+- **技术栈为 React 且涉及组件开发或修改** → 建议动态拼接 `{static_config_dir}/skills/fw-react-components/SKILL.md`（仅适用于 React 技术栈）
+- **涉及复杂类型约束或类型问题** → 建议动态拼接 `{static_config_dir}/skills/fw-typescript-advanced-types/SKILL.md`
+   - **发现缺失关键技能** → **先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，动态拼接 `{static_config_dir}/skills/find-skills/SKILL.md` 并输出安装建议
    - **禁止在非 React 技术栈下调用 React 技能**
    - **禁止在不满足触发条件时强行调用**
 10. If a critical dependency is missing, call `find-skills` and output an explicit install list
