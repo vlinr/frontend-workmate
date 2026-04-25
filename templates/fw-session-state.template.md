@@ -96,41 +96,60 @@ When updating status:
 3. If found → Update that status block
 4. If not found → Create new task status block
 
-## New Session Task Association Rules
+## Task ID Carriage Mechanism
 
-**New session starts → First check state file for active tasks**
+**User only inputs requirements, Task ID auto-carried via AI output**
 
-### Task ID Extraction from User Input
+### Task ID Carriage Methods
 
-| User Input Pattern | Action |
+| Carriage Source | Description |
 | --- | --- |
-| Contains `Task ID: task_xxxxxxxx` | Continue that task |
-| References AI output containing Task ID | Extract Task ID from referenced content, continue that task |
-| No Task ID reference | **Create new task** (default behavior) |
+| Context reference | User referenced previous AI output (first line contains `Task ID: task_xxxxxxxx`) |
+| IDE auto-carriage | IDE session management auto-carries previous output's Task ID |
+| No carriage | First input in new session, no Task ID context |
 
-### Example Scenarios
+### Judgment Logic (Step 1)
 
-**Scenario 1: Continue existing task**
+**After receiving user input, first check Task ID carriage status**:
+| Carriage Status | Next Action |
+| --- | --- |
+| Task ID carried | → Read state file → Find corresponding task → Continue |
+| **No Task ID carriage** | → **Create new task** (first input in new session) |
+
+**Important**:
+- User will not manually input Task ID, only inputs requirement content
+- Task ID carried via AI output first line, subsequent dialogue auto-transmits via reference/context
+- "No Task ID carriage" detected = first input in new session = create new task
+
+### Step 2 Branches
+
+**Branch A (Task ID carried)**:
+- Read state file → Find `<!-- TASK_{TASK_ID_UPPERCASE}_START -->`
+- Continue that task
+
+**Branch B (No Task ID carriage)**:
+- Generate new Task ID `task_{new_random_id}`
+- Read state file → Add new task block
+- Start from Stage 0
+- **First line output carries Task ID** `[Phase Name] Task ID: task_xxx`
+
+### Example Flow
+
+**First input in new session**:
 ```
-User: "继续刚才的任务" (refers to previous AI output: "Task ID: task_abc123")
-AI: Extract task_abc123 → Read state file → Find TASK_ABC123 block → Continue from recorded phase
+User: "add user management module" (no Task ID carriage)
+AI: Step 1 check → No carriage → Create new task task_abc123 → Stage 0
+AI output first line: "[Initialization] Task ID: task_abc123"
 ```
 
-**Scenario 2: New task**
+**Continue existing session**:
 ```
-User: "添加用户管理模块" (no Task ID reference)
-AI: No Task ID extracted → Generate new Task ID → Create new task block → Start from Stage 0
-```
-
-**Scenario 3: Explicit Task ID**
-```
-User: "继续 Task ID: task_def456 的任务"
-AI: Extract task_def456 → Read state file → Find TASK_DEF456 block → Continue from recorded phase
+User: "continue, need to modify this" (Task ID carried from previous round)
+AI: Step 1 check → Carriage task_abc123 → Continue task_abc123
 ```
 
-### Why This Design Works
+### Design Points
 
-- **Task ID in every AI output**: Ensures task context not lost even if context overflows
-- **User can reference Task ID**: Either explicitly or by referencing AI output
-- **Default: New task**: Avoids forcing unrelated new requests onto existing active task
-- **State file only tracks, not forces**: State file `alwaysApply: true` provides rules, but actual task association determined by user input context
+- **AI output first line carries Task ID**: Ensures task context is trackable
+- **IDE/reference auto-transmit**: Task ID auto-carried in dialogue, user no need to manually input
+- **No carriage = new task**: Simplest judgment logic

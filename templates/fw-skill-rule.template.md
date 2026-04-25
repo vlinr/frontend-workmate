@@ -154,23 +154,52 @@ Config file `.fw-session-config.json` stored in `{project_ide_dir}`, **only stor
 # Execution Order (Most Important)
 
 **After receiving user input**:
+
+### Step 1: Check Task ID Carriage (Highest Priority)
+
+**Task ID carriage methods**:
+| Carriage Source | Description |
+| --- | --- |
+| Context reference | User referenced previous AI output (first line contains `Task ID: task_xxxxxxxx`) |
+| IDE auto-carriage | IDE session management auto-carries previous output's Task ID |
+| No carriage | First input in new session, no Task ID context |
+
+**Judgment logic**:
+| Carriage Status | Next Action |
+| --- | --- |
+| Task ID carried | → Step 2A: Read state file → Find corresponding task → Continue |
+| **No Task ID carriage** | → **Step 2B: Create new task** (first input in new session) |
+
+**Important**:
+- User only inputs requirements, will not manually input Task ID
+- Task ID carried via AI output first line, subsequent dialogue auto-transmits via reference/context
+- "No Task ID carriage" detected = first input in new session = create new task
+
+### Step 2A: Continue Existing Task (Task ID carried)
+
 1. **Read config file** `{project_ide_dir}/.fw-session-config.json`
-2. **Read state file** `{project_ide_dir}/rules/fw-session-state.md` → Get active tasks list
-3. **Extract Task ID from user input** (New Session Task Association):
-   | Pattern | Action |
-   | --- | --- |
-   | User input contains `Task ID: task_xxxxxxxx` | Extract → Continue that task |
-   | User input references AI output with Task ID | Extract from reference → Continue that task |
-   | No Task ID reference | **Create new task** → Generate new Task ID → Start Stage 0 |
+2. **Read state file** `{project_ide_dir}/rules/fw-session-state.md`
+3. Find `<!-- TASK_{TASK_ID_UPPERCASE}_START -->` → Continue that task
 4. **Process input based on phase**:
    | Phase | Status | Input Type | Handling |
    | --- | --- | --- | --- |
    | stage8 | waiting | Modification content | **First update status to stage5 + reset phases** |
    | stage8 | waiting | "continue" | Mark complete |
    | stage1-7 | waiting | Any content | Execute current phase reply handling |
-   | completed | - | New requirement | Generate new Task ID → stage0 |
 
-5. **Execute phase action** → Prohibited from skipping status update
+### Step 2B: Create New Task (No Task ID carriage)
+
+1. **Generate new Task ID** `task_{new_random_id}`
+2. **Read state file** `{project_ide_dir}/rules/fw-session-state.md`
+3. **Add new task block** (do not modify existing active tasks)
+4. **Start from Stage 0**
+5. **First line output carries Task ID** `[Phase Name] Task ID: task_{new_random_id}`
+
+### Prohibited Behavior
+
+- **Prohibited**: Read state file active tasks before checking Task ID carriage
+- **Prohibited**: Assume user wants to continue existing task (must first check Task ID carriage)
+- **Prohibited**: Associate unrelated new request with active task in state file
 
 ---
 

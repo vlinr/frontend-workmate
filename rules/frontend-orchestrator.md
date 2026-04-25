@@ -99,41 +99,63 @@
 - Only when current phase status is `completed`, can switch to next phase.
 - If current phase status is `waiting_user` or `blocked`, must stop in current phase, cannot because project already created, dependencies already installed or code editable then automatically proceed.
 
-## New Session Task Association Rules
+## Task ID Carriage Mechanism
 
-**New session starts → First check state file and user input context**
+**User only inputs requirements, Task ID auto-carried via AI output**
 
-### Task ID Extraction Logic
+### Task ID Carriage Methods
 
-| User Input Pattern | Action |
+| Carriage Source | Description |
 | --- | --- |
-| Contains explicit `Task ID: task_xxxxxxxx` | Extract Task ID → Find matching task in state file → Continue from recorded phase |
-| References previous AI output containing Task ID | Extract Task ID from referenced content → Continue that task |
-| No Task ID reference detected | **Default: Create new task** → Generate new Task ID → Start from Stage 0 |
+| Context reference | User referenced previous AI output (first line contains `Task ID: task_xxxxxxxx`) |
+| IDE auto-carriage | IDE session management auto-carries previous output's Task ID |
+| No carriage | First input in new session, no Task ID context |
 
-### Important: Every AI Output Must Carry Task ID
+### Judgment Logic (Step 1)
 
-- First line of every output: `[Phase Name] Task ID: task_xxxxxxxx`
-- This ensures:
-  - Task context not lost even if context window overflows
-  - User can reference AI output to continue specific task
-  - New session can extract Task ID from user-referenced content
+**After receiving user input, first check Task ID carriage status**:
+| Carriage Status | Next Action |
+| --- | --- |
+| Task ID carried | → Read state file → Find corresponding task → Continue |
+| **No Task ID carriage** | → **Create new task** (first input in new session) |
 
-### Example Handling
+**Important**:
+- User will not manually input Task ID, only inputs requirement content
+- Task ID carried via AI output first line, subsequent dialogue auto-transmits via reference/context
+- "No Task ID carriage" detected = first input in new session = create new task
 
+### Step 2 Branches
+
+**Branch A (Task ID carried)**:
+- Read state file → Find `<!-- TASK_{TASK_ID}_START -->`
+- Continue that task
+
+**Branch B (No Task ID carriage)**:
+- Generate new Task ID
+- Read state file → Add new task block
+- Start from Stage 0
+- **First line output carries Task ID** `[Phase Name] Task ID: task_xxx`
+
+### Example Flow
+
+**First input in new session**:
 ```
-User: "继续刚才的任务"
-AI: Check if user input references previous AI output → Extract Task ID → Continue
+User: "add user management module" (no Task ID carriage)
+AI: Step 1 check → No carriage → Create new task task_abc123 → Stage 0
+AI output first line: "[Initialization] Task ID: task_abc123"
+```
 
-User: "添加用户管理模块" (no reference)
-AI: No Task ID extracted → Create new task (task_new123) → Start Stage 0
+**Continue existing session**:
+```
+User: "continue, need to modify this" (Task ID carried from previous round)
+AI: Step 1 check → Carriage task_abc123 → Continue task_abc123
 ```
 
 ### Prohibited Behavior
 
-- **Prohibited**: Assume user wants to continue active task without checking for Task ID reference
-- **Prohibited**: Force unrelated new request onto existing active task
-- **Prohibited**: Skip Task ID extraction before determining task association
+- **Prohibited**: Read state file active tasks before checking Task ID carriage
+- **Prohibited**: Assume user wants to continue existing task (must first check Task ID carriage)
+- **Prohibited**: Associate unrelated new request with active task in state file
 
 ## Failure Fallback
 
