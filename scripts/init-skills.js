@@ -20,6 +20,12 @@
  * 静态技能拷贝逻辑：
  * - 源目录：skills/curated/ 和 skills/external/（frontend-workmate 内）
  * - 目标目录：{static_config_dir}/skills/（与 frontend-workmate 同级）
+ * 
+ * 改进逻辑：
+ * - 技能同步：检查版本号或 SKILL.md 内容变化，有变化则更新
+ * - 配置文件：验证三核心目录是否正确，不正确则更新
+ * - rules 文件：检查模板是否有变更，有变更则更新
+ * - 状态文件：保留现有内容，不覆盖（有任务数据）
  */
 
 const fs = require("fs");
@@ -54,6 +60,7 @@ function printHelp() {
   console.log("  --workdir <path>    Project work directory. Default: process.cwd()");
   console.log("  --ide <name>        IDE config directory name. Default: auto-detect");
   console.log("  --dirs <list>       Source skill directories. Default: curated,external");
+  console.log("  --force             Force update all skills and rules (ignore version check)");
   console.log("  --dry-run           Show planned actions without executing");
   console.log("  --help, -h          Show this help");
 }
@@ -63,6 +70,7 @@ function parseArgs(argv) {
     workdir: null,
     ide: null,
     dirs: SOURCE_SKILL_DIRS,
+    force: false,
     dryRun: false,
   };
 
@@ -82,6 +90,8 @@ function parseArgs(argv) {
     } else if (arg === "--dirs" && next) {
       options.dirs = next.split(",").map(s => s.trim()).filter(Boolean);
       i++;
+    } else if (arg === "--force") {
+      options.force = true;
     } else if (arg === "--dry-run") {
       options.dryRun = true;
     }
@@ -165,12 +175,71 @@ function fileExists(filePath) {
 }
 
 /**
- * 同步静态技能目录
- * 将 skills/curated/ 下的技能拷贝到 {static_config_dir}/skills/
+ * 获取技能版本信息
+ * 从 SKILL.md 的 YAML frontmatter 中提取 description 作为版本标识
  */
-function syncStaticSkills(skillPackageDir, staticConfigDir, dirNames, dryRun) {
+function getSkillVersion(skillDir) {
+  const skillMdPath = path.resolve(skillDir, "SKILL.md");
+  if (!fileExists(skillMdPath)) {
+    return null;
+  }
+  
+  const content = fs.readFileSync(skillMdPath, "utf-8");
+  // 提取 frontmatter 中的 description 作为版本标识
+  const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+  if (frontmatterMatch) {
+    const frontmatter = frontmatterMatch[1];
+    const descMatch = frontmatter.match(/description:\s*(.+)/);
+    if (descMatch) {
+      return descMatch[1].trim();
+    }
+  }
+  
+  // 如果没有 description，使用文件修改时间作为版本
+  const stat = fs.statSync(skillMdPath);
+  return stat.mtimeMs.toString();
+}
+
+/**
+ * 检查技能是否需要更新
+ * 对比源目录和目标目录的 SKILL.md 内容
+ */
+function needsSkillUpdate(sourceDir, targetDir, force) {
+  if (!directoryExists(targetDir)) {
+    return { needsUpdate: true, reason: "target_missing" };
+  }
+  
+  if (force) {
+    return { needsUpdate: true, reason: "force_update" };
+  }
+  
+  // 检查源目录是否还存在（如果存在说明还没清理，需要同步）
+  if (directoryExists(sourceDir)) {
+    return { needsUpdate: true, reason: "source_still_exists" };
+  }
+  
+  const sourceVersion = getSkillVersion(sourceDir);
+  const targetVersion = getSkillVersion(targetDir);
+  
+  if (sourceVersion !== targetVersion) {
+    return { needsUpdate: true, reason: "version_changed", sourceVersion, targetVersion };
+  }
+  
+  return { needsUpdate: false, reason: "version_match" };
+}
+
+/**
+ * 同步静态技能目录（改进版）
+ * 
+ * 新逻辑：
+ * 1. 如果目标不存在 → 拷贝
+ * 2. 如果源目录还存在 → 更新（说明技能包有变更）
+ * 3. 如果 force=true → 强制更新
+ * 4. 否则检查版本变化 → 有变化则更新
+ */
+function syncStaticSkills(skillPackageDir, staticConfigDir, dirNames, force, dryRun) {
   const results = [];
-  const targetSkillsDir = path.resolve(staticConfigDir, "skills");  // 目标: ~/.qoder/skills/
+  const targetSkillsDir = path.resolve(staticConfigDir, "skills");
 
   for (const dirName of dirNames) {
     const sourceCategoryDir = path.resolve(skillPackageDir, "skills", dirName);
@@ -181,7 +250,6 @@ function syncStaticSkills(skillPackageDir, staticConfigDir, dirNames, dryRun) {
       continue;
     }
 
-    // 遍历子目录，拷贝到 {static_config_dir}/skills/
     const childDirs = fs.readdirSync(sourceCategoryDir);
     
     for (const childName of childDirs) {
@@ -192,29 +260,39 @@ function syncStaticSkills(skillPackageDir, staticConfigDir, dirNames, dryRun) {
         continue;
       }
 
-      if (directoryExists(childTargetDir)) {
-        console.log(`[skip] Target already exists: ${childTargetDir}`);
+      // 改进：检查是否需要更新
+      const updateCheck = needsSkillUpdate(childSourceDir, childTargetDir, force);
+      
+      if (!updateCheck.needsUpdate) {
+        console.log(`[skip] ${childName}: ${updateCheck.reason}`);
         results.push({ 
           category: dirName, 
           skillName: childName, 
-          status: "target_exists", 
+          status: "no_update_needed", 
+          reason: updateCheck.reason,
           sourceDir: childSourceDir, 
           targetDir: childTargetDir 
         });
         continue;
       }
 
+      // 需要更新：先删除目标目录（如果存在），再拷贝
       if (!dryRun) {
+        if (directoryExists(childTargetDir)) {
+          fs.rmSync(childTargetDir, { recursive: true, force: true });
+          console.log(`[remove] Old version: ${childTargetDir}`);
+        }
         fs.cpSync(childSourceDir, childTargetDir, { recursive: true, force: true });
-        console.log(`[copy] ${childSourceDir} -> ${childTargetDir}`);
+        console.log(`[${updateCheck.reason === "target_missing" ? "copy" : "update"}] ${childSourceDir} -> ${childTargetDir}`);
       } else {
-        console.log(`[dry-run] Would copy: ${childSourceDir} -> ${childTargetDir}`);
+        console.log(`[dry-run] Would ${updateCheck.reason === "target_missing" ? "copy" : "update"}: ${childSourceDir} -> ${childTargetDir}`);
       }
 
       results.push({ 
         category: dirName, 
         skillName: childName, 
-        status: "copied", 
+        status: updateCheck.reason === "target_missing" ? "copied" : "updated", 
+        reason: updateCheck.reason,
         sourceDir: childSourceDir, 
         targetDir: childTargetDir 
       });
@@ -244,77 +322,183 @@ function cleanupSourceDirs(skillPackageDir, dirNames, dryRun) {
 }
 
 /**
- * 创建项目配置文件
- * 仅存储三个核心目录路径
+ * 检查配置文件是否需要更新
+ * 验证三核心目录是否正确
  */
-function createConfigFile(paths, dryRun) {
+function needsConfigUpdate(configFilePath, paths) {
+  if (!fileExists(configFilePath)) {
+    return { needsUpdate: true, reason: "config_missing" };
+  }
+  
+  try {
+    const existingConfig = JSON.parse(fs.readFileSync(configFilePath, "utf-8"));
+    
+    const errors = [];
+    
+    if (existingConfig.project_work_dir !== paths.projectWorkDir) {
+      errors.push({
+        field: "project_work_dir",
+        expected: paths.projectWorkDir,
+        actual: existingConfig.project_work_dir
+      });
+    }
+    
+    if (existingConfig.project_ide_dir !== paths.projectIdeDir) {
+      errors.push({
+        field: "project_ide_dir",
+        expected: paths.projectIdeDir,
+        actual: existingConfig.project_ide_dir
+      });
+    }
+    
+    if (existingConfig.static_config_dir !== paths.staticConfigDir) {
+      errors.push({
+        field: "static_config_dir",
+        expected: paths.staticConfigDir,
+        actual: existingConfig.static_config_dir
+      });
+    }
+    
+    if (errors.length > 0) {
+      return { needsUpdate: true, reason: "path_mismatch", errors };
+    }
+    
+    return { needsUpdate: false, reason: "config_valid" };
+  } catch (e) {
+    return { needsUpdate: true, reason: "config_parse_error", error: e.message };
+  }
+}
+
+/**
+ * 创建或更新项目配置文件（改进版）
+ * 
+ * 新逻辑：
+ * 1. 配置不存在 → 创建
+ * 2. 配置存在但路径不正确 → 更新
+ * 3. 配置正确 → 跳过
+ */
+function createOrUpdateConfigFile(paths, dryRun) {
   const configFilePath = path.resolve(paths.projectIdeDir, ".fw-session-config.json");
 
-  // 只存储3个核心目录
-  const config = {
+  const expectedConfig = {
     project_work_dir: paths.projectWorkDir,
     project_ide_dir: paths.projectIdeDir,
     static_config_dir: paths.staticConfigDir,
     created_at: new Date().toISOString(),
   };
 
-  if (!dryRun) {
-    fs.writeFileSync(configFilePath, JSON.stringify(config, null, 2), "utf-8");
-    console.log(`[create] Config file: ${configFilePath}`);
-  } else {
-    console.log(`[dry-run] Would create: ${configFilePath}`);
+  const updateCheck = needsConfigUpdate(configFilePath, paths);
+  
+  if (!updateCheck.needsUpdate) {
+    console.log(`[skip] Config file valid: ${configFilePath}`);
+    return { configFilePath, status: "config_valid" };
+  }
+  
+  if (updateCheck.reason === "path_mismatch") {
+    console.log(`[update] Config paths mismatch:`);
+    for (const err of updateCheck.errors) {
+      console.log(`  - ${err.field}: expected ${err.expected}, actual ${err.actual}`);
+    }
   }
 
-  return { configFilePath, config };
+  if (!dryRun) {
+    fs.writeFileSync(configFilePath, JSON.stringify(expectedConfig, null, 2), "utf-8");
+    console.log(`[${updateCheck.reason === "config_missing" ? "create" : "update"}] Config file: ${configFilePath}`);
+  } else {
+    console.log(`[dry-run] Would ${updateCheck.reason === "config_missing" ? "create" : "update"}: ${configFilePath}`);
+  }
+
+  return { configFilePath, config: expectedConfig, status: updateCheck.reason };
 }
 
 /**
- * 创建项目规则文件和状态文件
- * 存放在 {project_ide_dir}/rules/
- * 模板文件从 {skillPackageDir}/templates/ 读取
+ * 检查 rules 文件是否需要更新
+ * 对比模板文件和现有文件内容
  */
-function createProjectRules(paths, dryRun) {
+function needsRulesUpdate(templatePath, filePath) {
+  if (!fileExists(filePath)) {
+    return { needsUpdate: true, reason: "file_missing" };
+  }
+  
+  if (!fileExists(templatePath)) {
+    return { needsUpdate: false, reason: "template_missing" };
+  }
+  
+  const templateContent = fs.readFileSync(templatePath, "utf-8");
+  const fileContent = fs.readFileSync(filePath, "utf-8");
+  
+  if (templateContent !== fileContent) {
+    return { needsUpdate: true, reason: "content_changed" };
+  }
+  
+  return { needsUpdate: false, reason: "content_match" };
+}
+
+/**
+ * 创建或更新项目规则文件（改进版）
+ * 
+ * 新逻辑：
+ * 1. 文件不存在 → 创建
+ * 2. 文件存在但模板有变更 → 更新
+ * 3. 内容相同 → 跳过
+ * 
+ * 注意：状态文件不更新（保留任务数据）
+ */
+function createOrUpdateProjectRules(paths, dryRun) {
   const ruleTemplatePath = path.resolve(paths.skillPackageDir, "templates", "fw-skill-rule.template.md");
   const stateTemplatePath = path.resolve(paths.skillPackageDir, "templates", "fw-session-state.template.md");
   const ruleFilePath = path.resolve(paths.projectIdeDir, "rules", "fw-skill-rule.md");
   const stateFilePath = path.resolve(paths.projectIdeDir, "rules", "fw-session-state.md");
 
+  const results = {
+    rule: { filePath: ruleFilePath },
+    state: { filePath: stateFilePath }
+  };
+
+  // 处理 rule 文件（改进：检查模板变更）
   if (!fileExists(ruleTemplatePath)) {
     console.log(`[skip] Rule template not found: ${ruleTemplatePath}`);
-    return { status: "template_missing", ruleFilePath, stateFilePath };
-  }
-
-  if (!fileExists(stateTemplatePath)) {
-    console.log(`[skip] State template not found: ${stateTemplatePath}`);
-    return { status: "state_template_missing", ruleFilePath, stateFilePath };
-  }
-
-  const ruleExists = fileExists(ruleFilePath);
-  const stateExists = fileExists(stateFilePath);
-
-  if (ruleExists && stateExists) {
-    console.log(`[skip] Both files already exist: ${ruleFilePath}, ${stateFilePath}`);
-    return { status: "files_exist", ruleFilePath, stateFilePath };
-  }
-
-  if (!dryRun) {
-    if (!ruleExists) {
-      const ruleTemplateContent = fs.readFileSync(ruleTemplatePath, "utf-8");
-      fs.writeFileSync(ruleFilePath, ruleTemplateContent, "utf-8");
-      console.log(`[create] Rule file: ${ruleFilePath}`);
+    results.rule.status = "template_missing";
+  } else {
+    const ruleUpdateCheck = needsRulesUpdate(ruleTemplatePath, ruleFilePath);
+    
+    if (!ruleUpdateCheck.needsUpdate) {
+      console.log(`[skip] Rule file content match: ${ruleFilePath}`);
+      results.rule.status = "no_update_needed";
+    } else {
+      if (!dryRun) {
+        const ruleTemplateContent = fs.readFileSync(ruleTemplatePath, "utf-8");
+        fs.writeFileSync(ruleFilePath, ruleTemplateContent, "utf-8");
+        console.log(`[${ruleUpdateCheck.reason === "file_missing" ? "create" : "update"}] Rule file: ${ruleFilePath}`);
+      } else {
+        console.log(`[dry-run] Would ${ruleUpdateCheck.reason === "file_missing" ? "create" : "update"}: ${ruleFilePath}`);
+      }
+      results.rule.status = ruleUpdateCheck.reason === "file_missing" ? "created" : "updated";
+      results.rule.reason = ruleUpdateCheck.reason;
     }
+  }
 
-    if (!stateExists) {
-      const stateTemplateContent = fs.readFileSync(stateTemplatePath, "utf-8");
-      fs.writeFileSync(stateFilePath, stateTemplateContent, "utf-8");
-      console.log(`[create] State file: ${stateFilePath}`);
+  // 处理 state 文件（保留现有内容，不覆盖）
+  if (!fileExists(stateFilePath)) {
+    if (!fileExists(stateTemplatePath)) {
+      console.log(`[skip] State template not found: ${stateTemplatePath}`);
+      results.state.status = "template_missing";
+    } else {
+      if (!dryRun) {
+        const stateTemplateContent = fs.readFileSync(stateTemplatePath, "utf-8");
+        fs.writeFileSync(stateFilePath, stateTemplateContent, "utf-8");
+        console.log(`[create] State file: ${stateFilePath}`);
+      } else {
+        console.log(`[dry-run] Would create: ${stateFilePath}`);
+      }
+      results.state.status = "created";
     }
   } else {
-    console.log(`[dry-run] Would create: ${ruleFilePath}`);
-    console.log(`[dry-run] Would create: ${stateFilePath}`);
+    console.log(`[skip] State file exists (preserving task data): ${stateFilePath}`);
+    results.state.status = "preserved";
   }
 
-  return { status: "created", ruleFilePath, stateFilePath };
+  return results;
 }
 
 /**
@@ -348,6 +532,12 @@ function main() {
   console.log("  2. project_ide_dir   - 项目IDE配置根目录");
   console.log("  3. static_config_dir - 静态资源根目录（IDE配置根目录）");
   console.log("");
+  console.log("改进逻辑：");
+  console.log("  - 技能同步：检查版本变化，有变化则更新");
+  console.log("  - 配置文件：验证路径正确性，不正确则更新");
+  console.log("  - rules 文件：检查模板变更，有变更则更新");
+  console.log("  - 状态文件：保留现有内容（有任务数据）");
+  console.log("");
   console.log("其他路径拼接：");
   console.log("  - 静态技能: {static_config_dir}/skills/{技能名}/SKILL.md");
   console.log("  - 静态规则: {static_config_dir}/rules/{规则名}.md");
@@ -360,12 +550,13 @@ function main() {
 
   console.log("");
   console.log(`Mode: ${options.dryRun ? "dry-run" : "execute"}`);
+  console.log(`Force update: ${options.force ? "yes" : "no"}`);
   console.log(`Source dirs: ${options.dirs.join(", ")}`);
   console.log("");
 
   // 同步静态技能到 {static_config_dir}/skills/
   console.log("=== Syncing static skills ===");
-  const syncResults = syncStaticSkills(paths.skillPackageDir, paths.staticConfigDir, options.dirs, options.dryRun);
+  const syncResults = syncStaticSkills(paths.skillPackageDir, paths.staticConfigDir, options.dirs, options.force, options.dryRun);
 
   // 确保项目IDE目录结构存在
   console.log("");
@@ -375,15 +566,15 @@ function main() {
   ensureDirectory(path.resolve(paths.projectIdeDir, "rules"), options.dryRun);
   ensureDirectory(path.resolve(paths.projectIdeDir, "output"), options.dryRun);
 
-  // 创建项目配置文件
+  // 创建或更新项目配置文件
   console.log("");
-  console.log("=== Creating config file ===");
-  const configResult = createConfigFile(paths, options.dryRun);
+  console.log("=== Creating/Updating config file ===");
+  const configResult = createOrUpdateConfigFile(paths, options.dryRun);
 
-  // 创建项目规则文件
+  // 创建或更新项目规则文件
   console.log("");
-  console.log("=== Creating project rules ===");
-  const rulesResult = createProjectRules(paths, options.dryRun);
+  console.log("=== Creating/Updating project rules ===");
+  const rulesResult = createOrUpdateProjectRules(paths, options.dryRun);
 
   // 创建项目技能目录
   console.log("");
@@ -408,27 +599,35 @@ function main() {
   console.log("");
   console.log("静态技能同步：");
   const copiedSkills = syncResults.filter(r => r.status === "copied");
-  const existingSkills = syncResults.filter(r => r.status === "target_exists");
+  const updatedSkills = syncResults.filter(r => r.status === "updated");
+  const skippedSkills = syncResults.filter(r => r.status === "no_update_needed");
   
   if (copiedSkills.length > 0) {
-    console.log(`  Copied (${copiedSkills.length}):`);
+    console.log(`  新增 (${copiedSkills.length}):`);
     for (const r of copiedSkills) {
       console.log(`    - ${r.skillName}`);
     }
   }
   
-  if (existingSkills.length > 0) {
-    console.log(`  Already exists (${existingSkills.length}):`);
-    for (const r of existingSkills) {
-      console.log(`    - ${r.skillName}`);
+  if (updatedSkills.length > 0) {
+    console.log(`  更新 (${updatedSkills.length}):`);
+    for (const r of updatedSkills) {
+      console.log(`    - ${r.skillName} (${r.reason})`);
+    }
+  }
+  
+  if (skippedSkills.length > 0) {
+    console.log(`  无需更新 (${skippedSkills.length}):`);
+    for (const r of skippedSkills) {
+      console.log(`    - ${r.skillName} (${r.reason})`);
     }
   }
   
   console.log("");
-  console.log("生成的文件：");
-  console.log(`  配置文件: ${configResult.configFilePath}`);
-  console.log(`  规则文件: ${rulesResult.ruleFilePath}`);
-  console.log(`  状态文件: ${rulesResult.stateFilePath}`);
+  console.log("生成的/更新的文件：");
+  console.log(`  配置文件: ${configResult.configFilePath} (${configResult.status})`);
+  console.log(`  规则文件: ${rulesResult.rule.filePath} (${rulesResult.rule.status})`);
+  console.log(`  状态文件: ${rulesResult.state.filePath} (${rulesResult.state.status})`);
   console.log(`  项目技能: ${skillResult.projectSkillDir}`);
   console.log("");
 
@@ -439,9 +638,9 @@ function main() {
   console.log(`${paths.staticConfigDir}/`);
   console.log("  ├── skills/");
   console.log("  │   ├── frontend-workmate/    # 本技能包");
-  console.log("  │   ├── react-best-practices/");
-  console.log("  │   ├── systematic-debugging/");
-  for (const r of copiedSkills) {
+  console.log("  │   ├── fw-react-best-practices/");
+  console.log("  │   ├── fw-systematic-debugging/");
+  for (const r of [...copiedSkills, ...updatedSkills]) {
     console.log(`  │   ├── ${r.skillName}/`);
   }
   console.log("  │   └── ...");
