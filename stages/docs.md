@@ -1,174 +1,174 @@
-# Stage 7：文档同步
+# Stage 7: Documentation Sync
 
-## ⚠️ 强制规则（必须遵守）
+## ⚠️ Mandatory Rules (Must Follow)
 
-### 1. 单一阶段输出原则
+### 1. Single Phase Output Principle
 
-**本阶段输出只能包含文档同步内容，禁止幻想未来阶段**：
+**This phase output must only contain documentation sync content, prohibited from imagining future phases**:
 
-| 禁止内容 | 说明 |
+| Prohibited Content | Description |
 | --- | --- |
-| "用户确认后会xxx" | 禁止幻想用户反馈 |
-| "接下来进入交付" | 禁止输出后续阶段计划 |
+| "After user confirmation, xxx" | Prohibited from imagining user feedback |
+| "Proceeding to delivery next" | Prohibited from outputting subsequent phase plans |
 
-### 2. 任务ID携带原则
+### 2. Task ID Carrying Principle
 
-**本阶段必须携带任务ID**：
-- 第一行输出：`[文档同步] 任务ID: task_xxxxxxxx`
-- 状态文件更新必须携带任务ID
+**This phase must carry Task ID**:
+- First line output: `[Documentation Sync] Task ID: task_xxxxxxxx`
+- State file update must carry Task ID
 
-### 3. 完成后自动进入下一阶段
+### 3. After Completion, Automatically Proceed to Next Phase
 
-**文档同步完成后**：
-- 不输出确认提示语
-- 不等待用户确认
-- 自动进入 stage8（交付续跑）
+**After documentation sync completes**:
+- Don't output confirmation prompt
+- Don't wait for user confirmation
+- Automatically proceed to stage8 (Delivery)
 
 ---
 
-## 目标
+## Goal
 
-本阶段主要实现**两个任务**：
+This phase mainly implements **two tasks**:
 
-1. **判断是否需要更新项目技能**：将更新的代码通过代码分析技能，判断是否有可以更新到项目技能 `fw-project-develop` 的内容，如有则进行更新
-2. **生成/更新目录说明文档**：通过代码分析，在代码修改的目录下生成或更新说明文档（以目录为单位）
+1. **Judge if need to update project skill**: Analyze updated code through code analysis skill, judge if there's content that can be updated to project skill `fw-project-develop`, if yes then update
+2. **Generate/Update directory documentation**: Through code analysis, generate or update documentation under code modification directories (per directory)
 
-## 内容处理规则（重要）
+## Content Handling Rules (Important)
 
-**本阶段职责边界**：
+**This Phase Responsibility Boundary**:
 
-| 属于本阶段的内容 | 不属于本阶段的内容（记录到上下文） |
+| Belongs to This Phase | Does Not Belong to This Phase (Record to Context) |
 | --- | --- | --- |
-| 项目技能更新判断 | 代码修改（回 stage5） |
-| 目录说明文档生成/更新 | 验证执行 |
-| 文档内容提取 | 用户确认（stage8） |
+| Project skill update judgment | Code modification (return to stage5) |
+| Directory documentation generation/update | Verification execution |
+| Documentation content extraction | User confirmation (stage8) |
 
-**本阶段是自动执行阶段，不接收用户输入**：
-
-```
-用户在本阶段无法提供内容，因为：
-- 本阶段不暂停等待用户
-- 自动执行文档同步流程
-- 完成后自动进入 stage8
-
-用户在 stage8 提出文档问题时，会回到 stage5 → stage6 → stage7 重新同步
-```
-
-**注意**：
-- 本阶段不接收用户内容，自动执行文档同步
-- 文档内容从代码中提取，不依赖用户输入
-
-## 第一步：更新状态文件
-
-**进入本阶段后，必须立即执行以下编辑操作**：
-
-### 进入本阶段时编辑
-
-**根据当前任务ID（从上下文获取 `current_task_id`）找到对应的状态块**：
-- 查找 `<!-- TASK_{任务ID大写}_START -->` 到 `<!-- TASK_{任务ID大写}_END -->` 之间的内容
-- 使用 edit 工具替换该状态块内容为：
+**This phase is automatic execution phase, doesn't receive user input**:
 
 ```
-**正在执行**: 文档同步
-**阶段**: stage7
-**状态**: in_progress
-**下一步**: 判断是否更新项目技能 + 生成目录说明文档，完成后自动进入 stage8
-**用户提出修改时**: 在 stage8 统一处理
-**循环路径**: stage5 → stage6 → stage7 → stage8 → 循环
+User cannot provide content in this phase, because:
+- This phase doesn't pause waiting for user
+- Automatically executes documentation sync flow
+- After completion automatically proceeds to stage8
+
+User proposes documentation issues in stage8, will return to stage5 → stage6 → stage7 to re-sync
 ```
 
-### 阶段完成后再次编辑
+**Note**:
+- This phase doesn't receive user content, automatically executes documentation sync
+- Documentation content extracted from code, doesn't depend on user input
 
-**完成后直接进入 stage8**（不暂停等待用户确认）：
+## Step 1: Update State File
 
-再次使用 edit 工具更新该任务ID的状态块为：
+**After entering this phase, must immediately execute the following edit operations**:
+
+### Edit When Entering This Phase
+
+**Find corresponding status block based on current Task ID (get `current_task_id` from context)**:
+- Find content between `<!-- TASK_{TASK_ID_UPPERCASE}_START -->` and `<!-- TASK_{TASK_ID_UPPERCASE}_END -->`
+- Use edit tool to replace that status block content with:
 
 ```
-**任务ID**: {当前任务ID}
-**正在执行**: 交付续跑
-**阶段**: stage8
-**状态**: in_progress
-**下一步**: 输出交付结果，等待用户确认
-**用户提出修改时**: 立即切换到 stage5 → 循环
-**循环路径**: stage5 → stage6 → stage7 → stage8 → 循环
+**Currently Executing**: Documentation Sync
+**Phase**: stage7
+**Status**: in_progress
+**Next Step**: Judge if update project skill + Generate directory documentation, after completion automatically proceed to stage8
+**User Proposed Modifications**: Handle uniformly in stage8
+**Loop Path**: stage5 → stage6 → stage7 → stage8 → loop
 ```
 
-### 禁止事项
+### Edit Again After Phase Completion
 
-- 禁止不读取配置文件就猜测路径
-- **禁止在 stage7 暂停等待用户确认**（直接执行到 stage8）
+**After completion directly proceed to stage8** (no pause waiting for user confirmation):
 
-## 任务1：判断是否需要更新项目技能
+Use edit tool again to update that Task ID's status block to:
 
-**必须先执行此任务，再执行任务2**：
+```
+**Task ID**: {Current Task ID}
+**Currently Executing**: Delivery
+**Phase**: stage8
+**Status**: in_progress
+**Next Step**: Output delivery results, wait for user confirmation
+**User Proposed Modifications**: Immediately switch to stage5 → loop
+**Loop Path**: stage5 → stage6 → stage7 → stage8 → loop
+```
 
-1. **读取现有项目技能**：**先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，读取 `{project_ide_dir}/skills/fw-project-develop/SKILL.md`
-2. **分析本次代码改动**：
-   - 提取 Stage 5 实际修改的代码内容
-   - **必须先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，动态拼接 `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` 分析改动影响
-3. **判断是否需要更新项目技能**：
-   - **需要更新**的条件：
-     - 新增了长期稳定的项目知识（如新的目录结构、新的技术栈、新的路由规则等）
-     - 项目技能中记录的信息已过时（如目录结构已变化但技能未同步）
-     - 发现了新的稳定项目约束（如新的构建规则、新的状态管理方案等）
-   - **不需要更新**的条件：
-     - 改动仅涉及当前任务的临时实现，不属于项目长期知识
-     - 改动不影响项目技能记录的稳定信息
-4. **执行更新（如需要）**：
-   - 将新的稳定知识合并到 `fw-project-develop`
-   - 输出：`已更新项目技能 fw-project-develop，新增内容：[具体新增项]`
-5. **跳过更新（如不需要）**：
-   - 输出：`经分析，本次改动不影响项目技能长期知识，无需更新 fw-project-develop`
+### Prohibited Actions
 
-## 任务2：生成/更新目录说明文档（强制执行）
+- Prohibited from guessing paths without reading config file
+- **Prohibited from pausing in stage7 waiting for user confirmation** (directly execute to stage8)
 
-**任务1完成后，必须执行此任务**：
+## Task 1: Judge if Need to Update Project Skill
 
-### 强制规则：必须以目录为单位逐个处理
+**Must execute this task first, then execute Task 2**:
 
-**禁止生成单一总文档，必须按以下流程逐目录处理**：
+1. **Read Existing Project Skill**: **First read config file** `{project_ide_dir}/.fw-session-config.json`, read `{project_ide_dir}/skills/fw-project-develop/SKILL.md`
+2. **Analyze This Code Modification**:
+   - Extract code content actually modified in Stage 5
+   - **Must first read config file** `{project_ide_dir}/.fw-session-config.json`, dynamically concatenate `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` analyze modification impact
+3. **Judge if Need to Update Project Skill**:
+   - **Need update** conditions:
+     - Added long-term stable project knowledge (like new directory structure, new tech stack, new routing rules etc.)
+     - Info recorded in project skill is outdated (like directory structure changed but skill not synced)
+     - Discovered new stable project constraints (like new build rules, new state management solution etc.)
+   - **No need update** conditions:
+     - Modifications only involve current task's temporary implementation, not project long-term knowledge
+     - Modifications don't affect stable info recorded in project skill
+4. **Execute Update (If Needed)**:
+   - Merge new stable knowledge into `fw-project-develop`
+   - Output: `Updated project skill fw-project-develop, added content: [specific added items]`
+5. **Skip Update (If Not Needed)**:
+   - Output: `After analysis, this modification doesn't affect project skill long-term knowledge, no need to update fw-project-develop`
 
-1. **提取改动目录集合**：
-   - 从 Stage 5 的实际改动文件中提取所有涉及的目录
-   - 例如：改动 `src/pages/Home.tsx`、`src/components/Header.tsx` → 目录集合为 `src/pages/`、`src/components/`
+## Task 2: Generate/Update Directory Documentation (Mandatory Execution)
 
-2. **对每个改动目录执行以下步骤**：
-   - **先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，获取三核心目录
-   - 若目录实现关系复杂，**动态拼接路径** `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` 分析该目录
-   - 检查目录下是否已有说明文档（README.md 或类似文档）
-   - 若有 → 更新该文档内容
-   - 若无 → 使用 `templates/docs/directory-readme-template.md` 创建新文档
+**After Task 1 completes, must execute this task**:
 
-3. **目录说明文档内容要求**：
-   - 功能作用：该目录的用途
-   - 目录结构：子目录和文件说明
-   - 适用场景：何时使用该目录下的代码
-   - 使用规则：导入方式、调用规则
-   - 示例：使用示例
-   - 注意事项：特殊处理、约束条件
+### Mandatory Rule: Must Process Per Directory
 
-4. **输出示例**：
+**Prohibited from generating single total document, must process each directory following this flow**:
+
+1. **Extract Modification Directory Set**:
+   - Extract all involved directories from Stage 5's actual modified files
+   - Example: Modified `src/pages/Home.tsx`, `src/components/Header.tsx` → Directory set is `src/pages/`, `src/components/`
+
+2. **For Each Modification Directory Execute the Following Steps**:
+   - **First read config file** `{project_ide_dir}/.fw-session-config.json`, get three core directories
+   - If directory implementation relationships complex, **dynamically concatenate path** `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` analyze that directory
+   - Check if directory already has documentation (README.md or similar)
+   - If yes → Update that document content
+   - If no → Use `templates/docs/directory-readme-template.md` create new document
+
+3. **Directory Documentation Content Requirements**:
+   - Function purpose: What this directory is for
+   - Directory structure: Subdirectory and file descriptions
+   - Usage scenarios: When to use code in this directory
+   - Usage rules: Import methods, invocation rules
+   - Examples: Usage examples
+   - Notes: Special handling, constraint conditions
+
+4. **Output Example**:
    ```
-   [文档同步] 已处理以下目录：
-   - src/pages/ → 已更新 README.md（新增 Home 页面说明）
-   - src/components/ → 已创建 README.md（Header 组件说明）
-   - src/styles/ → 无需更新（本次改动不涉及长期知识）
+   [Documentation Sync] Processed the following directories:
+   - src/pages/ → Updated README.md (added Home page description)
+   - src/components/ → Created README.md (Header component description)
+   - src/styles/ → No need update (this modification doesn't involve long-term knowledge)
    ```
 
-5. 本阶段完成后直接进入 Stage 8，不再额外暂停确认。
+5. After this phase completes directly enter Stage 8, no extra pause for confirmation.
 
-## 输出
+## Output
 
-本阶段输出包含两个任务的产物：
+This phase output includes two tasks' artifacts:
 
-**任务1产物**：
-- 更新后的项目技能 `fw-project-develop`（如需要）
-- 项目技能更新摘要：`已更新项目技能 fw-project-develop，新增内容：[具体新增项]` 或 `无需更新 fw-project-develop`
+**Task 1 Artifact**:
+- Updated project skill `fw-project-develop` (if needed)
+- Project skill update summary: `Updated project skill fw-project-develop, added content: [specific added items]` or `No need update fw-project-develop`
 
-**任务2产物**：
-- 更新后的目录说明文档（每个改动目录下的 README.md 或类似文档）
+**Task 2 Artifact**:
+- Updated directory documentation (README.md or similar under each modification directory)
 
-## 回退条件
+## Fallback Conditions
 
-- 若实现仍在频繁变化，可暂缓本阶段，待 Stage 6 稳定后再执行。
-- 若 Stage 6 未形成"通过"结论，或仅给出环境修复建议但尚未完成重试，不得进入本阶段。
+- If implementation still frequently changing, can postpone this phase, wait for Stage 6 stable before executing.
+- If Stage 6 hasn't formed "pass" conclusion, or only gave environment fix suggestions but hasn't completed retry, cannot enter this phase.

@@ -1,217 +1,217 @@
-# Stage 5：实施研发
+# Stage 5: Implementation
 
-## ⚠️ 强制规则（必须遵守）
+## ⚠️ Mandatory Rules (Must Follow)
 
-### 1. 单一阶段输出原则
+### 1. Single Phase Output Principle
 
-**本阶段输出只能包含实施研发内容，禁止幻想未来阶段**：
+**This phase output must only contain implementation content, prohibited from imagining future phases**:
 
-| 禁止内容 | 说明 |
+| Prohibited Content | Description |
 | --- | --- |
-| "验证通过后会xxx" | 禁止承诺验证结果 |
-| "文档更新计划" | 禁止输出文档阶段的内容 |
-| "接下来进入验证" | 禁止输出后续阶段的计划 |
+| "After verification passes, xxx" | Prohibited from promising verification results |
+| "Documentation update plan" | Prohibited from outputting documentation phase content |
+| "Proceeding to verification next" | Prohibited from outputting subsequent phase plans |
 
-### 2. 任务ID携带原则
+### 2. Task ID Carrying Principle
 
-**本阶段必须携带任务ID**：
-- 第一行输出：`[实施研发] 任务ID: task_xxxxxxxx`
-- 状态文件更新必须携带任务ID
+**This phase must carry Task ID**:
+- First line output: `[Implementation] Task ID: task_xxxxxxxx`
+- State file update must carry Task ID
 
-### 3. 完成后自动进入下一阶段
+### 3. After Completion, Automatically Proceed to Next Phase
 
-**代码修改完成后**：
-- 不输出确认提示语
-- 不等待用户确认
-- 自动进入 stage6（验证）
+**After code modification completes**:
+- Don't output confirmation prompt
+- Don't wait for user confirmation
+- Automatically proceed to stage6 (Verification)
 
 ---
 
-## 目标
+## Goal
 
-- 根据任务类型与项目规则执行实际代码修改。
+- Execute actual code modifications based on task type and project rules.
 
-## 内容处理规则（重要）
+## Content Handling Rules (Important)
 
-**本阶段职责边界**：
+**This Phase Responsibility Boundary**:
 
-| 属于本阶段的内容 | 不属于本阶段的内容（记录到上下文） |
+| Belongs to This Phase | Does Not Belong to This Phase (Record to Context) |
 | --- | --- | --- |
-| 代码修改、文件编辑 | 验证执行（stage6） |
-| 技能调用、实现方案执行 | 文档更新（stage7） |
-| Bug修复、功能实现 | 用户确认（stage8） |
+| Code modification, file editing | Verification execution (stage6) |
+| Skill invocation, implementation plan execution | Documentation update (stage7) |
+| Bug fix, feature implementation | User confirmation (stage8) |
 
-**用户可以提供任何内容，本阶段只处理属于研发实施的内容**：
-
-```
-用户可能提供的内容示例：
-- "登录页面表单校验逻辑改成：邮箱正则 + 密码6位以上"
-- "用户管理页面加删除按钮，调用 DELETE /api/user/:id"
-- "首页性能优化：懒加载图片、减少请求次数"
-
-处理方式：
-- 属于研发实施的信息 → 本阶段处理（修改代码）
-- 不拒绝用户内容，直接执行修改
-```
-
-**注意**：
-- 本阶段是研发执行阶段，用户提供的实现细节应立即执行
-- 不暂停等待用户确认，完成后自动进入 stage6
-- 用户在 stage8 提出修改时，会回到本阶段重新执行
-
-## 第一步：更新状态文件
-
-**进入本阶段后，必须立即执行以下编辑操作**：
-
-### 进入本阶段时编辑
-
-**根据当前任务ID（从上下文获取 `current_task_id`）找到对应的状态块**：
-- 查找 `<!-- TASK_{任务ID大写}_START -->` 到 `<!-- TASK_{任务ID大写}_END -->` 之间的内容
-- 使用 edit 工具替换该状态块内容为：
+**User can provide any content, this phase only processes content belonging to development implementation**:
 
 ```
-**任务ID**: {当前任务ID}
-**正在执行**: 实施研发
-**阶段**: stage5
-**状态**: in_progress
-**下一步**: 执行代码修改，完成后自动进入 stage6
-**用户提出修改时**: 在 stage8 统一处理（循环）
-**循环路径**: stage5 → stage6 → stage7 → stage8 → 循环
+Example content user may provide:
+- "Login page form validation logic change to: email regex + password 6+ characters"
+- "User management page add delete button, call DELETE /api/user/:id"
+- "Homepage performance optimization: lazy load images, reduce request count"
+
+Handling method:
+- Info belonging to development implementation → This phase processes (modify code)
+- Don't reject user content, directly execute modifications
 ```
 
-### 阶段完成后再次编辑
+**Note**:
+- This phase is development execution phase, user-provided implementation details should be immediately executed
+- Don't pause waiting for user confirmation, after completion automatically enter stage6
+- User proposes modifications in stage8, will return to this phase to re-execute
 
-**完成后直接进入 stage6**（不暂停等待用户确认）：
+## Step 1: Update State File
 
-再次使用 edit 工具更新该任务ID的状态块为：
+**After entering this phase, must immediately execute the following edit operations**:
+
+### Edit When Entering This Phase
+
+**Find corresponding status block based on current Task ID (get `current_task_id` from context)**:
+- Find content between `<!-- TASK_{TASK_ID_UPPERCASE}_START -->` and `<!-- TASK_{TASK_ID_UPPERCASE}_END -->`
+- Use edit tool to replace that status block content with:
 
 ```
-**任务ID**: {当前任务ID}
-**正在执行**: 内部验证
-**阶段**: stage6
-**状态**: in_progress
-**下一步**: 执行功能验证、lint/type/build/test，完成后自动进入 stage7
-**用户提出修改时**: 在 stage8 统一处理
-**循环路径**: stage5 → stage6 → stage7 → stage8 → 循环
+**Task ID**: {Current Task ID}
+**Currently Executing**: Implementation
+**Phase**: stage5
+**Status**: in_progress
+**Next Step**: Execute code modification, after completion automatically proceed to stage6
+**User Proposed Modifications**: Handle uniformly in stage8 (loop)
+**Loop Path**: stage5 → stage6 → stage7 → stage8 → loop
 ```
 
-### 禁止事项
+### Edit Again After Phase Completion
 
-- 禁止不读取配置文件就猜测路径
-- **禁止在 stage5 暂停等待用户确认**（自动执行到 stage8）
+**After completion directly proceed to stage6** (no pause waiting for user confirmation):
 
-## 技能调用规则（强制执行）
+Use edit tool again to update that Task ID's status block to:
 
-**本阶段开始时，必须按以下顺序执行技能调用**：
+```
+**Task ID**: {Current Task ID}
+**Currently Executing**: Verification
+**Phase**: stage6
+**Status**: in_progress
+**Next Step**: Execute functional verification, lint/type/build/test, after completion automatically proceed to stage7
+**User Proposed Modifications**: Handle uniformly in stage8
+**Loop Path**: stage5 → stage6 → stage7 → stage8 → loop
+```
 
-### 第一步：必须扫描并调用技能（优先执行）
+### Prohibited Actions
 
-**进入本阶段后，必须先执行以下技能扫描和调用流程**：
+- Prohibited from guessing paths without reading config file
+- **Prohibited from pausing in stage5 waiting for user confirmation** (automatically execute to stage8)
 
-1. **扫描技能列表**：检查【技能目录】中是否存在可用技能
-2. **优先调用项目技能**：若存在 `fw-project-develop`，**必须先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，动态拼接 `{project_ide_dir}/skills/fw-project-develop/SKILL.md`
-3. **根据条件调用其他技能**：满足触发条件时，**必须先读取配置文件**，动态拼接对应技能路径
+## Skill Invocation Rules (Mandatory Execution)
 
-### 必须调用清单
+**When this phase starts, must execute skill invocation in the following order**:
 
-| 触发条件 | 必须调用的技能路径 | 调用时机 | 说明 |
+### Step 1: Must Scan and Invoke Skills (Execute First)
+
+**After entering this phase, must first execute the following skill scan and invocation flow**:
+
+1. **Scan Skill List**: Check if available skills exist in Skill Directory
+2. **Prioritize Invoking Project Skill**: If `fw-project-develop` exists, **must first read config file** `{project_ide_dir}/.fw-session-config.json`, dynamically concatenate `{project_ide_dir}/skills/fw-project-develop/SKILL.md`
+3. **Based on Conditions Invoke Other Skills**: When trigger conditions met, **must first read config file**, dynamically concatenate corresponding skill path
+
+### Mandatory Invocation List
+
+| Trigger Condition | Must Invoke Skill Path | Invocation Timing | Description |
 | --- | --- | --- | --- |
-| 项目技能存在 | `{project_ide_dir}/skills/fw-project-develop/SKILL.md` | **必须首先调用** | 获取项目结构、技术栈、路由、权限、构建规则等约束 |
-| 任务类型为 `bug` | `{static_config_dir}/skills/fw-systematic-debugging/SKILL.md` | **必须在修复前调用** | 先找到根因，再执行修复 |
-| 技术栈为 React（项目技能中标记） | `{static_config_dir}/skills/fw-react-best-practices/SKILL.md` | **实现时必须调用** | React 项目实现必须遵循最佳实践 |
-| 技术栈为 React 且涉及组件开发或修改 | `{static_config_dir}/skills/fw-react-components/SKILL.md` | **组件开发时必须调用** | 创建/修改组件必须遵循规范 |
-| 涉及复杂类型问题 | `{static_config_dir}/skills/fw-typescript-advanced-types/SKILL.md` | 类型实现时调用 | 复杂类型场景 |
+| Project skill exists | `{project_ide_dir}/skills/fw-project-develop/SKILL.md` | **Must invoke first** | Get project structure, tech stack, routing, permission, build rules etc. constraints |
+| Task type is `bug` | `{static_config_dir}/skills/fw-systematic-debugging/SKILL.md` | **Must invoke before fix** | First find root cause, then execute fix |
+| Tech stack is React (marked in project skill) | `{static_config_dir}/skills/fw-react-best-practices/SKILL.md` | **Must invoke when implementing** | React project implementation must follow best practices |
+| Tech stack is React and involves component development or modification | `{static_config_dir}/skills/fw-react-components/SKILL.md` | **Must invoke when developing components** | Create/modify components must follow standards |
+| Involves complex type issues | `{static_config_dir}/skills/fw-typescript-advanced-types/SKILL.md` | Invoke when implementing types | Complex type scenarios |
 
-### 调用执行方式
+### Invocation Execution Method
 
-**读取技能 SKILL.md 文件（按条件执行）**：
+**Read skill SKILL.md file (Execute by condition)**:
 
-- 项目技能：**先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，动态拼接 `{project_ide_dir}/skills/fw-project-develop/SKILL.md`
-- 调试技能（bug 任务）：**先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-systematic-debugging/SKILL.md`
-- React 最佳实践：**先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-react-best-practices/SKILL.md`
-- 组件规范：**先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-react-components/SKILL.md`
+- Project skill: **First read config file** `{project_ide_dir}/.fw-session-config.json`, dynamically concatenate `{project_ide_dir}/skills/fw-project-develop/SKILL.md`
+- Debugging skill (bug task): **First read config file**, dynamically concatenate `{static_config_dir}/skills/fw-systematic-debugging/SKILL.md`
+- React best practices: **First read config file**, dynamically concatenate `{static_config_dir}/skills/fw-react-best-practices/SKILL.md`
+- Component standards: **First read config file**, dynamically concatenate `{static_config_dir}/skills/fw-react-components/SKILL.md`
 
-### 禁止事项
+### Prohibited Actions
 
-- 禁止跳过项目技能调用（若存在）
-- 禁止在 bug 任务中跳过调试技能调用
-- 禁止在 React 技术栈下跳过 React 技能调用
-- 禁止在非 React 技术栈下调用 React 技能
+- Prohibited from skipping project skill invocation (if exists)
+- Prohibited from skipping debugging skill invocation in bug tasks
+- Prohibited from skipping React skill invocation in React tech stack
+- Prohibited from invoking React skills in non-React tech stack
 
-## 分流规则
+## Branching Rules
 
-**根据任务类型，必须执行以下技能调用顺序**：
+**Based on task type, must execute the following skill invocation order**:
 
-- `bug` 任务：
-    - **必须先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-systematic-debugging/SKILL.md` 找到根因
-    - 根因确认后再执行修复
-    - 若涉及复杂类型问题，**必须先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-typescript-advanced-types/SKILL.md`
+- `bug` task:
+    - **Must first read config file**, dynamically concatenate `{static_config_dir}/skills/fw-systematic-debugging/SKILL.md` find root cause
+    - After root cause confirmed, execute fix
+    - If involves complex type issues, **must first read config file**, dynamically concatenate `{static_config_dir}/skills/fw-typescript-advanced-types/SKILL.md`
 
-- `feature` 任务：
-    - **必须先读取配置文件**，动态拼接 `{project_ide_dir}/skills/fw-project-develop/SKILL.md` 获取项目约束
-    - 若技术栈为 React，**必须先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-react-best-practices/SKILL.md`
-    - 若涉及组件开发，**必须先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-react-components/SKILL.md`
+- `feature` task:
+    - **Must first read config file**, dynamically concatenate `{project_ide_dir}/skills/fw-project-develop/SKILL.md` get project constraints
+    - If tech stack is React, **must first read config file**, dynamically concatenate `{static_config_dir}/skills/fw-react-best-practices/SKILL.md`
+    - If involves component development, **must first read config file**, dynamically concatenate `{static_config_dir}/skills/fw-react-components/SKILL.md`
 
-- `refactor` 任务：
-    - **必须先读取配置文件**，动态拼接 `{project_ide_dir}/skills/fw-project-develop/SKILL.md` 获取项目约束
-    - 默认先保持行为不变
-    - 先拆影响范围，再分批实施
+- `refactor` task:
+    - **Must first read config file**, dynamically concatenate `{project_ide_dir}/skills/fw-project-develop/SKILL.md` get project constraints
+    - Default first maintain behavior unchanged
+    - First break down impact scope, then batch implement
 
-- `optimize` 任务：
-    - **必须先读取配置文件**，动态拼接 `{project_ide_dir}/skills/fw-project-develop/SKILL.md` 获取项目约束
-    - 分析性能瓶颈后再优化
+- `optimize` task:
+    - **Must first read config file**, dynamically concatenate `{project_ide_dir}/skills/fw-project-develop/SKILL.md` get project constraints
+    - After analyzing performance bottlenecks, optimize
 
-## 通用动作
+## General Actions
 
-**按以下顺序严格执行**：
+**Execute strictly in the following order**:
 
-1. **开始正式实现前，必须先调用技能**：
-    - **必须先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，动态拼接 `{project_ide_dir}/skills/fw-project-develop/SKILL.md` 获取项目约束
-    - 调用后获取的约束作为实现参考，避免违背项目已有规则
-2. **根据本阶段"技能调用规则"执行技能调用**：
-   - 满足触发条件时，**必须调用**对应技能
-   - 不满足条件时不强行调用
-3. 对项目技能中标记为 `not_applicable` 的能力，不做虚构实现。
-4. 若现场发现新阻塞、环境问题、依赖问题或技能路线缺口，再回写更新，不得假装研发已完成。
-5. 若已启用长任务机制（Stage 3），则实施过程中持续回写步骤状态。
-6. **代码改动完成后，必须立即衔接 Stage 6 做内部验证**：
-   - **禁止**在 Stage 5 完成后询问"功能是否正确"或"是否进入验证"
-   - **禁止**输出"请确认功能实现是否满足需求"
-   - 直接进入 Stage 6，执行验证后再等待用户确认
-7. 若环境问题导致无法执行验证（如 lint/type/build/test 命令不可运行），则输出明确的环境修复建议并保持在 Stage 5，不得进入 Stage 6。
+1. **Before starting formal implementation, must first invoke skills**:
+    - **Must first read config file** `{project_ide_dir}/.fw-session-config.json`, dynamically concatenate `{project_ide_dir}/skills/fw-project-develop/SKILL.md` get project constraints
+    - Constraints obtained after invocation as implementation reference, avoid violating existing project rules
+2. **Execute skill invocation based on this phase "Skill Invocation Rules"**:
+    - When trigger conditions met, **must invoke** corresponding skill
+    - Don't forcibly invoke when conditions not met
+3. For capabilities marked `not_applicable` in project skill, don't fabricate implementation.
+4. If discover new blockers, environment issues, dependency issues or skill route gaps on-site, write back updates, cannot pretend development complete.
+5. If long task mechanism enabled (Stage 3), during implementation continuously write back step status.
+6. **After code modification completes, must immediately link to Stage 6 for internal verification**:
+    - **Prohibited**: After Stage 5 completion ask "is function correct" or "should enter verification"
+    - **Prohibited**: Output "Please confirm if implementation meets requirements"
+    - Directly enter Stage 6, after executing verification wait for user confirmation
+7. If environment issues cause cannot execute verification (like lint/type/build/test commands not runnable), output clear environment fix suggestions and stay in Stage 5, cannot enter Stage 6.
 
-## 输出
+## Output
 
-**代码修改完成后，必须输出衔接提示语**：
+**After code modification completes, must output linking prompt**:
 
 ```
-[实施研发] 任务ID: {当前任务ID}
-代码修改完成。
+[Implementation] Task ID: {Current Task ID}
+Code modification complete.
 
-修改内容：
-- {修改文件列表}
-- {简要修改说明}
+Modification content:
+- {Modified file list}
+- {Brief modification description}
 
-接下来进入下一阶段：[内部验证]。
+Proceeding to next phase: [Verification].
 ```
 
-**禁止事项**：
-- 禁止输出"请确认功能是否正确"
-- 禁止输出"是否进入验证"
-- 禁止等待用户确认（自动衔接 stage6）
+**Prohibited Actions**:
+- Prohibited from outputting "Please confirm if function is correct"
+- Prohibited from outputting "Should enter verification"
+- Prohibited from waiting for user confirmation (automatically link stage6)
 
 ---
 
-## 自动衔接流程
+## Automatic Linking Flow
 
-**Stage 5 完成后**：
-1. 更新状态文件：`**阶段**: stage6`、`**状态**: in_progress`
-2. 输出衔接提示语
-3. 自动进入 Stage 6 执行验证
+**After Stage 5 completion**:
+1. Update state file: `**Phase**: stage6`, `**Status**: in_progress`
+2. Output linking prompt
+3. Automatically proceed to Stage 6 to execute verification
 
 ---
 
-## 回退条件
+## Fallback Conditions
 
-- 若内部验证失败，回退本阶段继续修复。
-- 若运行、lint、type、build 或测试因当前环境问题无法通过，停留在本阶段，先向用户说明修复环境所需动作；环境修复后继续 Stage 5，而不是进入 Stage 6 或 Stage 7。
+- If internal verification fails, fallback to this phase to continue fixing.
+- If runtime, lint, type, build or test cannot pass due to current environment issues, stay in this phase, first explain to user actions needed to fix environment; after environment fix continue Stage 5, instead of entering Stage 6 or Stage 7.

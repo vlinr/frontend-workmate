@@ -1,97 +1,97 @@
 ---
 alwaysApply: true
-description: "frontend-workmate 会话状态（动态部分）"
+description: "frontend-workmate session state (dynamic part)"
 ---
 
-# 会话状态
+# Session State
 
-<!-- CONFIG_FILE_PATH: 读取 {project_ide_dir}/.fw-session-config.json 获取三核心目录 -->
+<!-- CONFIG_FILE_PATH: Read {project_ide_dir}/.fw-session-config.json to get three core directories -->
 
 <!-- TASK_LIST_START -->
-## 活跃任务
+## Active Tasks
 
-| 任务ID | 状态 | 阶段 | 描述 |
+| Task ID | Status | Phase | Description |
 | --- | --- | --- | --- |
-| （初始化时生成） |
+| (Generated at initialization) |
 
 ---
 
 <!-- TASK_XXX_START -->
-## 任务详情：task_xxxxxxxx
+## Task Details: task_xxxxxxxx
 
-### 基本信息
-| **任务ID** | task_xxxxxxxx |
-| **任务描述** | （用户原始诉求） |
-| **创建时间** | （初始化时记录） |
+### Basic Info
+| **Task ID** | task_xxxxxxxx |
+| **Task Description** | (User's original request) |
+| **Created Time** | (Recorded at initialization) |
 
-### 当前状态
-| **正在执行** | 初始化 |
-| **阶段** | stage0 |
-| **状态** | in_progress |
-| **下一步** | 执行 stages/init.md |
-| **重置阶段** | 无 |
+### Current Status
+| **Currently Executing** | Initialization |
+| **Phase** | stage0 |
+| **Status** | in_progress |
+| **Next Step** | Execute stages/init.md |
+| **Reset Phases** | None |
 
-### 阶段进度
-#### 已完成
-（阶段完成后追加）
+### Phase Progress
+#### Completed
+(Appended after phase completion)
 
-#### 进行中
-- [ ] Stage 0 — 初始化
+#### In Progress
+- [ ] Stage 0 — Initialization
 
-#### 待完成
-- [ ] Stage 1 — 项目扫描
-- [ ] Stage 2 — 范围分析
-- [ ] Stage 3 — 执行计划（长任务）
-- [ ] Stage 4 — 资料补充
-- [ ] Stage 5 — 实施研发
-- [ ] Stage 6 — 内部验证
-- [ ] Stage 7 — 文档同步
-- [ ] Stage 8 — 交付续跑
+#### To Do
+- [ ] Stage 1 — Project Scan
+- [ ] Stage 2 — Scope Analysis
+- [ ] Stage 3 — Execution Plan (long task)
+- [ ] Stage 4 — Material Supply
+- [ ] Stage 5 — Implementation
+- [ ] Stage 6 — Verification
+- [ ] Stage 7 — Documentation Sync
+- [ ] Stage 8 — Delivery
 
-#### 待重新执行
-（回退时追加）
+#### To Re-execute
+(Appended on fallback)
 
 <!-- TASK_XXX_END -->
 
 ---
 
-## 已完成任务
+## Completed Tasks
 
-| 任务ID | 完成时间 | 描述 |
+| Task ID | Completion Time | Description |
 | --- | --- | --- |
-| （任务完成后追加） |
+| (Appended after task completion) |
 
 <!-- TASK_LIST_END -->
 
 ---
 
-# 状态更新指南
+# State Update Guide
 
-## 阶段进入时更新
+## Update When Entering Phase
 
-找到对应任务的状态块（`<!-- TASK_{任务ID}_START -->`），更新：
-- `**正在执行**: {阶段名称}`
-- `**阶段**: stage{N}`
-- `**状态**: in_progress`
-- `**下一步**: {下一步动作}`
-- 阶段进度：将当前阶段移到"进行中"
+Find corresponding task's status block (`<!-- TASK_{TASK_ID}_START -->`), update:
+- `**Currently Executing**: {Phase Name}`
+- `**Phase**: stage{N}`
+- `**Status**: in_progress`
+- `**Next Step**: {Next Action}`
+- Phase progress: Move current phase to "In Progress"
 
-## 阶段完成后更新
+## Update After Phase Completion
 
-- `**状态**: completed`（或 `waiting_user`）
-- 阶段进度：将当前阶段移到"已完成"，下一阶段移到"进行中"
+- `**Status**: completed` (or `waiting_user`)
+- Phase progress: Move current phase to "Completed", next phase to "In Progress"
 
-## 回退时更新
+## Update on Fallback
 
-- `**阶段**: stage{目标阶段}`
-- `**状态**: in_progress`
-- `**重置阶段**: [stageX, stageY, ...] → 待重新执行`
-- 阶段进度：将后续阶段移到"待重新执行"
+- `**Phase**: stage{Target Phase}`
+- `**Status**: in_progress`
+- `**Reset Phases**: [stageX, stageY, ...] → To Re-execute`
+- Phase progress: Move subsequent phases to "To Re-execute"
 
-## 任务查找规则
+## Task Lookup Rules
 
-更新状态时：
-1. 从上下文获取 `current_task_id`
-2. 查找 `<!-- TASK_{任务ID大写}_START -->`
-3. 若找到 → 更新该状态块
-4. 若未找到 → 新增任务状态块
+When updating status:
+1. Get `current_task_id` from context
+2. Find `<!-- TASK_{TASK_ID_UPPERCASE}_START -->`
+3. If found → Update that status block
+4. If not found → Create new task status block

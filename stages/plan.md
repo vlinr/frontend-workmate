@@ -1,106 +1,106 @@
-# Stage 3：建立执行计划
+# Stage 3: Build Execution Plan
 
-## ⚠️ 强制规则（必须遵守）
+## ⚠️ Mandatory Rules (Must Follow)
 
-### 1. 单一阶段输出原则
+### 1. Single Phase Output Principle
 
-**本阶段输出只能包含执行计划内容，禁止幻想未来阶段**：
+**This phase output must only contain execution plan content, prohibited from imagining future phases**:
 
-| 禁止内容 | 说明 |
+| Prohibited Content | Description |
 | --- | --- |
-| "具体实现步骤" | 禁止输出具体实现细节 |
-| "代码修改方案" | 禁止输出实现阶段的内容 |
+| "Specific implementation steps" | Prohibited from outputting specific implementation details |
+| "Code modification plan" | Prohibited from outputting implementation phase content |
 
-### 2. 任务ID携带原则
+### 2. Task ID Carrying Principle
 
-**本阶段必须携带任务ID**：
-- 第一行输出：`[执行计划] 任务ID: task_xxxxxxxx`
-- 状态文件更新必须携带任务ID
+**This phase must carry Task ID**:
+- First line output: `[Execution Plan] Task ID: task_xxxxxxxx`
+- State file update must carry Task ID
 
-### 3. 完成后自动进入下一阶段
+### 3. After Completion, Automatically Proceed to Next Phase
 
-**执行计划建立后**：
-- 不输出确认提示语
-- 自动进入 stage4（资料补充）
+**After execution plan is built**:
+- Don't output confirmation prompt
+- Automatically proceed to stage4 (Material Supply)
 
 ---
 
-## 目标
+## Goal
 
-- 让复杂任务具备分步执行和断点续跑能力。
+- Enable complex tasks with step-by-step execution and checkpoint resume capability.
 
-## 内容处理规则（重要）
+## Content Handling Rules (Important)
 
-**本阶段职责边界**：
+**This Phase Responsibility Boundary**:
 
-| 属于本阶段的内容 | 不属于本阶段的内容（记录到上下文） |
+| Belongs to This Phase | Does Not Belong to This Phase (Record to Context) |
 | --- | --- | --- |
-| 任务拆分、步骤规划 | 具体代码修改、实现细节 |
-| 断点续跑机制建立 | 验证执行 |
-| 步骤ID分配 | 文档更新 |
+| Task breakdown, step planning | Specific code modification, implementation details |
+| Checkpoint resume mechanism establishment | Verification execution |
+| Step ID allocation | Documentation update |
 
-**用户可以提供任何内容，本阶段只处理属于执行计划的内容**：
-
-```
-用户可能提供的内容示例：
-- "先改登录页面，再改用户管理，最后改权限"
-- "第一步：修复表单校验，第二步：添加接口调用"
-
-处理方式：
-- 属于执行计划的信息 → 本阶段处理（拆分步骤）
-- 属于实现细节的信息 → 记录到任务上下文，等 stage5 处理
-- 不拒绝用户内容，只分阶段处理
-```
-
-## 进入条件
-
-- 任务为多步骤、跨目录、跨子项目、跨多轮验证，或预计单轮无法完成。
-
-## 第一步：更新状态文件
-
-**进入本阶段后，必须立即执行以下编辑操作**：
-
-### 编辑指令
-
-1. **先读取配置文件**：使用 read 工具读取 `{project_ide_dir}/.fw-session-config.json`
-2. **获取 rules 文件路径**：从配置中读取 `rules_file_path` 字段
-3. **读取 rules 文件**：使用 read 工具读取该路径的文件
-4. **编辑 rules 文件**：**根据当前任务ID（从上下文获取 `current_task_id`）找到对应的状态块**：
-   - 查找 `<!-- TASK_{任务ID大写}_START -->` 到 `<!-- TASK_{任务ID大写}_END -->` 之间的内容
-   - 使用 edit 工具替换该状态块内容为：
+**User can provide any content, this phase only processes content belonging to execution plan**:
 
 ```
-**任务ID**: {当前任务ID}
-**正在执行**: 执行计划
-**阶段**: stage3
-**状态**: in_progress
-**下一步**: 建立执行计划
+Example content user may provide:
+- "First change login page, then user management, finally permission"
+- "Step 1: Fix form validation, Step 2: Add API call"
+
+Handling method:
+- Info belonging to execution plan → This phase processes (break down steps)
+- Info belonging to implementation details → Record to task context, wait for stage5 to process
+- Don't reject user content, only process by phase
 ```
 
-### 阶段完成后再次编辑
+## Entry Conditions
 
-进入下一阶段前，再次使用 edit 工具替换状态内容为：
+- Task is multi-step, cross-directory, cross-sub-project, cross-multi-round verification, or estimated single round cannot complete.
+
+## Step 1: Update State File
+
+**After entering this phase, must immediately execute the following edit operations**:
+
+### Edit Instructions
+
+1. **First Read Config File**: Use read tool to read `{project_ide_dir}/.fw-session-config.json`
+2. **Get Rules File Path**: Read `rules_file_path` field from config
+3. **Read Rules File**: Use read tool to read file at that path
+4. **Edit Rules File**: **Find corresponding status block based on current Task ID (get `current_task_id` from context)**:
+   - Find content between `<!-- TASK_{TASK_ID_UPPERCASE}_START -->` and `<!-- TASK_{TASK_ID_UPPERCASE}_END -->`
+   - Use edit tool to replace that status block content with:
 
 ```
-**正在执行**: 资料补充
-**阶段**: stage4
-**状态**: in_progress
-**下一步**: 执行 stages/supply.md
+**Task ID**: {Current Task ID}
+**Currently Executing**: Execution Plan
+**Phase**: stage3
+**Status**: in_progress
+**Next Step**: Build execution plan
 ```
 
-### 禁止事项
+### Edit Again After Phase Completion
 
-- 禁止不读取配置文件就猜测路径
+Before proceeding to next phase, use edit tool again to replace status content with:
 
-1. **先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，动态拼接 `{static_config_dir}/skills/fw-task-plan-checkpoint/SKILL.md` 并调用。
-2. 建立任务运行目录与任务文件。
-3. 为步骤分配稳定 ID、状态、版本与重跑模板。
-4. 后续每推进一步，都同步回写任务文件。
+```
+**Currently Executing**: Material Supply
+**Phase**: stage4
+**Status**: in_progress
+**Next Step**: Execute stages/supply.md
+```
 
-## 输出
+### Prohibited Actions
 
-- `execution-plan` 或 `temp/task-runs/<task-id>/`
+- Prohibited from guessing paths without reading config file
 
-## 回退条件
+1. **First read config file** `{project_ide_dir}/.fw-session-config.json`, dynamically concatenate `{static_config_dir}/skills/fw-task-plan-checkpoint/SKILL.md` and invoke.
+2. Build task run directory and task files.
+3. Allocate stable IDs, status, versions and re-run templates for steps.
+4. After each advancement, synchronously write back to task files.
 
-- 若一开始误判为短任务，但执行中显著变长，立即补建本阶段。
+## Output
+
+- `execution-plan` or `temp/task-runs/<task-id>/`
+
+## Fallback Conditions
+
+- If initially misjudged as short task, but execution significantly lengthens, immediately supplement this phase.

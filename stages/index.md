@@ -1,117 +1,115 @@
-# 阶段定义索引
+# Phase Definition Index
 
-本目录存放前端研发编排流程各阶段的独立定义文件。
+This directory contains independent definition files for each phase of the frontend development orchestration workflow.
 
-## 流程映射表（ID ↔ 名称）
+## Phase Mapping Table (ID ↔ Name)
 
-| 内部 ID | 阶段名称 | 定义文件 |
+| Internal ID | Phase Name | Definition File |
 | --- | --- | --- |
-| `stage0` | 初始化 | `init.md` |
-| `stage1` | 项目扫描 | `project-scan.md` |
-| `stage2` | 范围分析 | `scope-analysis.md` |
-| `stage3` | 执行计划 | `plan.md` |
-| `stage4` | 资料补充 | `supply.md` |
-| `stage5` | 实施研发 | `implementation.md` |
-| `stage6` | 内部验证 | `verification.md` |
-| `stage7` | 文档同步 | `docs.md` |
-| `stage8` | 交付续跑 | `delivery.md` |
+| `stage0` | Initialization | `init.md` |
+| `stage1` | Project Scan | `project-scan.md` |
+| `stage2` | Scope Analysis | `scope-analysis.md` |
+| `stage3` | Execution Plan | `plan.md` |
+| `stage4` | Material Supply | `supply.md` |
+| `stage5` | Implementation | `implementation.md` |
+| `stage6` | Verification | `verification.md` |
+| `stage7` | Documentation Sync | `docs.md` |
+| `stage8` | Delivery | `delivery.md` |
 
-**使用规则**：
-- **内部状态维护**：使用 ID（如 `current_stage = stage0`）
-- **用户输出**：使用名称（如 `[初始化] 执行完成`）
-- **禁止**：对用户输出 ID 或 Stage 编号
+**Usage Rules**:
+- **Internal State Maintenance**: Use IDs (e.g., `current_stage = stage0`)
+- **User Output**: Use names (e.g., `[Initialization] Completed`)
+- **Prohibited**: Outputting IDs or Stage numbers to users
 
-## 总流程表（强制执行逻辑）
+## Master Process Table (Mandatory Execution Logic)
 
-| 阶段/节点 | 描述 | 判断/条件 | 下一步/分支走向 |
+| Phase/Node | Description | Decision/Condition | Next Step/Branch Direction |
 | :--- | :--- | :--- | :--- |
-| **初始化** | 完成环境初始化 | - | 进入项目扫描 |
-| **项目扫描** | 检查或生成项目技能 | - | 输出摘要 + **附加提示语**，进入节点 C |
-| **节点 C** | 验证项目扫描产物是否正确 | **是：回复"继续"** | 进入范围分析 |
-| | | **否：补充/修正** | 返回项目扫描 |
-| **范围分析** | 分析需求与范围 | - | 输出结论 + **附加提示语**，进入节点 E |
-| **节点 E** | 验证范围分析是否正确 | **是：回复"继续"** | 进入节点 F |
-| | | **否：补充/修正** | 返回范围分析 |
-| **节点 F** | 是否需要执行计划？ | **是** | 进入执行计划 |
-| | | **否** | 跳过执行计划，直接进入资料补充 |
-| **执行计划** | 建立执行计划 | - | 执行完成后进入资料补充 |
-| **资料补充** | 执行前补充资料 | - | 进入节点 I |
-| **节点 I** | 资料状态判断 | **待用户答复** | 停留在资料补充（等待） |
-| | | **已提供 / 跳过 / 不提供 / 没有** | 进入实施研发 |
-| **实施研发** | 执行代码修改 | - | **自动进入内部验证**（不等待用户确认） |
-| **内部验证** | 验证修改有效性（执行 lint/type/build/功能验证） | - | **自动进入文档同步**（不等待用户确认） |
-| **文档同步** | 更新目录级文档 | - | **自动进入交付续跑**（不等待用户确认） |
-| **交付续跑** | 输出交付结果 | - | 输出结果 + **附加确认提示语**，进入节点 O（等待用户确认） |
-| **节点 O** | 用户反馈判断 | **"确认" / "没问题"** | 任务完成，回收 |
-| | | **bug / 实现问题** | 回到实施研发 → 自动执行 6→7→8 → 再次等待确认 |
-| | | **需求问题** | 回到范围分析 |
-| | | **用户明确指定步骤** | 切换到指定步骤 |
+| **Initialization** | Complete environment initialization | - | Proceed to Project Scan |
+| **Project Scan** | Check or generate project skill | - | Output summary + **append prompt**, proceed to node C |
+| **Node C** | Verify project scan artifact correctness | **Yes: reply "continue"** | Proceed to Scope Analysis |
+| | | **No: supplement/correct** | Return to Project Scan |
+| **Scope Analysis** | Analyze requirements and scope | - | Output conclusion + **append prompt**, proceed to node E |
+| **Node E** | Verify scope analysis correctness | **Yes: reply "continue"** | Proceed to node F |
+| | | **No: supplement/correct** | Return to Scope Analysis |
+| **Node F** | Need execution plan? | **Yes** | Proceed to Execution Plan |
+| | | **No** | Skip Execution Plan, proceed to Material Supply |
+| **Execution Plan** | Build execution plan | - | After execution, proceed to Material Supply |
+| **Material Supply** | Supply materials before execution | - | Proceed to node I |
+| **Node I** | Material status judgment | **Awaiting user response** | Stay in Material Supply (waiting) |
+| | | **Provided / Skipped / Not Provided / None** | Proceed to Implementation |
+| **Implementation** | Execute code modifications | - | **Automatically proceed to Verification** (no user confirmation wait) |
+| **Verification** | Verify modification validity (execute lint/type/build/functional verification) | - | **Automatically proceed to Documentation Sync** (no user confirmation wait) |
+| **Documentation Sync** | Update directory-level documentation | - | **Automatically proceed to Delivery** (no user confirmation wait) |
+| **Delivery** | Output delivery results | - | Output results + **append confirmation prompt**, proceed to node O (await user confirmation) |
+| **Node O** | User feedback judgment | **"Confirm" / "No problem"** | Task complete, task closed |
+| | | **bug / implementation issue** | Return to Implementation → auto execute 6→7→8 → await confirmation again |
+| | | **requirement issue** | Return to Scope Analysis |
+| | | **User explicitly specifies step** | Switch to specified step |
 
-## 显式确认点标准提示语
+## Standard Prompt for Explicit Confirmation Points
 
-每个显式确认点输出结论后，**必须附加以下提示语**：
+After outputting conclusion at each explicit confirmation point, **must append the following prompt**:
 
-> "如果您还有其他需要修改的，请告诉我；当然如果没有其他修改，您可以直接回复'继续'，我将进入下一步。"
+> "If you have other modifications needed, please let me know; if everything looks correct, you can simply reply 'continue' and I'll proceed to the next step."
 
-**使用场景**：
-- 项目扫描确认：输出项目技能摘要后 → 附加提示语
-- 范围分析确认：输出分析结论后 → 附加提示语
-- 交付续跑确认：输出交付结果后 → 附加确认提示语（包含智能回退选项）
+**Usage Scenarios**:
+- Project Scan confirmation: After outputting project skill summary → append prompt
+- Scope Analysis confirmation: After outputting analysis conclusion → append prompt
+- Delivery confirmation: After outputting delivery results → append confirmation prompt (including smart fallback options)
 
-**禁止事项**：
-- 禁止只输出"请确认"或"回复继续"
-- 禁止省略"如果您还有其他需要修改的，请告诉我"部分
-- 禁止在最后一步（交付续跑完成后）附加提示语
+**Prohibited Actions**:
+- Prohibited from only outputting "please confirm" or "reply continue"
+- Prohibited from omitting "If you have other modifications needed, please let me know" part
+- Prohibited from appending prompt after final step (Delivery completed)
 
-## 节点 F 跳步判定
+## Node F Skip Decision
 
-节点 F（是否需要执行计划）是总流程中的关键跳步点。
+Node F (Need execution plan?) is a key skip point in the master process.
 
-### 进入执行计划的条件
+### Conditions to Enter Execution Plan
 
-### 进入执行计划的条件
+Enter Execution Plan when any of the following conditions are met:
+- Task is multi-step (estimated steps ≥ 3)
+- Task spans multiple directories
+- Task spans multiple sub-projects
+- Task requires multiple rounds of verification
+- Estimated that single round cannot complete
 
-满足以下任一条件时，进入执行计划：
-- 任务为多步骤（预估步骤 ≥ 3）
-- 任务跨多个目录
-- 任务跨多个子项目
-- 任务需要多轮验证
-- 预计单轮无法完成
+### Conditions to Skip Execution Plan
 
-### 跳过执行计划的条件
+Skip Execution Plan and proceed directly to Material Supply when all of the following conditions are met:
+- Task is single-step or simple (estimated steps < 3)
+- Task involves single directory
+- Task does not span sub-projects
+- Task does not require multiple rounds of verification
+- Estimated that single round can complete
 
-满足以下全部条件时，跳过执行计划，直接进入资料补充：
-- 任务为单步骤或简单步骤（预估步骤 < 3）
-- 任务涉及单一目录
-- 任务不跨子项目
-- 任务不需要多轮验证
-- 预计单轮可完成
+## Phase Definition Files
 
-## 阶段定义文件
-
-| 顺序 | 阶段名称 | 定义文件 |
+| Order | Phase Name | Definition File |
 | --- | --- | --- |
-| 1 | 初始化 | `init.md` |
-| 2 | 项目扫描 | `project-scan.md` |
-| 3 | 范围分析 | `scope-analysis.md` |
-| 4 | 执行计划 | `plan.md` |
-| 5 | 资料补充 | `supply.md` |
-| 6 | 实施研发 | `implementation.md` |
-| 7 | 内部验证 | `verification.md` |
-| 8 | 文档同步 | `docs.md` |
-| 9 | 交付续跑 | `delivery.md` |
+| 1 | Initialization | `init.md` |
+| 2 | Project Scan | `project-scan.md` |
+| 3 | Scope Analysis | `scope-analysis.md` |
+| 4 | Execution Plan | `plan.md` |
+| 5 | Material Supply | `supply.md` |
+| 6 | Implementation | `implementation.md` |
+| 7 | Verification | `verification.md` |
+| 8 | Documentation Sync | `docs.md` |
+| 9 | Delivery | `delivery.md` |
 
-## 回退路径
+## Fallback Paths
 
-| 场景 | 回退目标 |
+| Scenario | Fallback Target |
 | --- | --- |
-| 项目技能缺失或失效 | 项目扫描 |
-| 范围分析结论不稳定 | 范围分析 |
-| 验证失败 | 实施研发 |
-| 交付后用户补充新需求 | 范围分析 |
+| Project skill missing or invalid | Project Scan |
+| Scope analysis conclusion unstable | Scope Analysis |
+| Verification fails | Implementation |
+| User supplements new requirements after delivery | Scope Analysis |
 
-## 使用说明
+## Usage Instructions
 
-- 禁止输出 Stage 编号，必须使用阶段名称
-- 各阶段的详细定义见对应定义文件
-- 主协议 `SKILL.md` 定义核心门禁规则
+- Prohibited from outputting Stage numbers, must use phase names
+- Detailed definitions for each phase are in corresponding definition files
+- Main protocol `SKILL.md` defines core gate rules

@@ -1,84 +1,84 @@
 # Change Scope Template
 
-## 1. 需求结论
+## 1. Requirement Conclusion
 
-- 任务标题：
-- 最初需求锚点：
-- 最初目标对象：
-- 最初期望结果：
-- 原始截图/附件摘要：
-- 本阶段新增约束：
-- 本阶段新增约束归类：`实现约束补充 | 最初需求修正 | 项目长期规则 | pending`
-- 是否确认“新增约束不会覆盖最初需求”：`yes | no | pending`
-- 当前阶段：`stage2_scope`
-- 当前阶段状态：`pending | in_progress | waiting_user | completed | blocked`
-- 下一阶段：`stage3_plan | stage4_supply | not_applicable`
-- 当前阶段目标：
-- 当前阶段进入条件：
-- 当前阶段完成条件：
-- 阶段阻塞原因：
-- 是否已获准进入下一阶段：`yes | no | pending`
-- 下一阶段用户确认语句：
-- 类型：`bug | feature | refactor`
-- 目标描述：
-- 用户确认状态：`approved | revise_needed | pending | not_applicable`
-- 用户补充诉求后是否已合并：`yes | no | pending`
-- 合并后回显提示语：
-- 分析结论摘要（我将做什么 / 为什么这样做 / 暂不做什么）：
+- Task Title:
+- Original Requirement Anchor:
+- Original Target Object:
+- Original Expected Result:
+- Original Screenshot/Attachment Summary:
+- Current Phase Added Constraints:
+- Current Phase Added Constraint Category: `Implementation Constraint Supplement | Original Requirement Correction | Project Long-term Rules | pending`
+- Confirmed "Added Constraints Won't Overwrite Original Requirement": `yes | no | pending`
+- Current Phase: `stage2_scope`
+- Current Phase Status: `pending | in_progress | waiting_user | completed | blocked`
+- Next Phase: `stage3_plan | stage4_supply | not_applicable`
+- Current Phase Goal:
+- Current Phase Entry Condition:
+- Current Phase Completion Condition:
+- Phase Block Reason:
+- Approved to Enter Next Phase: `yes | no | pending`
+- Next Phase User Confirmation Statement:
+- Type: `bug | feature | refactor`
+- Target Description:
+- User Confirmation Status: `approved | revise_needed | pending | not_applicable`
+- User Supplementary Request Merged: `yes | no | pending`
+- Post-Merge Echo Prompt:
+- Analysis Conclusion Summary (What I will do / Why this way / What not to do temporarily):
 
-## 2. 修改范围
+## 2. Modification Scope
 
-- 范围分析必须以“最初需求锚点”为主轴；若本阶段新增的是技术偏好、样式方案、局部限制或实现路径，只能体现在“修改原因/预期动作”中，不能改写任务标题与最初目标。
-- 若“最初需求锚点”或“原始截图/附件摘要”已能确定主需求，则本阶段不得再次要求用户重述“要做什么”。
+- Scope analysis must use "Original Requirement Anchor" as main axis; if current phase added technical preferences, style plans, local limitations or implementation paths, only reflect in "Modification Reason/Expected Action", cannot rewrite task title and original goal.
+- If "Original Requirement Anchor" or "Original Screenshot/Attachment Summary" already can determine main requirement, this phase cannot re-require user to restate "what to do".
 
-| 模块 | 目录/文件 | 修改原因 | 预期动作 |
+| Module | Directory/File | Modification Reason | Expected Action |
 | --- | --- | --- | --- |
 |  |  |  |  |
 
-## 3. 依赖与前置条件
+## 3. Dependencies and Prerequisites
 
-- 依赖技能：
-- 依赖文档：
-- 依赖接口或设计稿：
-- 依赖环境：
-- Stage 5 执行前资料补充策略：`feature 默认补充 | bug 按需补充 | refactor 默认跳过 | not_applicable`
+- Dependent Skills:
+- Dependent Documentation:
+- Dependent Interfaces or Design Specs:
+- Dependent Environment:
+- Stage 5 Execution Pre Material Supplement Strategy: `feature default supplement | bug as-needed supplement | refactor default skip | not_applicable`
 
-## 4. 技能调用计划
+## 4. Skill Invocation Plan
 
-- 主要技能路线：
-- 后续正式执行阶段（Stage 3/4/5/6/7）开始前，都必须先检查并消费这里确认的技能路线；若后续阶段跳过已标记的必需技能，应视为流程违规。
-- 是否需要长任务：
-- 备注：
+- Main Skill Route:
+- Before subsequent formal execution phases (Stage 3/4/5/6/7) start, must first check and consume confirmed skill routes here; if subsequent phase skips marked required skills, treat as flow violation.
+- Need Long Task:
+- Notes:
 
-## 5. 风险分析
+## 5. Risk Analysis
 
-- 直接风险：
-- 间接影响：
-- 历史兼容风险：
-- 不确定项：
+- Direct Risks:
+- Indirect Impact:
+- Historical Compatibility Risk:
+- Uncertainty Items:
 
-## 6. 回归范围
+## 6. Regression Scope
 
-- 页面回归：
-- 组件回归：
-- 接口回归：
-- 权限回归：
-- 构建回归：
+- Page Regression:
+- Component Regression:
+- Interface Regression:
+- Permission Regression:
+- Build Regression:
 
-## 7. 用户确认点
+## 7. User Confirmation Points
 
-- [ ] 需求理解一致
-- [ ] 修改范围一致
-- [ ] 技能路线一致
-- [ ] 风险接受
-- [ ] Stage 5 执行前资料补充策略一致
-- [ ] 可以进入任务编排或直接研发
+- [ ] Requirement Understanding Consistent
+- [ ] Modification Scope Consistent
+- [ ] Skill Route Consistent
+- [ ] Risk Accepted
+- [ ] Stage 5 Execution Pre Material Supplement Strategy Consistent
+- [ ] Can Enter Task Orchestration or Direct Development
 
-## 8. 阶段切换规则
+## 8. Phase Switch Rules
 
-- Stage 2 的确认内容只围绕“需求理解与范围分析是否正确”，不额外展示“进入 Stage 2 / 进入下一步”等阶段提示。
-- 仅当“用户确认状态 = approved”且“是否已获准进入下一阶段 = yes”且当前阶段状态被标记为 `completed` 时，才能进入下一阶段。
-- 若用户在确认点补充或修正诉求，必须先把诉求合并回当前阶段结论，并回显更新后的分析结论，再等待下一次答复。
-- 若用户补充的是实现约束、技术偏好或局部限制，必须记录到“本阶段新增约束”，不能把“最初需求锚点”直接改写成该约束。
-- 若用户明确表示“原来的需求不对/我现在要改成另一个目标”，才允许改写“最初需求锚点”，并回写到 Stage 0 / request-brief。
-- 若存在待补资料、私有/自研 UI 库规则未清晰、或用户确认仍为 `pending`，当前阶段状态应保持 `waiting_user` 或 `blocked`，不得进入研发。
+- Stage 2 confirmation content only revolves around "requirement understanding and scope analysis correctness", don't extra show "Enter Stage 2 / Enter Next Step" etc. phase prompts.
+- Only when "User Confirmation Status = approved" and "Approved to Enter Next Phase = yes" and current phase status marked as `completed`, can enter next phase.
+- If user supplements or corrects request at confirmation point, must first merge request back to current phase conclusion, and echo updated analysis conclusion, then wait for next reply.
+- If user supplements implementation constraints, technical preferences or local limitations, must record to "Current Phase Added Constraints", cannot directly rewrite "Original Requirement Anchor".
+- If user explicitly states "original requirement wrong / now I want to change to another target", only then allowed to rewrite "Original Requirement Anchor", and write back to Stage 0 / request-brief.
+- If exists pending materials, private/self-developed UI library rules unclear, or user confirmation still `pending`, current phase status should stay `waiting_user` or `blocked`, cannot enter development.

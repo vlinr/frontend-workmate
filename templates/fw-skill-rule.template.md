@@ -1,92 +1,92 @@
 ---
 alwaysApply: true
-description: "frontend-workmate 技能规则（静态规则部分）"
+description: "frontend-workmate skill rules (static rules part)"
 ---
 
-# ⚠️ 核心强制规则（必须遵守）
+# ⚠️ Core Mandatory Rules (Must Follow)
 
-## 1. 单一阶段输出原则
+## 1. Single Phase Output Principle
 
-**每次输出只包含当前阶段内容**，禁止：
-- 输出未来阶段计划
-- 自创任务列表（必须使用状态文件的任务列表）
-- 幻想用户反馈或未来结果
+**Each output only contains current phase content**, prohibited:
+- Outputting future phase plans
+- Creating own task lists (must use state file's task list)
+- Imagining user feedback or future results
 
-**正确示例**：`[初始化] 任务ID: task_xxx... [初始化] 执行完成。进入下一阶段：[项目扫描]。`
+**Correct Example**: `[Initialization] Task ID: task_xxx... [Initialization] Completed. Entering next phase: [Project Scan].`
 
-## 2. 任务ID携带原则
+## 2. Task ID Carrying Principle
 
-**每次输出必须携带任务ID**：
-- 第一行输出：`[阶段名称] 任务ID: task_xxxxxxxx`
-- 状态更新时携带任务ID
-- 禁止脱离任务上下文执行操作
+**Each output must carry Task ID**:
+- First line output: `[Phase Name] Task ID: task_xxxxxxxx`
+- State update carries Task ID
+- Prohibited from executing operations outside task context
 
-## 3. 阶段确认闭环原则
+## 3. Phase Confirmation Loop Principle
 
-**必须等待用户确认后进入下一阶段**：
-| 阶段结束 | 动作 |
+**Must wait for user confirmation before entering next phase**:
+| Phase End | Action |
 | --- | --- |
-| 有产物输出 | 输出摘要 + 等待确认提示语 |
-| 用户确认"继续" | **先更新状态文件** → 进入下一阶段 |
-| 用户提出修改 | 停留当前阶段 → 合并反馈 → 再次等待 |
+| Has artifact output | Output summary + wait confirmation prompt |
+| User confirms "continue" | **First update state file** → enter next phase |
+| User proposes modifications | Stay current phase → merge feedback → wait again |
 
-**禁止**：未经确认进入下一阶段、连续输出多阶段内容
+**Prohibited**: Enter next phase without confirmation, continuously output multi-phase content
 
-## 4. 状态文件更新原则
+## 4. State File Update Principle
 
-**必须读取和更新状态文件**：
-| 时间点 | 动作 |
+**Must read and update state file**:
+| Timing | Action |
 | --- | --- |
-| 进入阶段前 | `read` 状态文件，获取当前阶段和任务ID |
-| 阶段完成后 | `edit` 状态文件，更新阶段进度 |
-| 用户提出修改后 | `edit` 状态文件，更新状态 |
+| Before entering phase | `read` state file, get current phase and Task ID |
+| After phase completes | `edit` state file, update phase progress |
+| After user proposes modifications | `edit` state file, update status |
 
-**禁止**：不读取状态文件就推断阶段、不更新状态文件就进入下一阶段
+**Prohibited**: Infer phase without reading state file, enter next phase without updating state file
 
-## 5. 动态路径读取原则（三核心目录）
+## 5. Dynamic Path Reading Principle (Three Core Directories)
 
-**配置文件仅存储三个核心目录**，其他路径通过拼接：
+**Config file only stores three core directories**, other paths via concatenation:
 
-| 目录概念 | 配置字段 | 说明 |
+| Directory Concept | Config Field | Description |
 | --- | --- | --- |
-| 用户项目根目录 | `project_work_dir` | 用户打开的目录，研发改动参考依据 |
-| 项目IDE配置根目录 | `project_ide_dir` | 存放项目配置、技能、规则、状态 |
-| 静态资源根目录 | `static_config_dir` | IDE配置根目录（如 ~/.qoder），存放静态技能、静态规则 |
+| User project root directory | `project_work_dir` | User-opened directory, development change reference |
+| Project IDE config root directory | `project_ide_dir` | Stores project config, skills, rules, state |
+| Static config root directory | `static_config_dir` | IDE config root directory (like ~/.qoder), stores static skills, static rules |
 
-**路径拼接规则**：
+**Path Concatenation Rules**:
 
-| 引用类型 | 拼接方式 |
+| Reference Type | Concatenation Method |
 | --- | --- |
-| 静态技能（fw-react-best-practices 等） | `{static_config_dir}/skills/{技能名}/SKILL.md` |
-| 静态规则（frontend-implementation.md 等） | `{static_config_dir}/rules/{规则名}.md` |
-| 项目技能（fw-project-develop） | `{project_ide_dir}/skills/fw-project-develop/SKILL.md` |
-| 项目规则（fw-skill-rule.md） | `{project_ide_dir}/rules/fw-skill-rule.md` |
-| 项目状态（fw-session-state.md） | `{project_ide_dir}/rules/fw-session-state.md` |
-| 改动代码 | `{project_work_dir}/src/...` |
+| Static skill (fw-react-best-practices etc.) | `{static_config_dir}/skills/{skill_name}/SKILL.md` |
+| Static rule (frontend-implementation.md etc.) | `{static_config_dir}/rules/{rule_name}.md` |
+| Project skill (fw-project-develop) | `{project_ide_dir}/skills/fw-project-develop/SKILL.md` |
+| Project rule (fw-skill-rule.md) | `{project_ide_dir}/rules/fw-skill-rule.md` |
+| Project state (fw-session-state.md) | `{project_ide_dir}/rules/fw-session-state.md` |
+| Modified code | `{project_work_dir}/src/...` |
 
-**引用步骤**：
+**Reference Steps**:
 1. `read` `{project_ide_dir}/.fw-session-config.json`
-2. 获取 `project_work_dir`、`project_ide_dir`、`static_config_dir`
-3. 根据引用类型拼接路径
+2. Get `project_work_dir`, `project_ide_dir`, `static_config_dir`
+3. Concatenate path based on reference type
 
-**禁止**：硬编码路径（如 `skills/curated/xxx/SKILL.md`）
+**Prohibited**: Hardcoded paths (like `skills/curated/xxx/SKILL.md`)
 
-## 6. 回退重置原则
+## 6. Fallback Reset Principle
 
-**回退时必须重置后续阶段**：
-| 回退场景 | 重置阶段 |
+**Must reset subsequent phases when fallback**:
+| Fallback Scenario | Reset Phases |
 | --- | --- |
-| stage8 → stage5 | stage5-8 → 待重新执行 |
-| stage8 → stage2 | stage2-8 → 待重新执行 |
-| stage5 → stage2 | stage2-5 → 待重新执行 |
+| stage8 → stage5 | stage5-8 → pending re-execution |
+| stage8 → stage2 | stage2-8 → pending re-execution |
+| stage5 → stage2 | stage2-5 → pending re-execution |
 
-**禁止**：回退时不重置后续阶段
+**Prohibited**: Not resetting subsequent phases when fallback
 
 ---
 
-# 配置文件结构
+# Config File Structure
 
-配置文件 `.fw-session-config.json` 存放于 `{project_ide_dir}`，**仅存储三个核心目录**：
+Config file `.fw-session-config.json` stored in `{project_ide_dir}`, **only stores three core directories**:
 
 ```json
 {
@@ -97,70 +97,70 @@ description: "frontend-workmate 技能规则（静态规则部分）"
 }
 ```
 
-**其他路径通过拼接**：
-- 静态技能目录 = `{static_config_dir}/skills/`
-- 静态规则目录 = `{static_config_dir}/rules/`
-- 项目技能目录 = `{project_ide_dir}/skills/`
-- 项目规则目录 = `{project_ide_dir}/rules/`
+**Other paths via concatenation**:
+- Static skill directory = `{static_config_dir}/skills/`
+- Static rule directory = `{static_config_dir}/rules/`
+- Project skill directory = `{project_ide_dir}/skills/`
+- Project rule directory = `{project_ide_dir}/rules/`
 
 ---
 
-# 各阶段职责边界
+# Phase Responsibility Boundary
 
-| 阶段 | 负责 | 不负责（记录到上下文） |
+| Phase | Responsible | Not Responsible (Record to Context) |
 | --- | --- | --- |
-| stage0 | 初始化、任务ID生成 | 项目分析、范围分析 |
-| stage1 | 项目扫描、技能生成 | 研发需求、功能描述 |
-| stage2 | 范围分析、任务类型判断 | 具体实现方案 |
-| stage3 | 执行计划、任务拆分 | 研发实施 |
-| stage4 | 资料补充 | 研发实施 |
-| stage5 | 代码修改、技能调用 | 验证、文档更新 |
-| stage6 | 验证执行 | 代码修改（回 stage5） |
-| stage7 | 文档同步 | 验证、代码修改 |
-| stage8 | 交付确认 | 研发实施（回 stage5） |
+| stage0 | Initialization, Task ID generation | Project analysis, scope analysis |
+| stage1 | Project scan, skill generation | Development requirements, feature descriptions |
+| stage2 | Scope analysis, task type judgment | Specific implementation plans |
+| stage3 | Execution plan, task breakdown | Development implementation |
+| stage4 | Material supply | Development implementation |
+| stage5 | Code modification, skill invocation | Verification, documentation update |
+| stage6 | Verification execution | Code modification (return to stage5) |
+| stage7 | Documentation sync | Verification, code modification |
+| stage8 | Delivery confirmation | Development implementation (return to stage5) |
 
-**处理原则**：用户可提供任何内容，AI只处理当前阶段需要的，其他记录到上下文。
+**Processing Principle**: User can provide any content, AI only processes what's needed for current phase, others record to context.
 
 ---
 
-# 循环路径汇总
+# Loop Path Summary
 
-| 阶段 | 下一阶段 | 用户修改时 | 自动衔接 |
+| Phase | Next Phase | User Modification | Auto Link |
 | --- | --- | --- | --- |
-| stage0 | stage1 | 无 | ✅ |
-| stage1 | stage2 | 保持stage1循环 | ❌ 等待确认 |
-| stage2 | stage3/4 | 保持stage2循环 | ❌ 等待确认 |
-| stage3 | stage4 | 回stage2 | ✅ |
-| stage4 | stage5 | 可跳过 | ✅ |
-| stage5 | stage6 | stage8统一处理 | ✅ |
-| stage6 | stage7 | 不暂停 | ✅ |
-| stage7 | stage8 | 不暂停 | ✅ |
-| stage8 | 完成 | 回stage5重置 | ❌ 等待确认 |
+| stage0 | stage1 | None | ✅ |
+| stage1 | stage2 | Stay stage1 loop | ❌ Wait confirmation |
+| stage2 | stage3/4 | Stay stage2 loop | ❌ Wait confirmation |
+| stage3 | stage4 | Return stage2 | ✅ |
+| stage4 | stage5 | Can skip | ✅ |
+| stage5 | stage6 | stage8 unified handling | ✅ |
+| stage6 | stage7 | No pause | ✅ |
+| stage7 | stage8 | No pause | ✅ |
+| stage8 | Complete | Return stage5 reset | ❌ Wait confirmation |
 
 ---
 
-# 执行顺序（最重要）
+# Execution Order (Most Important)
 
-**收到用户输入后**：
-1. **读取配置文件** `{project_ide_dir}/.fw-session-config.json`
-2. **读取状态文件** `{project_ide_dir}/rules/fw-session-state.md` → 获取当前阶段、任务ID
-3. **根据阶段处理输入**：
-   | 阶段 | 状态 | 输入类型 | 处理 |
+**After receiving user input**:
+1. **Read config file** `{project_ide_dir}/.fw-session-config.json`
+2. **Read state file** `{project_ide_dir}/rules/fw-session-state.md` → Get current phase, Task ID
+3. **Process input based on phase**:
+   | Phase | Status | Input Type | Handling |
    | --- | --- | --- | --- |
-   | stage8 | waiting | 修改内容 | **先更新状态为stage5 + 重置阶段** |
-   | stage8 | waiting | "继续" | 标记完成 |
-   | stage1-7 | waiting | 任何内容 | 执行当前阶段回复处理 |
-   | completed | - | 新需求 | 生成新任务ID → stage0 |
+   | stage8 | waiting | Modification content | **First update status to stage5 + reset phases** |
+   | stage8 | waiting | "continue" | Mark complete |
+   | stage1-7 | waiting | Any content | Execute current phase reply handling |
+   | completed | - | New requirement | Generate new Task ID → stage0 |
 
-4. **执行阶段动作** → 禁止跳过状态更新
+4. **Execute phase action** → Prohibited from skipping status update
 
 ---
 
-# 状态文件说明
+# State File Description
 
-状态文件 `fw-session-state.md` 包含：
-- 活跃任务列表
-- 各任务的当前状态（阶段、状态、下一步）
-- 阶段进度（已完成/进行中/待完成/待重新执行）
+State file `fw-session-state.md` contains:
+- Active task list
+- Each task's current status (phase, status, next step)
+- Phase progress (completed/in-progress/to-do/to-re-execute)
 
-详见状态文件模板 `fw-session-state.template.md`。
+See state file template `fw-session-state.template.md`.

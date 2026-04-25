@@ -6,13 +6,13 @@
 
 ## OVERVIEW
 
-**frontend-workmate** 是一个前端研发全流程编排技能包，采用技能驱动架构，通过 9 阶段流程规范化执行 Bug 修复、Feature 实现、Refactor 改造等前端研发任务。
+**frontend-workmate** is a full-stack frontend development orchestration skill pack using a skill-driven architecture. It standardizes execution of Bug fixes, Feature implementations, Refactoring, and other frontend development tasks through a 9-phase workflow.
 
-核心设计理念：
-- **三核心目录**：用户项目目录、项目 IDE 配置目录、静态资源目录
-- **技能驱动**：内置 10 个可复用技能，按条件自动调用
-- **智能回退**：根据用户反馈自动判断回退阶段
-- **多任务并发**：支持同时处理多个研发任务
+Core Design Principles:
+- **Three Core Directories**: User project directory, project IDE config directory, static resources directory
+- **Skill-Driven**: Built-in 10 reusable skills, automatically invoked based on conditions
+- **Smart Fallback**: Automatically determines fallback phase based on user feedback
+- **Multi-task Concurrency**: Supports simultaneous processing of multiple development tasks
 
 ---
 
@@ -20,58 +20,58 @@
 
 ```
 frontend-workmate/
-├── SKILL.md                        # 总编排协议（最高优先级）
-├── AGENTS.md                       # 项目知识库
-├── README.md                       # 使用文档
+├── SKILL.md                        # Master orchestration protocol (highest priority)
+├── AGENTS.md                       # Project knowledge base
+├── README.md                       # Usage documentation
 │
 ├── scripts/
-│   └── init-skills.js              # 初始化脚本（生成配置、同步技能）
+│   └── init-skills.js              # Initialization script (generates config, syncs skills)
 │
-├── stages/                         # 9 阶段定义
-│   ├── index.md                    # 阶段索引与总流程表
-│   ├── init.md                     # Stage 0: 初始化
-│   ├── project-scan.md             # Stage 1: 项目扫描
-│   ├── scope-analysis.md           # Stage 2: 范围分析
-│   ├── plan.md                     # Stage 3: 执行计划
-│   ├── supply.md                   # Stage 4: 资料补充
-│   ├── implementation.md           # Stage 5: 实施研发
-│   ├── verification.md             # Stage 6: 内部验证
-│   ├── docs.md                     # Stage 7: 文档同步
-│   └── delivery.md                 # Stage 8: 交付续跑
+├── stages/                         # 9 phase definitions
+│   ├── index.md                    # Phase index and master process table
+│   ├── init.md                     # Stage 0: Initialization
+│   ├── project-scan.md             # Stage 1: Project Scan
+│   ├── scope-analysis.md           # Stage 2: Scope Analysis
+│   ├── plan.md                     # Stage 3: Execution Plan
+│   ├── supply.md                   # Stage 4: Material Supply
+│   ├── implementation.md           # Stage 5: Implementation
+│   ├── verification.md             # Stage 6: Verification
+│   ├── docs.md                     # Stage 7: Documentation Sync
+│   └── delivery.md                 # Stage 8: Delivery
 │
-├── rules/                          # 流程规则
-│   ├── frontend-orchestrator.md    # 核心链路规则
-│   ├── frontend-change-scope.md    # 范围分析规则
-│   ├── frontend-implementation.md  # 研发实施规则
-│   ├── frontend-verification.md    # 验证规则
-│   ├── directory-doc-sync.md       # 文档同步规则
-│   └── fw-project-develop.md       # 项目技能模板规则
+├── rules/                          # Process rules
+│   ├── frontend-orchestrator.md    # Core chain rules
+│   ├── frontend-change-scope.md    # Scope analysis rules
+│   ├── frontend-implementation.md  # Implementation rules
+│   ├── frontend-verification.md    # Verification rules
+│   ├── directory-doc-sync.md       # Documentation sync rules
+│   └── fw-project-develop.md       # Project skill template rules
 │
 ├── skills/
-│   └── curated/                    # 内置可复用技能（10 个）
-│       ├── fw-react-best-practices/   # React 最佳实践
-│       ├── fw-react-components/       # React 组件规范
-│       ├── fw-systematic-debugging/   # 系统化调试
-│       ├── fw-typescript-advanced-types/  # TypeScript 高级类型
-│       ├── fw-accessibility/          # WCAG 可访问性
-│       ├── fw-web-design-guidelines/  # UI 规范
-│       ├── fw-task-plan-checkpoint/   # 长任务续跑
-│       ├── fw-code-analysis-doc/      # 代码分析文档
-│       ├── skill-creator/          # 技能创建工具
-│       └── find-skills/            # 技能发现
+│   └── curated/                    # Built-in reusable skills (10)
+│       ├── fw-react-best-practices/   # React best practices
+│       ├── fw-react-components/       # React component standards
+│       ├── fw-systematic-debugging/   # Systematic debugging
+│       ├── fw-typescript-advanced-types/  # TypeScript advanced types
+│       ├── fw-accessibility/          # WCAG accessibility
+│       ├── fw-web-design-guidelines/  # UI guidelines
+│       ├── fw-task-plan-checkpoint/   # Long task checkpoint resume
+│       ├── fw-code-analysis-doc/      # Code analysis documentation
+│       ├── skill-creator/          # Skill creation tool
+│       └── find-skills/            # Skill discovery
 │
-├── templates/                      # 产物模板
-│   ├── fw-skill-rule.template.md      # 规则文件模板
-│   ├── fw-session-state.template.md   # 状态文件模板
-│   ├── analysis/                    # 分析产物模板
-│   ├── delivery/                    # 交付产物模板
-│   ├── docs/                        # 文档模板
-│   ├── intake/                      # 输入模板
-│   ├── project/                     # 项目技能模板
-│   ├── task/                        # 任务模板
-│   └── verification/                # 验证模板
+├── templates/                      # Artifact templates
+│   ├── fw-skill-rule.template.md      # Rule file template
+│   ├── fw-session-state.template.md   # State file template
+│   ├── analysis/                    # Analysis artifact templates
+│   ├── delivery/                    # Delivery artifact templates
+│   ├── docs/                        # Documentation templates
+│   ├── intake/                      # Input templates
+│   ├── project/                     # Project skill templates
+│   ├── task/                        # Task templates
+│   └── verification/                # Verification templates
 │
-└── prd-ux-code/                    # UX 代码转换（扩展模块）
+└── prd-ux-code/                    # UX code conversion (extension module)
 ```
 
 ---
@@ -80,54 +80,54 @@ frontend-workmate/
 
 | Task | Location | Notes |
 |------|----------|-------|
-| 理解总流程 | `SKILL.md` | 9 阶段流程定义、门禁规则 |
-| 阶段索引 | `stages/index.md` | 总流程表、显式确认点、自动衔接点 |
-| 项目扫描 | `stages/project-scan.md` | Stage 1 项目技能生成 |
-| 范围分析 | `stages/scope-analysis.md` | Stage 2 bug/feature/refactor 分类 |
-| 实施研发 | `stages/implementation.md` | Stage 5 代码修改 |
-| 内部验证 | `stages/verification.md` | Stage 6 功能验证 |
-| 文档同步 | `stages/docs.md` | Stage 7 目录文档 |
-| 交付续跑 | `stages/delivery.md` | Stage 8 智能回退 |
-| React 最佳实践 | `skills/curated/fw-react-best-practices/` | 40+ 规则 |
-| 系统化调试 | `skills/curated/fw-systematic-debugging/` | 根因追踪方法论 |
-| 可访问性 | `skills/curated/fw-accessibility/` | WCAG 2.2 合规 |
-| TypeScript 高级类型 | `skills/curated/fw-typescript-advanced-types/` | 泛型、条件类型 |
-| 长任务续跑 | `skills/curated/fw-task-plan-checkpoint/` | 断点续跑机制 |
-| 初始化脚本 | `scripts/init-skills.js` | 配置生成、技能同步 |
+| Understand master process | `SKILL.md` | 9-phase workflow definition, gate rules |
+| Phase index | `stages/index.md` | Master process table, explicit confirmation points, automatic transitions |
+| Project Scan | `stages/project-scan.md` | Stage 1 project skill generation |
+| Scope Analysis | `stages/scope-analysis.md` | Stage 2 bug/feature/refactor classification |
+| Implementation | `stages/implementation.md` | Stage 5 code modification |
+| Verification | `stages/verification.md` | Stage 6 functional verification |
+| Documentation Sync | `stages/docs.md` | Stage 7 directory documentation |
+| Delivery | `stages/delivery.md` | Stage 8 smart fallback |
+| React best practices | `skills/curated/fw-react-best-practices/` | 40+ rules |
+| Systematic debugging | `skills/curated/fw-systematic-debugging/` | Root cause tracing methodology |
+| Accessibility | `skills/curated/fw-accessibility/` | WCAG 2.2 compliance |
+| TypeScript advanced types | `skills/curated/fw-typescript-advanced-types/` | Generics, conditional types |
+| Long task checkpoint resume | `skills/curated/fw-task-plan-checkpoint/` | Checkpoint resume mechanism |
+| Initialization script | `scripts/init-skills.js` | Config generation, skill sync |
 
 ---
 
 ## THREE CORE DIRECTORIES
 
-**配置文件仅存储 3 个核心目录路径**：
+**Config file only stores 3 core directory paths**:
 
-| 目录概念 | 配置字段 | 说明 |
+| Directory Concept | Config Field | Description |
 | --- | --- | --- |
-| 用户项目根目录 | `project_work_dir` | 用户打开的目录 |
-| 项目 IDE 配置目录 | `project_ide_dir` | 存放项目配置、技能、规则、状态 |
-| 静态资源根目录 | `static_config_dir` | IDE 配置根目录，存放静态技能、静态规则 |
+| User project root directory | `project_work_dir` | User-opened directory |
+| Project IDE config directory | `project_ide_dir` | Stores project config, skills, rules, state |
+| Static config root directory | `static_config_dir` | IDE config root directory, stores static skills, static rules |
 
-**路径拼接规则**：
+**Path Concatenation Rules**:
 
-| 引用类型 | 拼接方式 |
+| Reference Type | Concatenation Method |
 | --- | --- |
-| 静态技能 | `{static_config_dir}/skills/{技能名}/SKILL.md` |
-| 静态规则 | `{static_config_dir}/rules/{规则名}.md` |
-| 项目技能 | `{project_ide_dir}/skills/fw-project-develop/SKILL.md` |
-| 项目规则 | `{project_ide_dir}/rules/fw-skill-rule.md` |
-| 项目状态 | `{project_ide_dir}/rules/fw-session-state.md` |
+| Static skill | `{static_config_dir}/skills/{skill_name}/SKILL.md` |
+| Static rule | `{static_config_dir}/rules/{rule_name}.md` |
+| Project skill | `{project_ide_dir}/skills/fw-project-develop/SKILL.md` |
+| Project rule | `{project_ide_dir}/rules/fw-skill-rule.md` |
+| Project state | `{project_ide_dir}/rules/fw-session-state.md` |
 
 ---
 
 ## CONVENTIONS
 
-- **技能定义**: 所有技能使用 `SKILL.md` 文件，YAML frontmatter 必含 `name`、`description`
-- **项目技能名**: Stage 1 产物固定为 `fw-project-develop`
-- **阶段状态**: 必须维护状态文件 `fw-session-state.md`
-- **配置文件**: 仅存储 3 个核心目录路径，其他路径通过拼接
-- **自动衔接**: Stage 5→6→7→8 自动衔接，不等待用户确认
-- **显式确认**: Stage 1、2、8 结束后等待用户确认
-- **禁止虚构**: 项目不存在的能力标记 `not_applicable`
+- **Skill definition**: All skills use `SKILL.md` file, YAML frontmatter must contain `name`, `description`
+- **Project skill name**: Stage 1 artifact is fixed as `fw-project-develop`
+- **Phase state**: Must maintain state file `fw-session-state.md`
+- **Config file**: Only stores 3 core directory paths, other paths via concatenation
+- **Automatic transition**: Stage 5→6→7→8 automatic transition, no user confirmation wait
+- **Explicit confirmation**: Stage 1, 2, 8 completion waits for user confirmation
+- **Prohibit fabrication**: Project non-existent capabilities marked as `not_applicable`
 
 ---
 
@@ -135,36 +135,36 @@ frontend-workmate/
 
 | Pattern | Location | Rule |
 |---------|----------|------|
-| 不得自行改写流程 | `SKILL.md` | 必须把本文件视为最高优先级执行协议 |
-| 不得跳过技能 | `stages/*.md` | 各阶段标记的必需技能不得跳过 |
-| 不得虚构能力 | `SKILL.md` | 项目不存在的能力不得虚构实现 |
-| 不得提前追问 | `stages/init.md` | Stage 0 禁止追问实现细节 |
-| 不得覆盖最初需求 | `SKILL.md` | 阶段补充约束不得改写最初需求锚点 |
-| NO FIXES WITHOUT ROOT CAUSE | `skills/curated/fw-systematic-debugging/` | 调试前必须先找到根因 |
-| NEVER fix just the symptom | `skills/curated/fw-systematic-debugging/` | 修复症状而非根因是失败 |
+| Must not rewrite process | `SKILL.md` | Must treat this file as highest priority execution protocol |
+| Must not skip skills | `stages/*.md` | Required skills marked in each phase cannot be skipped |
+| Must not fabricate capabilities | `SKILL.md` | Project non-existent capabilities cannot be fabricated |
+| Must not ask ahead | `stages/init.md` | Stage 0 prohibits asking implementation details |
+| Must not override original requirements | `SKILL.md` | Phase supplement constraints cannot rewrite original requirement anchor |
+| NO FIXES WITHOUT ROOT CAUSE | `skills/curated/fw-systematic-debugging/` | Must find root cause before debugging |
+| NEVER fix just the symptom | `skills/curated/fw-systematic-debugging/` | Fixing symptoms not root cause is failure |
 
 ---
 
 ## UNIQUE STYLES
 
-- **双语文档**: 中英文混合，协议规则使用中文，技能内容中英混合
-- **Mermaid 流程图**: 使用 Mermaid 定义 9 阶段切换关系
-- **技能调用矩阵**: 明确各阶段必须调用的技能清单
-- **三核心目录设计**: 配置文件仅存储 3 个路径，其他通过拼接
-- **智能回退**: 根据用户反馈自动判断回退阶段
+- **Bilingual documentation**: Mixed Chinese-English, protocol rules use Chinese, skill content mixed
+- **Mermaid flowcharts**: Use Mermaid to define 9-phase transition relationships
+- **Skill invocation matrix**: Explicit skill list required for each phase
+- **Three core directories design**: Config file only stores 3 paths, others via concatenation
+- **Smart fallback**: Automatically determines fallback phase based on user feedback
 
 ---
 
 ## COMMANDS
 
 ```bash
-# 初始化（推荐参数）
-node scripts/init-skills.js --workdir "项目路径" --ide ".trae"
+# Initialization (recommended parameters)
+node scripts/init-skills.js --workdir "project_path" --ide ".trae"
 
-# 预览模式
+# Preview mode
 node scripts/init-skills.js --dry-run
 
-# 指定源技能目录
+# Specify source skill directories
 node scripts/init-skills.js --dirs curated,external
 ```
 
@@ -172,7 +172,7 @@ node scripts/init-skills.js --dirs curated,external
 
 ## NOTES
 
-- 技能来源优先级: 用户提供 > 项目技能 > 公共技能包
-- 项目技能产物名统一为 `fw-project-develop`
-- 支持全局安装和项目内安装
-- 支持 15+ IDE 目录名（`.trae`, `.cursor`, `.opencode` 等）
+- Skill source priority: User provided > Project skill > Public skill pack
+- Project skill artifact name unified as `fw-project-develop`
+- Supports global install and in-project install
+- Supports 15+ IDE directory names (`.trae`, `.cursor`, `.opencode`, etc.)

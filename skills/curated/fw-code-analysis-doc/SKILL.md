@@ -1,95 +1,95 @@
 ---
 name: fw-code-analysis-doc
-description: 通用代码分析与文档沉淀技能。用于用户要求“分析函数/文件/组件/模块/功能并生成说明文档”时触发，也用于代码研发或代码修改完成后的文档同步阶段。适用于前端、后端与通用代码目录。执行“实现解读 + 全仓引用检索 + 特殊用法提炼 + 案例化说明”，并在目标目录输出或更新可维护的 Markdown 使用说明，便于后续 AI 直接复用。
+description: General code analysis and documentation skill. Triggered when users request "analyze function/file/component/module/feature and generate documentation", also used in the documentation sync phase after code development or modification is complete. Applicable to frontend, backend, and general code directories. Executes "implementation interpretation + repository-wide reference retrieval + special usage extraction + case-based explanation", outputs or updates maintainable Markdown usage documentation in target directory for subsequent AI reuse.
 ---
 
 # Code Analysis Doc
 
-按以下流程执行，并直接落地文档。
+Execute the following workflow and produce documentation directly.
 
-## 0) 触发时机
+## 0) Trigger Conditions
 
-- 以下场景均应触发本技能：
-  - 用户明确要求分析代码并生成说明文档。
-  - 用户要求补充、修订、同步某模块文档。
-  - AI 完成代码研发或代码修改后，进入交付收尾阶段。
-- 在“研发/修改后收尾”场景，必须执行文档同步判定：
-  - 若目标目录已存在对应说明文档，执行增量更新。
-  - 若目标目录不存在对应说明文档，创建新文档并写入完整说明。
+- This skill should be triggered in the following scenarios:
+  - User explicitly requests code analysis and documentation generation.
+  - User requests supplementation, revision, or synchronization of module documentation.
+  - AI completes code development or modification and enters the delivery/closing phase.
+- In "post-development/modification closing" scenarios, must execute documentation sync judgment:
+  - If target directory already has corresponding documentation, perform incremental update.
+  - If target directory lacks corresponding documentation, create new file with complete explanation.
 
-## 1) 明确分析对象与输出路径
+## 1) Identify Analysis Target and Output Path
 
-- 识别分析目标：函数、文件、组件、页面、服务、模块、目录。
-- 若用户给了具体路径，优先在该路径下输出文档。
-- 默认文档名：`README.md`；若目录已有同类文档，更新原文档而非新建多个版本。
-- 若是“研发/修改后收尾”触发，先基于改动范围确定目标文档路径：
-  - 组件/模块级改动：优先对应目录 `README.md`
-  - 跨目录改动：按主改动模块分别更新对应文档
+- Identify analysis target: function, file, component, page, service, module, directory.
+- If user provides specific path, prioritize outputting documentation under that path.
+- Default document name: `README.md`; if directory already has similar documentation, update existing file rather than create multiple versions.
+- If triggered by "post-development/modification closing", first determine target document path based on change scope:
+  - Component/module-level changes: prioritize corresponding directory `README.md`
+  - Cross-directory changes: update respective documentation by main modified modules
 
-## 2) 代码调研（实现 + 引用）
+## 2) Code Research (Implementation + References)
 
-- 先读目标实现，提炼：
-  - 核心作用
-  - 输入输出（入参/出参/props/返回结构）
-  - 内部依赖（hooks、service、store、配置）
-  - 关键流程（数据流、渲染流、交互流）
-- 再查全仓库引用方式，必须覆盖：
-  - 典型接入模式（最常见写法）
-  - 变体模式（参数差异、上下文差异、生命周期差异）
-  - 特殊/边界用法（兜底逻辑、条件分支、兼容写法）
-  - 共同约束与隐式契约
-- 引用调研输出要求：
-  - 给出 2~4 个“代表性引用点”（不要罗列全量文件）
-  - 每个引用点说明“为什么代表一种模式”
-  - 至少包含 1 个特殊或边界用法引用
-  - 每个引用点必须附“关键代码片段”（10~40 行，保留核心参数与调用上下文）
-  - 代码片段下方仅标注“来源场景名/模式名”，不写文件名、路径、行号
+- First read target implementation, extract:
+  - Core purpose
+  - Input/output (parameters/returns/props/return structure)
+  - Internal dependencies (hooks, services, stores, configurations)
+  - Key flows (data flow, render flow, interaction flow)
+- Then query repository-wide reference patterns, must cover:
+  - Typical integration patterns (most common usage)
+  - Variant patterns (parameter differences, context differences, lifecycle differences)
+  - Special/boundary usage (fallback logic, conditional branches, compatibility handling)
+  - Common constraints and implicit contracts
+- Reference research output requirements:
+  - Provide 2-4 "representative reference points" (don't list all files exhaustively)
+  - For each reference point, explain "why it represents a pattern"
+  - Must include at least 1 special or boundary usage reference
+  - Each reference point must include "key code snippet" (10-40 lines, preserving core parameters and call context)
+  - Below code snippet, only annotate "source scenario name/pattern name", not filenames, paths, or line numbers
 
-## 3) 提炼稳定规则与引用结论
+## 3) Extract Stable Rules and Reference Conclusions
 
-- 仅保留“长期稳定”的知识：
-  - 用途与边界
-  - 适用/不适用场景
-  - 接口契约与必需字段
-  - 注意事项与常见错误
-- 将“实现逻辑”与“引用行为”合并成规则：
-  - 哪些参数/前置条件是被调用方普遍依赖的
-  - 哪些写法只在特定场景成立
-  - 哪些特殊用法可复用，哪些只能谨慎参考
-- 避免沉淀高波动信息：
-  - 不写全量调用文件清单
-  - 不写容易过期的统计数量
-  - 不写临时分支信息
+- Only retain "long-term stable" knowledge:
+  - Purpose and boundaries
+  - Applicable/non-applicable scenarios
+  - Interface contracts and required fields
+  - Notes and common errors
+- Merge "implementation logic" with "reference behavior" into rules:
+  - Which parameters/preconditions are universally relied upon by callers
+  - Which patterns only work in specific scenarios
+  - Which special usages are reusable, which should only be cautiously referenced
+- Avoid accumulating high-volatility information:
+  - Don't write exhaustive call file lists
+  - Don't write easily-expiring statistics
+  - Don't write temporary branch information
 
-## 4) 文档结构模板
+## 4) Document Structure Template
 
-按以下顺序组织文档内容：
+Organize document content in the following order:
 
-1. 功能作用
-2. 适用场景
-3. 对外契约（参数、返回、依赖）
-4. 项目内引用分析（代表性引用 + 模式说明）
-5. 使用规则（按模式归纳）
-6. 使用案例（2~3 个，至少 1 个特殊用法案例）
-7. 注意事项（稳定、可执行）
+1. Purpose and Function
+2. Applicable Scenarios
+3. External Contracts (parameters, returns, dependencies)
+4. In-Project Reference Analysis (representative references + pattern explanation)
+5. Usage Rules (summarized by pattern)
+6. Usage Examples (2-3, at least 1 special usage example)
+7. Notes (stable, actionable)
 
-## 5) 写作规范
+## 5) Writing Standards
 
-- 使用简洁中文，术语保持代码原名。
-- 示例以可复制代码块呈现，优先最小可用示例。
-- 案例必须“来源于真实引用模式”，禁止纯臆造示例。
-- 引用分析必须贴真实代码片段，禁止写路径、文件名、行号链接。
-- 若需补充定位信息，仅使用“场景标签 + 关键参数/关键调用”描述。
-- 结论可落地，避免空泛描述。
-- 若存在不确定行为，标注“依赖调用方约束”并说明影响。
+- Use concise English, preserve technical terms as original code names.
+- Present examples as copyable code blocks, prioritize minimal working examples.
+- Examples must "derive from real reference patterns", prohibit purely fabricated examples.
+- Reference analysis must include real code snippets, prohibit paths, filenames, or line number links.
+- If positioning info needed, only use "scenario tag + key parameters/key calls" description.
+- Conclusions should be actionable, avoid vague descriptions.
+- If uncertain behavior exists, annotate "depends on caller constraints" and explain impact.
 
-## 6) 交付检查
+## 6) Delivery Checklist
 
-- 文档已写入用户指定目录。
-- 内容覆盖“作用、场景、引用分析、案例、注意事项”。
-- 已包含至少 1 个特殊/边界用法的说明与示例。
-- “项目内引用分析”中的每个代表性引用均包含代码片段与场景说明。
-- 文档中不包含路径、文件名、行号链接等易变定位信息。
-- 无高波动清单信息。
-- 与当前代码实现一致。
-- 若本次任务包含代码研发或代码修改，已完成“存在即更新、不存在即创建”的文档同步动作。
+- Documentation written to user-specified directory.
+- Content covers "purpose, scenarios, reference analysis, examples, notes".
+- Includes at least 1 special/boundary usage explanation and example.
+- Each representative reference in "in-project reference analysis" includes code snippet and scenario explanation.
+- Documentation does not contain paths, filenames, line number links or other volatile positioning info.
+- No high-volatility list information.
+- Consistent with current code implementation.
+- If this task includes code development or modification, completed "update if exists, create if absent" documentation sync action.

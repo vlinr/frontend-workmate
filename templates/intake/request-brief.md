@@ -1,154 +1,154 @@
 # Request Brief Template
 
-## 1. 基础信息
+## 1. Basic Info
 
-- 任务标题：
-- 用户目标：
-- 交付方式：`仅分析 | 修改代码 | 修改代码并补文档 | 其他`
-- 优先级：`高 | 中 | 低`
-- 任务类型初判：`bug | feature | refactor | pending`
-- 当前阶段：`stage0 | stage1 | stage2 | stage3 | stage4 | stage5 | stage6 | stage7 | stage8`
-- 当前阶段状态：`pending | in_progress | waiting_user | completed | blocked`
-- 下一阶段：`stage0 | stage1 | stage2 | stage3 | stage4 | stage5 | stage6 | stage7 | stage8 | not_applicable`
-- 当前阶段目标：
-- 当前阶段进入条件：
-- 当前阶段完成条件：
-- 阶段阻塞原因：
-- 是否已获准进入下一阶段：`yes | no | pending`
-- 下一阶段用户确认语句：
-- 用户补充诉求后是否已合并：`yes | no | pending`
-- 合并后回显提示语：
-- 当前步骤被否定时回退目标：`stay_current | previous_stage | stage5 | stage6 | stage2 | not_applicable`
-- 以上阶段状态字段默认用于内部记录，不要求原样展示给用户；尤其在 Stage 0，不应直接输出成字段列表。
+- Task Title:
+- User Goal:
+- Delivery Method: `Analysis Only | Modify Code | Modify Code + Docs | Other`
+- Priority: `High | Medium | Low`
+- Task Type Preliminary: `bug | feature | refactor | pending`
+- Current Phase: `stage0 | stage1 | stage2 | stage3 | stage4 | stage5 | stage6 | stage7 | stage8`
+- Current Phase Status: `pending | in_progress | waiting_user | completed | blocked`
+- Next Phase: `stage0 | stage1 | stage2 | stage3 | stage4 | stage5 | stage6 | stage7 | stage8 | not_applicable`
+- Current Phase Goal:
+- Current Phase Entry Condition:
+- Current Phase Completion Condition:
+- Phase Block Reason:
+- Approved to Enter Next Phase: `yes | no | pending`
+- Next Phase User Confirmation Statement:
+- User Supplementary Request Merged: `yes | no | pending`
+- Post-Merge Echo Prompt:
+- Fallback Target When Current Step Negated: `stay_current | previous_stage | stage5 | stage6 | stage2 | not_applicable`
+- Above phase status fields default for internal recording, not required to show to user as-is; especially in Stage 0, should not directly output as field list.
 
-## 2. 用户原始描述
+## 2. User Original Description
 
-> 在这里粘贴或整理用户的原始诉求。
+> Paste or organize user's original request here.
 
-- 原始截图/附件摘要：
-- 原始截图中已明确的页面/区域：
-- 原始截图中已明确的目标或改动意图：
-- 若截图已足够表达主需求，则 Stage 2 不得再次追问“要做什么”：
+- Original Screenshot/Attachment Summary:
+- Page/Area Already Clear in Original Screenshot:
+- Target or Change Intent Already Clear in Original Screenshot:
+- If screenshot already sufficiently expresses main requirement, Stage 2 cannot re-ask "what to do":
 
-## 2.1 最初需求锚点
+## 2.1 Original Requirement Anchor
 
-- 最初需求一句话概括：
-- 最初要解决的问题：
-- 最初目标对象（页面/模块/功能）：
-- 最初期望结果：
-- 以下内容只能在用户明确否定或重定义目标时才允许改写；普通阶段补充、技术偏好、实现约束不得覆盖本区：
-  - 是否已被用户重定义：`yes | no | pending`
-  - 最近一次重定义依据：
+- Original Requirement One-Sentence Summary:
+- Original Problem to Solve:
+- Original Target Object (page/module/function):
+- Original Expected Result:
+- Below content only allowed to be rewritten when user explicitly negates or redefines goal; normal phase supplements, technical preferences, implementation constraints cannot overwrite this section:
+  - Already Redefined by User: `yes | no | pending`
+  - Most Recent Redefinition Basis:
 
-## 3. 最小必要上下文
+## 3. Minimum Necessary Context
 
-- Stage 0 只允许被动记录本区字段；若用户未明确提供，保留空白或 `pending`，不得在 Stage 0 主动追问实现细节。
-- 目标模块/页面：
-- 问题现象或期望行为：
-- 影响范围：
-- 是否允许修改代码：`yes | no | pending`
-- 是否只做方案：`yes | no | pending`
+- Stage 0 only allowed to passively record this section fields; if user didn't explicitly provide, leave blank or `pending`, cannot in Stage 0 proactively ask implementation details.
+- Target Module/Page:
+- Problem Phenomenon or Expected Behavior:
+- Impact Scope:
+- Code Modification Allowed: `yes | no | pending`
+- Only Plan: `yes | no | pending`
 
-## 4. 限制条件
+## 4. Constraints
 
-- 技术限制：
-- 时间/范围限制：
-- 环境限制：
-- 兼容性要求：
+- Technical Constraints:
+- Time/Scope Constraints:
+- Environment Constraints:
+- Compatibility Requirements:
 
-## 4.1 阶段补充约束
+## 4.1 Phase Supplementary Constraints
 
-- 本区只记录围绕最初需求新增的实现约束、技术偏好、局部限制、验证要求。
-- 这些内容用于收窄实现方案，不得反向改写 `2.1 最初需求锚点`。
-- 当前阶段新增约束：
-- 约束来源阶段：
-- 是否属于项目长期规则：`yes | no | pending`
-- 若不是长期规则，禁止写入项目技能：`yes`
+- This section only records implementation constraints, technical preferences, local limitations, verification requirements added around original requirement.
+- These contents narrow implementation plan, cannot reverse overwrite `2.1 Original Requirement Anchor`.
+- Current Phase Added Constraints:
+- Constraint Source Phase:
+- Belongs to Project Long-term Rules: `yes | no | pending`
+- If not long-term rules, prohibited from writing to project skill: `yes`
 
-## 4.2 用户提问计划
+## 4.2 User Inquiry Plan
 
-- 当前阶段待发起的交互类型：`provide | confirm | choose | approve | correct | not_applicable`
-- 当前提问方式：`text_reply | choice_ui | not_applicable`
-- 本轮提问目标：
-- 建议提示语：
-- 若为选择题，候选项样式：`数字 | 字母 | 短标签 | not_applicable`
-- 是否为 Stage 1 首轮最小首问：`yes | no`
-- 是否为新会话首轮唯一问题：`yes | no`
-- 是否为硬门禁：`yes | no`
-- 若为非硬门禁，是否允许用户回复 `继续/跳过/不提供`：`yes | no | not_applicable`
-- 提问后是否必须结束当前回合等待用户输入：`yes`
+- Current Phase Pending Interaction Type: `provide | confirm | choose | approve | correct | not_applicable`
+- Current Inquiry Method: `text_reply | choice_ui | not_applicable`
+- This Round Inquiry Goal:
+- Suggested Prompt:
+- If choice question, candidate style: `Number | Letter | Short Tag | not_applicable`
+- Is Stage 1 First Round Minimal Inquiry: `yes | no`
+- Is New Session First Round Only Question: `yes | no`
+- Is Hard Gate: `yes | no`
+- If not hard gate, allow user reply `continue/skip/not_provide`: `yes | no | not_applicable`
+- Must End Current Round After Inquiry Wait for User Input: `yes`
 
-## 5. 用户已提供资料
+## 5. User Provided Materials
 
-- 以下字段只记录用户明确答复的内容；若用户尚未回答，保留空白或标记 `pending`，不得由 AI 自行补齐。
-- 资料提供类字段统一使用：`provided | not_provided | skipped | pending | not_applicable`。
-- 决策类字段统一使用：`yes | no | skipped | pending | not_applicable`。
-- 门禁判定：仅 `pending` 阻塞；`not_provided`、`skipped`、`no` 不阻塞流程，但需记录风险与后续分支。
-- 项目 skills 状态：`provided | not_provided | pending`
-- 项目 skills 位置：
-- 项目文档状态：`provided | not_provided | pending`
-- 项目文档位置：
-- UI 框架 skills 状态：`provided | not_provided | pending`
-- UI 框架 skills 位置：
-- UI 框架文档状态：`provided | not_provided | pending`
-- UI 框架文档位置：
-- 无前端项目时是否协助初始化：`yes | no | skipped | pending`
-- 初始化底层框架：
-- 初始化底层框架版本：
-- 初始化语言框架：
-- 初始化语言框架版本：
-- 初始化语言：
-- 初始化 UI 库：
-- 初始化 UI 库版本：
-- 版本留空是否按最新版处理：`yes | no`
+- Below fields only record user explicitly answered content; if user hasn't answered, leave blank or mark `pending`, cannot be self-filled by AI.
+- Material provide fields unified use: `provided | not_provided | skipped | pending | not_applicable`.
+- Decision fields unified use: `yes | no | skipped | pending | not_applicable`.
+- Gate judgment: Only `pending` blocks; `not_provided`, `skipped`, `no` don't block flow, but need record risk and subsequent branches.
+- Project skills status: `provided | not_provided | pending`
+- Project skills location:
+- Project documentation status: `provided | not_provided | pending`
+- Project documentation location:
+- UI framework skills status: `provided | not_provided | pending`
+- UI framework skills location:
+- UI framework documentation status: `provided | not_provided | pending`
+- UI framework documentation location:
+- Assist initialization when no frontend project: `yes | no | skipped | pending`
+- Initialization underlying framework:
+- Initialization underlying framework version:
+- Initialization language framework:
+- Initialization language framework version:
+- Initialization language:
+- Initialization UI library:
+- Initialization UI library version:
+- Process as latest version if version blank: `yes | no`
 
-## 6. 待补充信息
+## 6. Info to Supplement
 
-- [ ] 存在必须由用户回答但仍为 `pending` 的输入
-- [ ] 缺少接口文档
-- [ ] 缺少设计稿
-- [ ] 缺少报错信息或复现路径
-- [ ] 缺少测试/构建命令
-- [ ] 用户已明确 `not_provided/skipped` 的资料（仅记录风险，不阻塞）
-- [ ] 缺少项目 skills 或项目文档（仅当状态为 `pending` 时阻塞）
-- [ ] 缺少 UI 框架 skills 或 UI 框架文档（仅当状态为 `pending` 时阻塞）
-- [ ] 缺少初始化底层框架、语言框架、语言或 UI 库选择
-- [ ] 其他：
+- [ ] Exists must-be-user-answered but still `pending` input
+- [ ] Missing interface documentation
+- [ ] Missing design spec
+- [ ] Missing error info or reproduction path
+- [ ] Missing test/build commands
+- [ ] User explicitly `not_provided/skipped` materials (only record risk, don't block)
+- [ ] Missing project skills or project documentation (only block when status `pending`)
+- [ ] Missing UI framework skills or UI framework documentation (only block when status `pending`)
+- [ ] Missing initialization underlying framework, language framework, language or UI library selection
+- [ ] Other:
 
-## 7. 阶段决策
+## 7. Phase Decisions
 
-- 是否进入项目扫描：`yes | no | pending`
-- 是否进入需求分析：`yes | no | pending`
-- 是否需要长任务：`yes | no | pending`
-- 下一步：
+- Enter project scan: `yes | no | pending`
+- Enter requirement analysis: `yes | no | pending`
+- Need long task: `yes | no | pending`
+- Next step:
 
-## 7.1 上下文一致性检查
+## 7.1 Context Consistency Check
 
-- Stage 1 是否误把单次任务约束写入项目技能：`yes | no | pending`
-- Stage 2 是否仍以最初需求为主目标：`yes | no | pending`
-- 当前阶段补充内容属于：`最初需求修正 | 实现约束补充 | 项目长期规则 | pending`
-- 若发现偏离，回退阶段：
+- Stage 1 mistakenly wrote single-task constraints to project skill: `yes | no | pending`
+- Stage 2 still uses original requirement as main goal: `yes | no | pending`
+- Current phase added content belongs to: `Original Requirement Correction | Implementation Constraint Supplement | Project Long-term Rules | pending`
+- If deviation found, fallback phase:
 
-## 8. 暂停规则
+## 8. Pause Rules
 
-- 若 `4.1 用户提问计划` 中存在待发起问题，则本回合必须停在提问处，等待用户输入。
-- 不得把命令批准、工具 approval、shell confirm 视为用户对业务问题的答复。
-- 未收到用户明确答复前，不得继续进入后续 Stage、执行命令、修改文件或落地默认方案。
-- 仅在当前阶段确实需要用户确认、补充资料或做选择时，才把“是否已获准进入下一阶段”记录为 `yes | no | pending`。
-- 若用户在当前阶段补充、修正或扩展诉求，必须停留在当前阶段，先合并诉求并回显最新结论；提示语应根据回复类型动态生成：
-  - 用户提供资料：使用“我已接收并吸收你提供的资料”类话术
-  - 用户补充/修正诉求：使用“我已合并你刚补充的诉求”类话术
-  - 用户不提供/跳过：使用“我已记录你暂不提供该资料”类话术
-  - 用户仅确认：使用“我已记录你的确认”类话术
-  - 以上类型的结尾都应包含“如果没问题，你可以回复继续；如果还要补充或修改，也可以直接告诉我”
-- 除 Stage 0 外，每个确认点都应记录“当前步骤被否定时回退目标”；Stage 0 固定为 `stay_current`。
-- “进入下一步”的用户答复必须是纯放行语句；若回复中夹带任何新需求、修正、限制或补充信息，则不得标记为已获准进入下一阶段。
-- Stage 0 只负责诉求接收与进入 Stage 1 判定；在本阶段不得主动追问实现范围、接口字段、交互细节、校验规则、还原标准或改动边界。
-- Stage 0 完成后的用户侧输出默认应为简短正文提示，例如“正在初始化...”或“初始化已完成，继续处理下一环节。”；不直接展示内部状态字段。
-- Stage 1 首轮只允许处理项目基线歧义：多个前端项目时询问选哪个，未识别到前端项目时询问是否初始化；若已识别到唯一现有前端项目，则不为形式确认额外发问。
-- 所有需要用户确认的阶段，用户侧输出默认采用“简短摘要 + 可继续/可补充/可修改”格式，不展示内部阶段字段列表，也不只给“回复继续”一种指令。
-- 若当前仍处于新会话首轮且 Stage 1 项目基线存在歧义，本轮只能发出一个问题，不得同时追问页面细节、交互范围、数据来源、还原标准或其他 Stage 2 信息。
-- 若问题需要用户补文档、skills、路径、截图说明、接口说明或组件约束，提问方式必须是 `text_reply`，只通过普通文本回复引导，不做成选择器。
-- 即便是分支决策，也默认优先用文本列项直问；候选项可使用数字、字母或短标签，并明确告诉用户既可以回复对应标记，也可以直接输入自己的想法；只有宿主环境强制要求时才使用 `choice_ui`。
-- 若用户已给出自定义 UI 库名称，则不要预先追问安装地址或本地路径；未给版本时默认可按最新版处理，只有在后续安装或校验失败时才回头追问来源。
-- 默认不是每个 Stage 都要求用户确认；只有当前结论需要用户确认、正式研发前仍缺少必要资料，或验证结果需要用户明确放行时，才把当前回合作为暂停点。
+- If `4.2 User Inquiry Plan` has pending inquiry, this round must stop at inquiry, wait for user input.
+- Cannot treat command approval, tool approval, shell confirm as user answer to business questions.
+- Before receiving user explicit answer, cannot continue enter subsequent Stage, execute commands, modify files or land default plan.
+- Only when current phase actually needs user confirmation, supplement materials or make choice, record "Approved to Enter Next Phase" as `yes | no | pending`.
+- If user supplements, corrects or expands request in current phase, must stay in current phase, first merge request and echo latest conclusion; prompt should dynamically generate based on reply type:
+  - User provides materials: Use "I have received and absorbed your provided materials" style wording
+  - User supplements/corrects request: Use "I have merged your just-supplemented request" style wording
+  - User not provide/skip: Use "I have recorded you temporarily not providing that material" style wording
+  - User only confirms: Use "I have recorded your confirmation" style wording
+  - Above type endings should all include "If no problem, you can reply continue; if still need supplement or modification, can also tell me directly"
+- Except Stage 0, each confirmation point should record "Fallback target when current step negated"; Stage 0 fixed as `stay_current`.
+- "Enter next step" user reply must be pure pass-through statement; if reply contains any new requirement, correction, limitation or supplement info, cannot mark as approved to enter next phase.
+- Stage 0 only responsible for request reception and Stage 1 entry judgment; in this phase cannot proactively ask implementation scope, interface fields, interaction details, validation rules, restoration standards or change boundaries.
+- Stage 0 completion user-side output default should be brief text prompt, like "Initializing..." or "Initialization complete, continuing to next step."; not directly show internal status fields.
+- Stage 1 first round only allowed to handle project baseline ambiguity: ask which to choose when multiple frontend projects, ask whether to initialize when no frontend project identified; if already identified unique existing frontend project, don't extra ask for formal confirmation.
+- All phases needing user confirmation, user-side output default uses "brief summary + can continue/can supplement/can modify" format, not show internal phase field list, also not only give "reply continue" one instruction.
+- If still in new session first round and Stage 1 project baseline has ambiguity, this round can only issue one question, cannot simultaneously ask page details, interaction scope, data source, restoration standards or other Stage 2 info.
+- If question needs user to supplement documentation, skills, paths, screenshot descriptions, interface descriptions or component constraints, inquiry method must be `text_reply`, only use plain text reply guide, don't make as selector.
+- Even for branch decisions, default prioritize use text list items direct ask; candidates can use numbers, letters or short tags, and explicitly tell user: can reply corresponding tag, can also directly input own thoughts or plan; only use `choice_ui` when host environment mandatory requires.
+- If user already gave custom UI library name, don't proactively ask install address or local path; if no version given default process as latest version, only go back to ask source or path when subsequent installation or validation fails.
+- Default not every Stage requires user confirmation; only when current conclusion needs user confirmation, still missing necessary materials before formal development, or verification results need user explicit pass-through, treat current round as pause point.

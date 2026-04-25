@@ -1,265 +1,265 @@
-# Stage 8：交付续跑
+# Stage 8: Delivery
 
-## ⚠️ 强制规则（必须遵守）
+## ⚠️ Mandatory Rules (Must Follow)
 
-### 1. 单一阶段输出原则
+### 1. Single Phase Output Principle
 
-**本阶段输出只能包含交付确认内容，禁止幻想未来阶段**：
+**This phase output must only contain delivery confirmation content, prohibited from imagining future phases**:
 
-| 禁止内容 | 说明 |
+| Prohibited Content | Description |
 | --- | --- |
-| "修复后会xxx" | 禁止在修复前承诺结果 |
-| "新任务计划" | 禁止自创新任务列表 |
+| "After fix, xxx" | Prohibited from promising results before fix |
+| "New task plan" | Prohibited from creating new task lists |
 
-### 2. 任务ID携带原则
+### 2. Task ID Carrying Principle
 
-**本阶段必须携带任务ID**：
-- 第一行输出：`[交付续跑] 任务ID: task_xxxxxxxx`
-- 状态文件更新必须携带任务ID
-- 用户提出修改时，更新状态必须携带任务ID
+**This phase must carry Task ID**:
+- First line output: `[Delivery] Task ID: task_xxxxxxxx`
+- State file update must carry Task ID
+- When user proposes modifications, update status must carry Task ID
 
-### 3. 必须等待用户确认
+### 3. Must Wait for User Confirmation
 
-**交付结果输出后**：
-- 输出交付摘要
-- 输出确认提示语
-- 结束当前回复
-- 等待用户回复"确认"或提出修改
+**After delivery results output**:
+- Output delivery summary
+- Output confirmation prompt
+- End current reply
+- Wait for user to reply "confirm" or propose modifications
 
-### 4. 用户提出修改时必须先更新状态
+### 4. When User Proposes Modifications, Must First Update Status
 
-**收到用户修改后**：
-1. 使用 edit 工具更新状态为 stage5
-2. 执行修复循环
-3. 禁止直接修改代码而不更新状态
+**After receiving user modifications**:
+1. Use edit tool to update status to stage5
+2. Execute fix loop
+3. Prohibited from directly modifying code without updating status
 
 ---
 
-## 目标
+## Goal
 
-- **用户确认的唯一节点**：在整个研发流程（stage5 → stage6 → stage7）结束后，输出交付结果等待用户确认。
-- 如果用户提出修改，**立即回到 stage5** → 执行修复 → stage6 → stage7 → stage8 → 循环。
-- 支持用户明确指定回到任意步骤。
+- **User Confirmation's Sole Node**: After entire development flow (stage5 → stage6 → stage7) ends, output delivery results waiting for user confirmation.
+- If user proposes modifications, **immediately return to stage5** → execute fix → stage6 → stage7 → stage8 → loop.
+- Support user explicitly specifying return to any step.
 
-## 内容处理规则（重要）
+## Content Handling Rules (Important)
 
-**本阶段职责边界**：
+**This Phase Responsibility Boundary**:
 
-| 属于本阶段的内容 | 不属于本阶段的内容（决定执行路径） |
+| Belongs to This Phase | Does Not Belong to This Phase (Decide Execution Path) |
 | --- | --- | --- |
-| 交付结果输出 | 代码修改（回 stage5） |
-| 用户确认收集 | 文档更新（回 stage7） |
-| 任务回收、续跑切换 | 范围重新分析（回 stage2） |
+| Delivery results output | Code modification (return to stage5) |
+| User confirmation collection | Documentation update (return to stage7) |
+| Task completed, resume switch | Scope re-analysis (return to stage2) |
 
-**用户可以提供任何内容，本阶段根据内容决定执行路径**：
+**User can provide any content, this phase decides execution path based on content**:
 
 ```
-用户可能提供的内容示例：
-- "继续" / "确认" → 任务完成，回收任务
-- "登录页面还有问题，验证逻辑要改" → 回到 stage5 修复
-- "接口文档需要补充" → 回到 stage4 补充资料
-- "新需求：新增订单管理模块" → 回到 stage2 重新分析
-- "进入步骤6" → 切换到 stage5
+Example content user may provide:
+- "continue" / "confirm" → Task complete, task closed
+- "Login page still has issue, validation logic needs change" → Return to stage5 to fix
+- "API doc needs supplement" → Return to stage4 to supplement materials
+- "New requirement: Add order management module" → Return to stage2 to re-analyze
+- "Enter step 6" → Switch to stage5
 
-处理方式：
-- 根据用户内容判断意图 → 决定执行路径
-- 不拒绝用户内容，按意图切换到对应阶段
+Handling method:
+- Based on user content judge intent → Decide execution path
+- Don't reject user content, switch to corresponding phase by intent
 ```
 
-**内容提取规则**：
+**Content Extraction Rules**:
 
-| 用户回复模式 | 意图类型 | 执行路径 |
+| User Reply Pattern | Intent Type | Execution Path |
 | --- | --- | --- |
-| "继续" / "确认" / "没问题" | **确认意图** | 任务完成，回收 |
-| 功能问题 / bug描述 / 修改内容 | **修复意图** | 回到 stage5 |
-| 资料补充 / 接口文档等 | **补充意图** | 回到 stage4 |
-| 新需求 / 新功能描述 | **新需求意图** | 回到 stage2 |
-| "进入步骤X" | **切换意图** | 切换到指定步骤 |
+| "continue" / "confirm" / "no problem" | **Confirm Intent** | Task complete, task closed |
+| Functional issue / bug description / modification content | **Fix Intent** | Return to stage5 |
+| Material supplement / API doc etc. | **Supplement Intent** | Return to stage4 |
+| New requirement / new feature description | **New Requirement Intent** | Return to stage2 |
+| "Enter step X" | **Switch Intent** | Switch to specified step |
 
-## 第一步：更新状态文件
+## Step 1: Update State File
 
-**进入本阶段后，必须立即执行以下编辑操作**：
+**After entering this phase, must immediately execute the following edit operations**:
 
-### 进入本阶段时编辑
+### Edit When Entering This Phase
 
-**根据当前任务ID（从上下文获取 `current_task_id`）找到对应的状态块**：
-- 查找 `<!-- TASK_{任务ID大写}_START -->` 到 `<!-- TASK_{任务ID大写}_END -->` 之间的内容
-- 使用 edit 工具替换该状态块内容为：
-
-```
-**正在执行**: 交付续跑
-**阶段**: stage8
-**状态**: in_progress
-**下一步**: 输出交付结果，等待用户确认
-**用户提出修改时**: 立即切换到 stage5 → 执行修复 → stage6 → stage7 → stage8 → 循环
-**循环路径**: stage5 → stage6 → stage7 → stage8 → stage5 → 循环（直到用户确认无修改）
-```
-
-### 输出交付结果后再次编辑
-
-等待用户确认时，再次使用 edit 工具更新该任务ID的状态块为：
+**Find corresponding status block based on current Task ID (get `current_task_id` from context)**:
+- Find content between `<!-- TASK_{TASK_ID_UPPERCASE}_START -->` and `<!-- TASK_{TASK_ID_UPPERCASE}_END -->`
+- Use edit tool to replace that status block content with:
 
 ```
-**任务ID**: {当前任务ID}
-**正在执行**: 交付续跑
-**阶段**: stage8
-**状态**: waiting_user
-**下一步**: 等待用户确认交付结果，如有修改则回到 stage5
-**用户提出修改时**: 立即切换到 stage5 → 循环
-**循环路径**: stage5 → stage6 → stage7 → stage8 → 循环
+**Currently Executing**: Delivery
+**Phase**: stage8
+**Status**: in_progress
+**Next Step**: Output delivery results, wait for user confirmation
+**User Proposed Modifications**: Immediately switch to stage5 → execute fix → stage6 → stage7 → stage8 → loop
+**Loop Path**: stage5 → stage6 → stage7 → stage8 → stage5 → loop (until user confirms no modification)
 ```
 
-### 用户提出修改时再次编辑
+### Edit Again After Outputting Delivery Results
 
-**用户提出修改时的循环路径**：
+When waiting for user confirmation, use edit tool again to update that Task ID's status block to:
 
-1. **立即切换到 stage5**：
+```
+**Task ID**: {Current Task ID}
+**Currently Executing**: Delivery
+**Phase**: stage8
+**Status**: waiting_user
+**Next Step**: Wait for user to confirm delivery results, if modifications return to stage5
+**User Proposed Modifications**: Immediately switch to stage5 → loop
+**Loop Path**: stage5 → stage6 → stage7 → stage8 → loop
+```
+
+### Edit Again When User Proposes Modifications
+
+**Loop path when user proposes modifications**:
+
+1. **Immediately switch to stage5**:
    ```
-   **正在执行**: 实施研发
-   **阶段**: stage5
-   **状态**: in_progress
-   **下一步**: 根据用户反馈执行修复
-   **用户提出修改时**: 无（当前正在修复）
-   **循环路径**: stage5 → stage6 → stage7 → stage8 → 循环
-   ```
-
-2. **执行修复动作**：调用 `stages/implementation.md`，根据用户反馈修改代码
-
-3. **修复完成后自动执行**：stage6 → stage7 → stage8
-
-4. **再次进入 stage8 等待确认**：
-   ```
-   **正在执行**: 交付续跑
-   **阶段**: stage8
-   **状态**: waiting_user
-   **下一步**: 等待用户确认更新后的交付结果
-   **用户提出修改时**: 立即切换到 stage5 → 循环
-   **循环路径**: stage5 → stage6 → stage7 → stage8 → 循环
+   **Currently Executing**: Implementation
+   **Phase**: stage5
+   **Status**: in_progress
+   **Next Step**: Execute fix based on user feedback
+   **User Proposed Modifications**: None (currently fixing)
+   **Loop Path**: stage5 → stage6 → stage7 → stage8 → loop
    ```
 
-5. **循环直到用户确认无修改**
+2. **Execute fix action**: Invoke `stages/implementation.md`, modify code based on user feedback
 
-### 用户确认无修改时再次编辑
+3. **After fix complete automatically execute**: stage6 → stage7 → stage8
 
-再次使用 edit 工具更新该任务ID的状态块为：
+4. **Re-enter stage8 waiting for confirmation**:
+   ```
+   **Currently Executing**: Delivery
+   **Phase**: stage8
+   **Status**: waiting_user
+   **Next Step**: Wait for user to confirm updated delivery results
+   **User Proposed Modifications**: Immediately switch to stage5 → loop
+   **Loop Path**: stage5 → stage6 → stage7 → stage8 → loop
+   ```
+
+5. **Loop until user confirms no modification**
+
+### Edit Again When User Confirms No Modification
+
+Use edit tool again to update that Task ID's status block to:
 
 ```
-**任务ID**: {当前任务ID}
-**正在执行**: 任务完成
-**阶段**: completed
-**状态**: completed
-**下一步**: 等待用户补充新需求或退出技能
-**用户提出修改时**: 回到用户指定的任意步骤（或默认 stage5）
-**循环路径**: 无
+**Task ID**: {Current Task ID}
+**Currently Executing**: Task Complete
+**Phase**: completed
+**Status**: completed
+**Next Step**: Wait for user to supplement new requirements or exit skill
+**User Proposed Modifications**: Return to user-specified any step (or default stage5)
+**Loop Path**: None
 ```
 
-### 用户指定回到某步骤时再次编辑
+### Edit Again When User Specifies Return to Some Step
 
-根据用户指定的步骤，替换状态内容为对应的阶段状态：
+Based on user-specified step, replace status content with corresponding phase status:
 
-| 用户指定步骤 | 状态内容 |
+| User Specified Step | Status Content |
 | --- | --- |
-| "进入项目扫描" / "步骤2" | `**正在执行**: 项目扫描<br>**阶段**: stage1<br>**状态**: in_progress<br>**下一步**: 执行 stages/project-scan.md` |
-| "进入范围分析" / "步骤3" | `**正在执行**: 范围分析<br>**阶段**: stage2<br>**状态**: in_progress<br>**下一步**: 执行 stages/scope-analysis.md` |
-| "进入实施研发" / "步骤6" / "需求研发" | `**正在执行**: 实施研发<br>**阶段**: stage5<br>**状态**: in_progress<br>**下一步**: 执行 stages/implementation.md` |
+| "Enter project scan" / "Step 2" | `**Currently Executing**: Project Scan<br>**Phase**: stage1<br>**Status**: in_progress<br>**Next Step**: Execute stages/project-scan.md` |
+| "Enter scope analysis" / "Step 3" | `**Currently Executing**: Scope Analysis<br>**Phase**: stage2<br>**Status**: in_progress<br>**Next Step**: Execute stages/scope-analysis.md` |
+| "Enter implementation" / "Step 6" / "Development" | `**Currently Executing**: Implementation<br>**Phase**: stage5<br>**Status**: in_progress<br>**Next Step**: Execute stages/implementation.md` |
 
-### 禁止事项
+### Prohibited Actions
 
-- 禁止不读取配置文件就猜测路径
-- **禁止用户提出修改后不切换到 stage5**（必须执行 stage5 → stage6 → stage7 → stage8 循环）
+- Prohibited from guessing paths without reading config file
+- **Prohibited from not switching to stage5 after user proposes modifications** (must execute stage5 → stage6 → stage7 → stage8 loop)
 
 ---
 
-## 研发循环流程（核心机制）
+## Development Loop Flow (Core Mechanism)
 
 ```
-用户确认范围分析后：
-├─ 进入 stage5（实施研发）
-├─ 自动进入 stage6（内部验证）← 不暂停
-├─ 自动进入 stage7（文档同步）← 不暂停
-├─ 进入 stage8（交付续跑）
-├─ 输出交付结果，等待用户确认
+After user confirms scope analysis:
+├─ Enter stage5 (Implementation)
+├─ Automatically enter stage6 (Verification) ← No pause
+├─ Automatically enter stage7 (Documentation Sync) ← No pause
+├─ Enter stage8 (Delivery)
+├─ Output delivery results, wait for user confirmation
 │
-├─ 用户提出修改：
-│   ├─ 立即切换到 stage5
-│   ├─ 执行修复 → stage6 → stage7 → stage8
-│   ├─ 再次输出交付结果 → 等待确认
-│   ├─ 循环直到用户确认无修改
+├─ User proposes modifications:
+│   ├─ Immediately switch to stage5
+│   ├─ Execute fix → stage6 → stage7 → stage8
+│   ├─ Re-output delivery results → wait for confirmation
+│   ├─ Loop until user confirms no modification
 │
-├─ 用户明确指定回到某步骤：
-│   ├─ 切换到用户指定的步骤
-│   ├─ 从该步骤继续向下执行
+├─ User explicitly specifies return to some step:
+│   ├─ Switch to user-specified step
+│   ├─ From that step continue executing downward
 │
-├─ 用户确认无修改：
-│   └─ 任务完成
+├─ User confirms no modification:
+│   └─ Task complete
 ```
 
 ---
 
-## 执行动作
+## Execution Actions
 
-1. **汇总交付结果**：
-   - 修改内容摘要
-   - 验证结果摘要
-   - 已知风险
-   - 后续建议
+1. **Aggregate Delivery Results**:
+   - Modification content summary
+   - Verification results summary
+   - Known risks
+   - Follow-up suggestions
 
-2. **输出交付结果**，包含以下信息：
-   - 改了什么
-   - 如何验证
-   - 还有什么风险
+2. **Output Delivery Results**, containing the following info:
+   - What was changed
+   - How verified
+   - Remaining risks
 
-3. **附加确认提示语**（必须输出）：
+3. **Append Confirmation Prompt** (Must output):
    ```
-   以上是本次任务的交付结果。
+   Above is this task's delivery results.
    
-   请确认是否有修改：
-   - 如有修改需求，请直接告诉我具体内容，我将回到实施研发阶段修复
-   - 如无其他修改，回复"确认"即可完成本次任务
+   Please confirm if modifications needed:
+   - If have modification requirements, please tell me specific content directly, I will return to implementation phase to fix
+   - If no other modifications, reply "confirm" to complete this task
    
-   您也可以明确指定回到某个步骤：
-   - "进入步骤6" / "进入实施研发"：重新开始代码修改
-   - "进入步骤2" / "进入范围分析"：重新分析需求
+   You can also explicitly specify return to some step:
+   - "Enter step 6" / "Enter implementation": Re-start code modification
+   - "Enter step 2" / "Enter scope analysis": Re-analyze requirements
    ```
 
-4. **等待用户回复**，根据用户输入决定执行路径：
+4. **Wait for user reply**, decide execution path based on user input:
 
-### ⚠️ 收到用户修改后，必须先更新状态文件
+### ⚠️ After Receiving User Modifications, Must First Update Status File
 
-**用户提出修改时，必须按以下顺序执行**：
+**When user proposes modifications, must execute in the following order**:
 
-1. **第一步：使用 edit 工具更新状态文件**
+1. **Step 1: Use edit tool to update status file**
    ```
-   **正在执行**: 实施研发
-   **阶段**: stage5
-   **状态**: in_progress
-   **下一步**: 根据用户反馈执行修复
+   **Currently Executing**: Implementation
+   **Phase**: stage5
+   **Status**: in_progress
+   **Next Step**: Execute fix based on user feedback
    ```
    
-2. **第二步：执行修复动作**
-   - 调用 `stages/implementation.md`
-   - 根据用户反馈修改代码
+2. **Step 2: Execute fix action**
+   - Invoke `stages/implementation.md`
+   - Modify code based on user feedback
 
-3. **第三步：修复完成后自动循环**
-   - stage6（验证） → stage7（文档同步） → stage8（交付确认）
-   - 再次等待用户确认
+3. **Step 3: After fix complete automatically loop**
+   - stage6 (Verification) → stage7 (Documentation Sync) → stage8 (Delivery confirmation)
+   - Re-wait for user confirmation
 
-**禁止事项**：
-- 禁止不更新状态文件就直接修改代码
-- 禁止跳过 stage5 → stage6 → stage7 → stage8 循环
-- 禁止在 stage8 状态下直接执行修复
+**Prohibited Actions**:
+- Prohibited from directly modifying code without updating status file
+- Prohibited from skipping stage5 → stage6 → stage7 → stage8 loop
+- Prohibited from directly executing fix in stage8 status
 
 ---
 
-## 输出
+## Output
 
-- 简洁的交付结论
-- 确认提示语（包含修改循环和步骤切换选项）
+- Concise delivery conclusion
+- Confirmation prompt (includes modification loop and step switch options)
 
 ---
 
-## 回退条件
+## Fallback Conditions
 
-- 用户提出修改 → **默认回到 stage5**（循环）
-- 用户明确指定步骤 → 切换到指定步骤
-- 用户确认无修改 → 任务完成
+- User proposes modifications → **Default return to stage5** (loop)
+- User explicitly specifies step → Switch to specified step
+- User confirms no modification → Task complete

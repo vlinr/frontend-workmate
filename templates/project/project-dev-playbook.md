@@ -1,199 +1,199 @@
 # Project Dev Playbook Template
 
-## 1. 研发定位
+## 1. Development Positioning
 
-- 项目名称：
-- 适用范围：
-- 默认研发顺序：
-- 项目技能来源：
-- UI 库技能来源：
+- Project name:
+- Applicable scope:
+- Default development order:
+- Project skill source:
+- UI library skill source:
 
-## 2. 目录定位规则
+## 2. Directory Positioning Rules
 
-| 研发对象 | 优先目录 | 说明 |
+| Development Object | Priority Directory | Description |
 | --- | --- | --- |
-| 页面 |  |  |
-| 组件 |  |  |
-| 路由 |  |  |
-| API 常量 |  |  |
+| Pages |  |  |
+| Components |  |  |
+| Routes |  |  |
+| API Constants |  |  |
 | Service |  |  |
-| 状态管理 |  |  |
-| 国际化 |  |  |
-| 样式 |  |  |
-| 构建配置 |  |  |
+| State Management |  |  |
+| Internationalization |  |  |
+| Styles |  |  |
+| Build Config |  |  |
 
-## 3. 组件与框架选型
+## 3. Component and Framework Selection
 
-- 现有业务组件优先级：
-- 基础 UI 库优先级：
-- 底层框架：
-- 底层框架版本：
-- 语言框架：
-- 语言框架版本：
-- 语言：
-- UI 库类型：`通用 | 自研 | not_applicable`
-- UI 库名称：
-- UI 库版本：
-- UI 库主入口：
-- UI 库 skill 路径：
-- UI 库文档或源码入口：
-- 回退策略：
-- 组件文档检查规则：
-- 若版本留空是否按最新版处理：`是 | 否`
+- Existing business component priority:
+- Base UI library priority:
+- Base framework:
+- Base framework version:
+- Language framework:
+- Language framework version:
+- Language:
+- UI library type: `General | Custom | not_applicable`
+- UI library name:
+- UI library version:
+- UI library main entry:
+- UI library skill path:
+- UI library docs or source entry:
+- Fallback strategy:
+- Component docs check rules:
+- If version blank, use latest version: `Yes | No`
 
-## 4. 条件判断清单
+## 4. Condition Judgment Checklist
 
-在补齐以下章节前，先判断项目是否真实存在对应逻辑；不存在时标记为 `not_applicable`，不要为了模板完整性强行填写。
+Before filling the following sections, first judge whether the project truly has corresponding logic; if not, mark `not_applicable`, don't fabricate for template completeness.
 
-| 逻辑域 | 是否存在 | 判断条件 | 若不存在如何处理 |
+| Logic Domain | Exists | Judgment Condition | If Not Exists, How to Handle |
 | --- | --- | --- | --- |
-| 路由权限 | `yes | no` | 路由配置中存在 `authority`、登录态、菜单可见性、重定向控制 | 标记 `not_applicable`，仅保留基础路由说明 |
-| 按钮/操作权限 | `yes | no` | 页面、表格、操作列存在权限控制、显隐控制、禁用控制 | 标记 `not_applicable`，不要补虚构权限点 |
-| 数据权限 | `yes | no` | 查询条件、接口参数、返回结果受用户角色或范围控制 | 标记 `not_applicable`，在风险项说明无数据范围控制 |
-| OEM / 多变体 | `yes | no` | 存在 `oem`、品牌配置、差异打包脚本、运行时品牌判断 | 标记 `not_applicable`，不要生成 OEM 章节细节 |
-| alias | `yes | no` | 构建配置、tsconfig、webpack/vite 配置中存在路径别名 | 标记 `not_applicable`，按相对路径规则说明 |
-| 动态导入 | `yes | no` | 路由或模块存在 `import()`、懒加载、按需分包 | 标记 `not_applicable`，不补动态导入约束 |
-| 国际化 | `yes | no` | 用户可见文本使用翻译函数、语言包或 locale 配置 | 标记 `not_applicable`，说明项目无国际化要求 |
-| 状态管理 | `yes | no` | 项目存在 store、model、context、redux/rematch 等状态层 | 标记 `not_applicable`，按局部状态说明 |
-| Mock / 联调 | `yes | no` | 项目存在 mock 脚本、mock 目录、代理配置、联调环境约定 | 标记 `not_applicable`，仅保留基础启动与构建命令 |
-| 通用 UI 框架 | `yes | no` | 依赖中存在 antd、element、mui、chakra 等成熟 UI 库 | 标记 `not_applicable`，转向自研 UI 框架判断 |
-| 自研 UI 框架 | `yes | no` | 项目存在自研组件库、design-system、ui-core 等独立体系 | 标记 `not_applicable`，仅记录通用 UI 框架 |
+| Route permission | `yes | no` | Route config has `authority`, login state, menu visibility, redirect control | Mark `not_applicable`, only retain basic route explanation |
+| Button/action permission | `yes | no` | Page, table, action column has permission control, show/hide control, disable control | Mark `not_applicable`, don't fabricate permission points |
+| Data permission | `yes | no` | Query conditions, API params, return results controlled by user role or scope | Mark `not_applicable`, note in risk items no data scope control |
+| OEM / Multi-variant | `yes | no` | Exists `oem`, brand config, differential packaging scripts, runtime brand judgment | Mark `not_applicable`, don't generate OEM section details |
+| alias | `yes | no` | Build config, tsconfig, webpack/vite config has path aliases | Mark `not_applicable`, explain by relative path rules |
+| Dynamic import | `yes | no` | Route or module has `import()`, lazy loading, on-demand chunking | Mark `not_applicable`, don't add dynamic import constraints |
+| Internationalization | `yes | no` | User-visible text uses translation functions, language packs, or locale config | Mark `not_applicable`, explain project has no internationalization requirement |
+| State management | `yes | no` | Project has store, model, context, redux/rematch state layer | Mark `not_applicable`, explain by local state |
+| Mock / Integration | `yes | no` | Project has mock scripts, mock directory, proxy config, integration environment convention | Mark `not_applicable`, only retain basic startup and build commands |
+| General UI framework | `yes | no` | Dependencies have antd, element, mui, chakra, etc. mature UI library | Mark `not_applicable`, turn to custom UI framework judgment |
+| Custom UI framework | `yes | no` | Project has custom component library, design-system, ui-core, etc. independent system | Mark `not_applicable`, only record general UI framework |
 
-## 5. 研发实施规则
+## 5. Development Implementation Rules
 
-### 5.1 页面
+### 5.1 Pages
 
-- 页面目录规范：
-- 入口文件规范：
-- 私有组件规范：
+- Page directory standards:
+- Entry file standards:
+- Private component standards:
 
-### 5.1A UI 库
+### 5.1A UI Library
 
-- 是否存在该逻辑：
-- UI 库类型：
-- UI 库名称与版本：
-- UI 库主入口：
-- 通用 UI 库替代边界：
-- 自研 UI 库目录入口：
-- 自研 UI 库优先复用规则：
-- 自研 UI 库 skill 路径：
-- UI 库资料来源：
-- UI 库 skill 刷新条件：
-- 若名称已知但版本缺失，是否按最新版处理：`是 | 否`
-- 若后续安装或校验失败，再向用户补问来源/路径：`是 | 否`
+- Does this logic exist:
+- UI library type:
+- UI library name and version:
+- UI library main entry:
+- General UI library substitution boundary:
+- Custom UI library directory entry:
+- Custom UI library priority reuse rules:
+- Custom UI library skill path:
+- UI library material source:
+- UI library skill refresh conditions:
+- If name known but version missing, use latest: `Yes | No`
+- If subsequent install or verification fails, ask user for source/path: `Yes | No`
 
-### 5.2 路由
+### 5.2 Routes
 
-- 是否存在该逻辑：
-- 路由注册位置：
-- 路由权限字段：
-- 菜单字段：
-- 登录豁免字段：
-- 新窗口字段：
-- 重定向检查点：
+- Does this logic exist:
+- Route registration location:
+- Route permission field:
+- Menu field:
+- Login exemption field:
+- New window field:
+- Redirect check point:
 
-### 5.3 权限与访问控制
+### 5.3 Permission and Access Control
 
-- 是否存在该逻辑：
-- 页面访问权限规则：
-- 按钮显隐权限规则：
-- 按钮禁用权限规则：
-- 表格行操作权限规则：
-- 批量操作权限规则：
-- 数据权限或范围控制规则：
-- 隐藏与禁用的使用边界：
-- 权限缺失时的兜底行为：
+- Does this logic exist:
+- Page access permission rules:
+- Button show/hide permission rules:
+- Button disable permission rules:
+- Table row action permission rules:
+- Batch action permission rules:
+- Data permission or scope control rules:
+- Show vs disable usage boundary:
+- Permission missing fallback behavior:
 
-### 5.4 OEM / 多变体逻辑
+### 5.4 OEM / Multi-variant Logic
 
-- 是否存在该逻辑：
-- 识别证据：
-- OEM 标识来源：
-- OEM 配置文件：
-- OEM 打包脚本：
-- 构建期 OEM 分支落点：
-- 运行期 OEM 分支落点：
-- OEM 资源差异点：
-- OEM 文案差异点：
-- OEM 页面或功能开关差异点：
-- OEM 回归检查项：
+- Does this logic exist:
+- Identification evidence:
+- OEM identifier source:
+- OEM config file:
+- OEM packaging script:
+- Build-time OEM branch location:
+- Runtime OEM branch location:
+- OEM resource differences:
+- OEM text differences:
+- OEM page or feature toggle differences:
+- OEM regression check items:
 
 ### 5.5 API / Service
 
-- API 常量命名规则：
-- Service 封装规则：
-- 请求参数约束：
-- 响应类型约束：
+- API constant naming rules:
+- Service encapsulation rules:
+- Request parameter constraints:
+- Response type constraints:
 
-### 5.6 状态管理
+### 5.6 State Management
 
-- 是否存在该逻辑：
-- 使用方案：
-- 模型注册位置：
-- 页面读取方式：
-- 页面派发方式：
+- Does this logic exist:
+- Solution used:
+- Model registration location:
+- Page read method:
+- Page dispatch method:
 
-### 5.7 国际化
+### 5.7 Internationalization
 
-- 是否存在该逻辑：
-- 用户可见文本处理规则：
-- 配置类文案处理规则：
-- 语言包维护要求：
+- Does this logic exist:
+- User-visible text handling rules:
+- Config text handling rules:
+- Language pack maintenance requirements:
 
-### 5.8 样式
+### 5.8 Styles
 
-- 局部样式规则：
-- 全局样式规则：
-- 主题变量规则：
+- Local style rules:
+- Global style rules:
+- Theme variable rules:
 
-### 5.9 导入别名与模块边界
+### 5.9 Import Aliases and Module Boundaries
 
-- 是否存在该逻辑：
-- 识别证据：
-- alias 定义位置：
-- 常用 alias：
-- 相对路径与 alias 的使用优先级：
-- 跨层引用限制：
-- 动态导入约束：
+- Does this logic exist:
+- Identification evidence:
+- Alias definition location:
+- Common aliases:
+- Relative path vs alias usage priority:
+- Cross-layer reference restrictions:
+- Dynamic import constraints:
 
-### 5.10 构建与联调
+### 5.10 Build and Integration
 
-- 是否存在 Mock / 联调特殊逻辑：
-- 本地联调命令：
-- Mock 方案：
-- 运行时配置文件：
-- 构建重写配置文件：
-- 构建校验命令：
-- 发布前检查项：
+- Does Mock / integration special logic exist:
+- Local integration command:
+- Mock solution:
+- Runtime config file:
+- Build rewrite config file:
+- Build verification command:
+- Pre-release check items:
 
-## 6. 回归清单
+## 6. Regression Checklist
 
-- 路由权限与菜单：
-- 按钮显隐与禁用：
-- 表格行操作与批量操作权限：
-- 构建期 OEM 分支行为：
-- 运行期 OEM 分支行为：
-- OEM 资源与文案差异：
-- alias 与动态导入：
-- 权限与菜单：
-- 空态与异常态：
-- API 错误码：
-- 分页、筛选、跳转：
-- 构建与启动：
+- Route permission and menu:
+- Button show/hide and disable:
+- Table row action and batch action permission:
+- Build-time OEM branch behavior:
+- Runtime OEM branch behavior:
+- OEM resource and text differences:
+- Alias and dynamic import:
+- Permission and menu:
+- Empty state and error state:
+- API error codes:
+- Pagination, filtering, navigation:
+- Build and startup:
 
-## 7. 常见风险
+## 7. Common Risks
 
-- 容易漏改的入口：
-- 容易漏配的权限点：
-- 容易遗漏的构建期 OEM 分支：
-- 容易遗漏的运行期 OEM 分支：
-- 容易遗漏的按钮显隐与禁用差异：
-- 容易写错的 alias 或导入方式：
-- 容易破坏的兼容逻辑：
-- 需要额外验证的链路：
+- Easy to miss entry modifications:
+- Easy to miss permission configurations:
+- Easy to miss build-time OEM branches:
+- Easy to miss runtime OEM branches:
+- Easy to miss button show/hide and disable differences:
+- Easy to write wrong alias or import method:
+- Easy to break compatibility logic:
+- Links needing extra verification:
 
-## 8. 用户提问补充规则
+## 8. User Inquiry Supplement Rules
 
-- 当需要用户补文档、skills、路径、组件规则或约束说明时，默认使用普通文本回复引导，不做成选择器。
-- 当存在有限方案分支时，默认也优先使用文本列项；候选项可使用数字、字母或短标签，并明确告诉用户既可以回复对应标记，也可以直接输入自己的想法。
-- 提问或说明一旦发出，当前回复应结束并等待用户输入，不在同一回复中继续落地后续实现。
+- When needing user to supplement docs, skills, paths, component rules, or constraint explanations, default use plain text reply guidance, don't make selectors.
+- When finite solution branches exist, default also prioritize text list items; candidate items can use numbers, letters, or short labels, and clearly tell user can reply with corresponding marker, or directly input their own idea.
+- Once inquiry or explanation issued, current reply should end and wait for user input, don't continue implementing within same reply.

@@ -1,381 +1,381 @@
-# Stage 4：资料补充
+# Stage 4: Material Supply
 
-## ⚠️ 强制规则（必须遵守）
+## ⚠️ Mandatory Rules (Must Follow)
 
-### 1. 单一阶段输出原则
+### 1. Single Phase Output Principle
 
-**本阶段输出只能包含资料补充内容，禁止幻想未来阶段**：
+**This phase output must only contain material supply content, prohibited from imagining future phases**:
 
-| 禁止内容 | 说明 |
+| Prohibited Content | Description |
 | --- | --- |
-| "实现方案" | 禁止输出实现阶段的内容 |
-| "修复计划" | 禁止输出修复计划 |
+| "Implementation plan" | Prohibited from outputting implementation phase content |
+| "Fix plan" | Prohibited from outputting fix plan |
 
-### 2. 任务ID携带原则
+### 2. Task ID Carrying Principle
 
-**本阶段必须携带任务ID**：
-- 第一行输出：`[资料补充] 任务ID: task_xxxxxxxx`
-- 状态文件更新必须携带任务ID
+**This phase must carry Task ID**:
+- First line output: `[Material Supply] Task ID: task_xxxxxxxx`
+- State file update must carry Task ID
 
-### 3. 根据资料状态决定是否等待用户答复
+### 3. Based on Material Status, Decide if Wait for User Response
 
-**两种执行路径**：
+**Two Execution Paths**:
 
-#### 路径 A：核心资料齐全 → 自动跳过（不等待用户确认）
+#### Path A: Core Materials Complete → Automatically Skip (No User Confirmation Wait)
 
-**若核心资料齐全**：
-- 输出：`[资料补充] 核心资料齐全，无需补充。接下来进入下一阶段：[实施研发]。`
-- 更新状态为 stage5
-- **自动进入 stage5**，不等待用户确认
+**If core materials complete**:
+- Output: `[Material Supply] Core materials complete, no supplement needed. Proceeding to next phase: [Implementation].`
+- Update status to stage5
+- **Automatically proceed to stage5**, no user confirmation wait
 
-#### 路径 B：核心资料缺失 → 必须等待用户答复
+#### Path B: Core Materials Missing → Must Wait for User Response
 
-**若核心资料缺失**：
-- 输出询问提示语
-- 结束当前回复
-- 等待用户答复
-
----
-
-## 目标
-
-- 在正式研发实施前，**智能判断**是否需要补充必要的前置资料。
-- **核心逻辑**：先检查已有资料，只对缺失的核心资料进行询问；如果核心资料齐全则跳过本阶段。
-
-## 内容处理规则（重要）
-
-**本阶段职责边界**：
-
-| 属于本阶段的内容 | 不属于本阶段的内容（记录到上下文） |
-| --- | --- | --- |
-| 资料缺失判断 | 代码修改、实现方案 |
-| 资料补充询问 | 验证执行 |
-| 资料状态记录 | 文档更新 |
-
-**用户可以提供任何内容，本阶段只处理属于资料补充的内容**：
-
-```
-用户可能提供的内容示例：
-- "接口文档：POST /api/login，参数：username, password"
-- "设计稿链接：https://figma.com/xxx"
-- "Bug截图和复现步骤：点击登录按钮后报错"
-
-处理方式：
-- 属于资料补充的信息 → 本阶段处理（记录资料状态）
-- 属于实现细节的信息 → 记录到任务上下文，等 stage5 处理
-- 不拒绝用户内容，只分阶段处理
-```
-
-**注意**：
-- 本阶段是可选阶段，若资料齐全则自动跳过
-- 用户提供的资料可能包含实现细节，只记录资料内容，不执行实现
-
-## 第一步：更新状态文件
-
-**进入本阶段后，必须立即执行以下编辑操作**：
-
-### 编辑指令
-
-1. **先读取配置文件**：使用 read 工具读取 `{project_ide_dir}/.fw-session-config.json`
-2. **获取 rules 文件路径**：从配置中读取 `rules_file_path` 字段
-3. **读取 rules 文件**：使用 read 工具读取该路径的文件
-4. **编辑 rules 文件**：**根据当前任务ID（从上下文获取 `current_task_id`）找到对应的状态块**：
-   - 查找 `<!-- TASK_{任务ID大写}_START -->` 到 `<!-- TASK_{任务ID大写}_END -->` 之间的内容
-   - 使用 edit 工具替换该状态块内容为：
-
-```
-**正在执行**: 资料补充
-**阶段**: stage4
-**状态**: in_progress
-**下一步**: 检查已有资料，判断是否需要补充
-```
-
-### 需要用户补充资料时再次编辑
-
-输出资料清单后，再次使用 edit 工具替换状态内容为：
-
-```
-**正在执行**: 资料补充
-**阶段**: stage4
-**状态**: waiting_user
-**下一步**: 等待用户答复（提供资料/不提供/跳过/没有）
-```
-
-### 无需补充或用户答复后再次编辑
-
-进入下一阶段前，再次使用 edit 工具更新该任务ID的状态块为：
-
-```
-**任务ID**: {当前任务ID}
-**正在执行**: 实施研发
-**阶段**: stage5
-**状态**: in_progress
-**下一步**: 执行 stages/implementation.md
-```
-
-### 禁止事项
-
-- 禁止不读取配置文件就猜测路径
-- 禁止在等待用户时不更新状态为 waiting_user
-- 禁止用户未答复时就进入 stage5
-
-## 输入
-
-- 任务类型（`需求` / `bug` / `重构` / `优化`）
-- Stage 0 用户原始输入（截图、附件、描述等）
-- Stage 2 范围分析结论（已有资料清单）
-
-## 资料清单定义（按任务类型）
-
-### Bug 类型资料清单
-
-**核心资料（必需）**：
-
-| 资料项 | 说明 | 判断条件 |
-| --- | --- | --- |
-| Bug 截图 | 问题现象的截图或录屏 | 检查 Stage 0 是否有截图附件 |
-| 复现步骤 | 问题复现的具体步骤 | 检查用户描述是否包含复现步骤 |
-| 错误信息 | 错误日志、报错信息、堆栈等 | 检查用户描述是否包含错误信息 |
-
-**非核心资料（按需）**：
-
-| 资料项 | 说明 | 判断条件 |
-| --- | --- | --- |
-| 接口文档 | 仅当问题涉及接口调用时需要 | 范围分析判断是否涉及接口 |
-| 环境信息 | 仅当问题涉及环境差异时需要 | 范围分析判断是否涉及环境 |
-
-**跳过条件**：
-- ✅ 核心资料全部已有 → 直接跳过
-- ✅ 核心资料已有 2+ 项 → 可以跳过，仅提示补充缺失项（可选）
-- ❌ 核心资料缺失 2+ 项 → 必须询问
-
-### 需求（Feature）类型资料清单
-
-**核心资料（必需）**：
-
-| 资料项 | 说明 | 判断条件 |
-| --- | --- | --- |
-| 设计稿 | UI 设计稿、原型图、交互说明 | 检查 Stage 0 是否有设计稿附件 |
-| 接口文档 | 仅当涉及接口调用时为必需 | **必须询问用户是否涉及接口，不能自行推断** |
-
-**非核心资料（按需）**：
-
-| 资料项 | 说明 | 判断条件 |
-| --- | --- | --- |
-| 权限说明 | 仅当涉及权限控制时需要 | **必须询问用户是否涉及权限，不能自行推断** |
-| 联调地址 | 仅当需要联调时需要 | **必须询问用户是否需要联调，不能自行推断** |
-| 三方库文档 | 仅当使用新三方库时需要 | 范围分析判断是否涉及新库 |
-
-**跳过条件**：
-- ✅ 设计稿已有 + 用户明确确认"不涉及接口" → 直接跳过
-- ✅ 设计稿已有 + 用户明确确认"涉及接口"且接口文档已有 → 直接跳过
-- ✅ 不涉及 UI（纯逻辑功能） + 用户明确确认"不涉及接口" → 直接跳过
-- ❌ 涉及 UI 但无设计稿 → 必须询问设计稿
-- ❌ 涉及 UI + 用户未明确是否涉及接口 → **必须询问是否涉及接口**
-- ❌ 用户明确确认"涉及接口"但无接口文档 → 必须询问接口文档
-
-**⚠️ 前端界面开发默认询问规则**：
-- 前端界面（页面、组件）开发通常涉及数据交互
-- 不能自行判定"不涉及接口"
-- 必须询问用户："此页面是否涉及接口调用（数据获取、表单提交等）？"
-
-### 重构（Refactor）类型资料清单
-
-**核心资料（必需）**：无
-
-**非核心资料（按需）**：
-
-| 资料项 | 说明 | 判断条件 |
-| --- | --- | --- |
-| 三方库文档 | 仅当引入新外部依赖时需要 | 范围分析判断是否引入新依赖 |
-
-**跳过条件**：
-- ✅ 默认跳过（重构通常基于现有代码，无需额外资料）
-- ❌ 仅当引入新外部依赖时才询问
-
-### 优化（Optimize）类型资料清单
-
-**核心资料（必需）**：无
-
-**跳过条件**：
-- ✅ **始终跳过**（优化类型不进行资料补充，直接进入 Stage 5）
+**If core materials missing**:
+- Output inquiry prompt
+- End current reply
+- Wait for user response
 
 ---
 
-## 执行流程
+## Goal
 
-### 第一步：检查已有资料（必须执行）
+- Before formal development implementation, **smart judgment** if need to supplement necessary prerequisite materials.
+- **Core Logic**: First check existing materials, only inquire about missing core materials; if core materials complete then skip this phase.
 
-**进入本阶段后，必须先执行以下检查**：
+## Content Handling Rules (Important)
 
-1. **提取已有资料清单**：
-   - 从 Stage 0 用户原始输入中提取：截图、附件、描述内容
-   - 从 Stage 2 范围分析结论中提取：已识别的资料项
+**This Phase Responsibility Boundary**:
 
-2. **根据任务类型，匹配资料清单定义**：
-   - Bug：检查截图、复现步骤、错误信息
-   - 需求：检查设计稿、接口文档（如涉及接口）
-   - 重构：检查是否有新外部依赖
-   - 优化：直接跳过
-
-3. **生成资料状态表**：
-   - 对每项资料标记状态：`provided`（已有） / `missing`（缺失） / `pending`（待确认）
-   - **禁止自行标记 `not_applicable`**：只有用户明确确认后才能标记
-
-### ⚠️ 关键规则：不能自行推断资料需求
-
-**对于以下资料项，必须询问用户，不能自行标记 `not_applicable`**：
-
-| 资料项 | 为什么不能自行推断 | 正确处理方式 |
+| Belongs to This Phase | Does Not Belong to This Phase (Record to Context) |
 | --- | --- | --- |
-| 接口文档 | 前端界面通常涉及数据交互 | 询问用户"是否涉及接口调用" |
-| 权限说明 | 前端界面可能涉及权限控制 | 询问用户"是否涉及权限控制" |
-| 联调地址 | 前端开发可能需要联调 | 询问用户"是否需要联调" |
+| Material missing judgment | Code modification, implementation plan |
+| Material supplement inquiry | Verification execution |
+| Material status recording | Documentation update |
 
-**只有用户明确回复"不涉及"后，才能标记 `not_applicable`**。
-
-### 第二步：判断是否需要询问用户
-
-**根据资料状态表，判断下一步动作**：
-
-#### Bug 类型判断逻辑
+**User can provide any content, this phase only processes content belonging to material supply**:
 
 ```
-检查核心资料状态：
-├─ 截图 + 复现步骤 + 错误信息 全部 provided → 直接跳过，进入 Stage 5
-├─ 核心资料 2+ 项 provided → 可选询问（仅提示缺失项，用户可选择提供或跳过）
-├─ 核心资料 2+ 项 missing → 必须询问缺失的核心资料
-└─ 检查非核心资料（接口文档、环境信息）：
-   ├─ 用户未明确是否涉及接口 → 必须询问："此 Bug 是否涉及接口调用？"
-   ├─ 用户明确确认"涉及接口" + 接口文档 missing → 必须询问接口文档
-   └─ 用户明确确认"涉及环境问题" + 环境信息 missing → 必须询问环境信息
+Example content user may provide:
+- "API doc: POST /api/login, params: username, password"
+- "Design spec link: https://figma.com/xxx"
+- "Bug screenshot and reproduction steps: Click login button then error"
+
+Handling method:
+- Info belonging to material supply → This phase processes (record material status)
+- Info belonging to implementation details → Record to task context, wait for stage5 to process
+- Don't reject user content, only process by phase
 ```
 
-#### 需求类型判断逻辑
+**Note**:
+- This phase is optional phase, if materials complete then automatically skip
+- User-provided materials may contain implementation details, only record material content, don't execute implementation
+
+## Step 1: Update State File
+
+**After entering this phase, must immediately execute the following edit operations**:
+
+### Edit Instructions
+
+1. **First Read Config File**: Use read tool to read `{project_ide_dir}/.fw-session-config.json`
+2. **Get Rules File Path**: Read `rules_file_path` field from config
+3. **Read Rules File**: Use read tool to read file at that path
+4. **Edit Rules File**: **Find corresponding status block based on current Task ID (get `current_task_id` from context)**:
+   - Find content between `<!-- TASK_{TASK_ID_UPPERCASE}_START -->` and `<!-- TASK_{TASK_ID_UPPERCASE}_END -->`
+   - Use edit tool to replace that status block content with:
 
 ```
-检查核心资料状态：
-├─ 不涉及 UI（纯逻辑功能） → 检查接口需求：
-│   ├─ 用户未明确是否涉及接口 → 必须询问："是否涉及接口调用？"
-│   ├─ 用户明确确认"不涉及接口" → 直接跳过
-│   ├─ 用户明确确认"涉及接口" + 接口文档 provided → 直接跳过
-│   └─ 用户明确确认"涉及接口" + 接口文档 missing → 必须询问接口文档
-├─ 涉及 UI：
-│   ├─ 设计稿 missing → 必须询问设计稿
-│   │   └─ 同时询问："此页面是否涉及接口调用（数据获取、表单提交等）？"
-│   ├─ 设计稿 provided → 检查接口需求：
-│   │   ├─ 用户未明确是否涉及接口 → 必须询问："此页面是否涉及接口调用？"
-│   │   ├─ 用户明确确认"不涉及接口" → 直接跳过
-│   │   ├─ 用户明确确认"涉及接口" + 接口文档 provided → 直接跳过
-│   │   └─ 用户明确确认"涉及接口" + 接口文档 missing → 必须询问接口文档
-│   └─ 同时检查权限、联调需求（询问用户确认）
+**Currently Executing**: Material Supply
+**Phase**: stage4
+**Status**: in_progress
+**Next Step**: Check existing materials, judge if need supplement
 ```
 
-**⚠️ 前端界面开发的默认询问模板**：
-```
-[资料补充] 已检测到设计稿。
-请确认以下问题：
-1. 此页面是否涉及接口调用？（如：数据获取、表单提交、状态查询等）
-   - 回复"涉及接口" → 我将询问接口文档
-   - 回复"不涉及接口" → 直接进入研发阶段
-2. 此页面是否涉及权限控制？
-   - 回复"涉及权限" → 我将询问权限说明
-   - 回复"不涉及权限" → 跳过此项
-```
+### Edit Again When Need User to Supply Materials
 
-#### 重构类型判断逻辑
+After outputting material list, use edit tool again to replace status content with:
 
 ```
-检查非核心资料状态：
-├─ 无新外部依赖 → 直接跳过
-└─ 有新外部依赖且文档 missing → 必须询问三方库文档
+**Currently Executing**: Material Supply
+**Phase**: stage4
+**Status**: waiting_user
+**Next Step**: Wait for user response (provide materials/not provide/skip/none)
 ```
 
-#### 优化类型判断逻辑
+### Edit Again When No Supplement Needed or After User Response
+
+Before proceeding to next phase, use edit tool again to update that Task ID's status block to:
 
 ```
-始终直接跳过，进入 Stage 5
+**Task ID**: {Current Task ID}
+**Currently Executing**: Implementation
+**Phase**: stage5
+**Status**: in_progress
+**Next Step**: Execute stages/implementation.md
 ```
 
-### 第三步：执行询问（如需要）
+### Prohibited Actions
 
-**若判断需要询问用户补充资料**：
+- Prohibited from guessing paths without reading config file
+- Prohibited from not updating status to waiting_user when waiting for user
+- Prohibited from entering stage5 before user responds
 
-1. **输出资料清单**（仅列出缺失的资料项）：
+## Input
+
+- Task type (`feature` / `bug` / `refactor` / `optimize`)
+- Stage 0 user original input (screenshots, attachments, descriptions etc.)
+- Stage 2 scope analysis conclusion (existing material list)
+
+## Material List Definition (By Task Type)
+
+### Bug Type Material List
+
+**Core Materials (Required)**:
+
+| Material Item | Description | Judgment Condition |
+| --- | --- | --- |
+| Bug screenshot | Screenshot or recording of problem phenomenon | Check if Stage 0 has screenshot attachment |
+| Reproduction steps | Specific steps to reproduce problem | Check if user description contains reproduction steps |
+| Error info | Error logs, error messages, stack trace etc. | Check if user description contains error info |
+
+**Non-Core Materials (As Needed)**:
+
+| Material Item | Description | Judgment Condition |
+| --- | --- | --- |
+| API documentation | Only needed when problem involves API calls | Scope analysis determines if involves API |
+| Environment info | Only needed when problem involves environment difference | Scope analysis determines if involves environment |
+
+**Skip Conditions**:
+- ✅ All core materials available → Directly skip
+- ✅ 2+ core materials available → Can skip, only prompt to supplement missing items (optional)
+- ❌ 2+ core materials missing → Must inquire
+
+### Feature Type Material List
+
+**Core Materials (Required)**:
+
+| Material Item | Description | Judgment Condition |
+| --- | --- | --- |
+| Design spec | UI design spec, prototype, interaction description | Check if Stage 0 has design spec attachment |
+| API documentation | Only required when involves API calls | **Must ask user if involves API, cannot infer by self** |
+
+**Non-Core Materials (As Needed)**:
+
+| Material Item | Description | Judgment Condition |
+| --- | --- | --- |
+| Permission description | Only needed when involves permission control | **Must ask user if involves permission, cannot infer by self** |
+| Integration address | Only needed when need integration | **Must ask user if need integration, cannot infer by self** |
+| Third-party library doc | Only needed when using new third-party library | Scope analysis determines if involves new library |
+
+**Skip Conditions**:
+- ✅ Design spec available + User explicitly confirms "no API involved" → Directly skip
+- ✅ Design spec available + User explicitly confirms "API involved" and API doc available → Directly skip
+- ✅ No UI involved (pure logic feature) + User explicitly confirms "no API involved" → Directly skip
+- ❌ UI involved but no design spec → Must inquire design spec
+- ❌ UI involved + User hasn't confirmed if API involved → **Must ask if API involved**
+- ❌ User explicitly confirms "API involved" but no API doc → Must inquire API doc
+
+**⚠️ Frontend Interface Development Default Inquiry Rule**:
+- Frontend interface (page, component) development usually involves data interaction
+- Cannot self-determine "no API involved"
+- Must ask user: "Does this page involve API calls (data fetch, form submit etc.)?"
+
+### Refactor Type Material List
+
+**Core Materials (Required)**: None
+
+**Non-Core Materials (As Needed)**:
+
+| Material Item | Description | Judgment Condition |
+| --- | --- | --- |
+| Third-party library doc | Only needed when introducing new external dependency | Scope analysis determines if introducing new dependency |
+
+**Skip Conditions**:
+- ✅ Default skip (refactor usually based on existing code, no extra materials needed)
+- ❌ Only inquire when introducing new external dependency
+
+### Optimize Type Material List
+
+**Core Materials (Required)**: None
+
+**Skip Conditions**:
+- ✅ **Always skip** (optimize type doesn't do material supply, directly enter Stage 5)
+
+---
+
+## Execution Flow
+
+### Step 1: Check Existing Materials (Must Execute)
+
+**After entering this phase, must first execute the following check**:
+
+1. **Extract Existing Material List**:
+   - Extract from Stage 0 user original input: screenshots, attachments, description content
+   - Extract from Stage 2 scope analysis conclusion: identified material items
+
+2. **Based on Task Type, Match Material List Definition**:
+   - Bug: Check screenshot, reproduction steps, error info
+   - Feature: Check design spec, API doc (if involves API)
+   - Refactor: Check if new external dependency
+   - Optimize: Directly skip
+
+3. **Generate Material Status Table**:
+   - Mark status for each material: `provided` (available) / `missing` (missing) / `pending` (to confirm)
+   - **Prohibited from self-marking `not_applicable`**: Only mark after user explicitly confirms
+
+### ⚠️ Key Rule: Cannot Self-Infer Material Requirements
+
+**For the following material items, must ask user, cannot self-mark `not_applicable`**:
+
+| Material Item | Why Cannot Self-Infer | Correct Handling Method |
+| --- | --- | --- |
+| API documentation | Frontend interface usually involves data interaction | Ask user "Does it involve API calls" |
+| Permission description | Frontend interface may involve permission control | Ask user "Does it involve permission control" |
+| Integration address | Frontend development may need integration | Ask user "Does it need integration" |
+
+**Only after user explicitly replies "not involved", can mark `not_applicable`**.
+
+### Step 2: Judge if Need to Ask User
+
+**Based on material status table, judge next action**:
+
+#### Bug Type Judgment Logic
+
+```
+Check core material status:
+├─ Screenshot + Reproduction steps + Error info all provided → Directly skip, enter Stage 5
+├─ 2+ core materials provided → Optional inquiry (only prompt missing items, user can choose provide or skip)
+├─ 2+ core materials missing → Must inquire missing core materials
+└─ Check non-core materials (API doc, environment info):
+   ├─ User hasn't confirmed if involves API → Must ask: "Does this Bug involve API calls?"
+   ├─ User explicitly confirms "involves API" + API doc missing → Must inquire API doc
+   └─ User explicitly confirms "involves environment issue" + Environment info missing → Must inquire environment info
+```
+
+#### Feature Type Judgment Logic
+
+```
+Check core material status:
+├─ No UI involved (pure logic feature) → Check API requirement:
+│   ├─ User hasn't confirmed if involves API → Must ask: "Does it involve API calls?"
+│   ├─ User explicitly confirms "no API involved" → Directly skip
+│   ├─ User explicitly confirms "involves API" + API doc provided → Directly skip
+│   └─ User explicitly confirms "involves API" + API doc missing → Must inquire API doc
+├─ UI involved:
+│   ├─ Design spec missing → Must inquire design spec
+│   │   └─ Also ask: "Does this page involve API calls (data fetch, form submit etc.)?"
+│   ├─ Design spec provided → Check API requirement:
+│   │   ├─ User hasn't confirmed if involves API → Must ask: "Does this page involve API calls?"
+│   │   ├─ User explicitly confirms "no API involved" → Directly skip
+│   │   ├─ User explicitly confirms "involves API" + API doc provided → Directly skip
+│   │   └─ User explicitly confirms "involves API" + API doc missing → Must inquire API doc
+│   └─ Also check permission, integration requirements (ask user to confirm)
+```
+
+**⚠️ Frontend Interface Development Default Inquiry Template**:
+```
+[Material Supply] Detected design spec.
+Please confirm the following:
+1. Does this page involve API calls? (Like: data fetch, form submit, status query etc.)
+   - Reply "involves API" → I will inquire API doc
+   - Reply "no API involved" → Directly enter development phase
+2. Does this page involve permission control?
+   - Reply "involves permission" → I will inquire permission description
+   - Reply "no permission involved" → Skip this item
+```
+
+#### Refactor Type Judgment Logic
+
+```
+Check non-core material status:
+├─ No new external dependency → Directly skip
+└─ New external dependency and doc missing → Must inquire third-party library doc
+```
+
+#### Optimize Type Judgment Logic
+
+```
+Always directly skip, enter Stage 5
+```
+
+### Step 3: Execute Inquiry (If Needed)
+
+**If judgment indicates need to ask user to supplement materials**:
+
+1. **Output Material List** (Only list missing material items):
    ```
-   [资料补充] 经检查，以下资料缺失，建议补充：
+   [Material Supply] After check, the following materials are missing, suggest supplementing:
    
-   1. [资料项名称]：[说明为什么需要，如"Bug 截图用于定位问题现象"]
-   2. [资料项名称]：[说明]
+   1. [Material item name]: [Explain why needed, like "Bug screenshot for locating problem phenomenon"]
+   2. [Material item name]: [Explanation]
    
-   请回复以下任意一种：
-   - 直接提供资料内容（如粘贴截图、复现步骤、接口文档等）
-   - 回复"不提供"、"没有"或"跳过"（我将基于现有信息继续研发）
+   Please reply any of the following:
+   - Directly provide material content (like paste screenshot, reproduction steps, API doc etc.)
+   - Reply "not provide", "none" or "skip" (I will continue development based on existing info)
    
-   等待您的答复后，我将进入实施研发阶段。
+   After your response, I will enter implementation phase.
    ```
 
-2. **发问后必须结束当前回复，等待用户答复**
-3. **建议：询问提示语应作为本轮回复的主要内容**
-4. **不建议**：发问后继续分析、调用技能、修改文件、进入下一阶段
+2. **After asking must end current reply, wait for user response**
+3. **Recommendation: Inquiry prompt should be main content of this round reply**
+4. **Not recommended**: After asking continue analyzing, invoking skills, modifying files, entering next phase
 
-### 第四步：用户答复后处理
+### Step 4: Handle After User Response
 
-**用户答复后，执行以下动作**：
+**After user response, execute the following actions**:
 
-- 用户提供资料 → 记录 `provided`，合并资料内容到任务上下文
-- 用户回复"不提供"/"没有"/"跳过" → 记录 `not_provided` 或 `skipped`
-- 用户回复"继续" → 视为同意跳过所有资料补充
+- User provides materials → Record `provided`, merge material content to task context
+- User replies "not provide"/"none"/"skip" → Record `not_provided` or `skipped`
+- User replies "continue" → Treat as agreeing to skip all material supplements
 
-**输出并进入下一阶段**：
+**Output and Proceed to Next Phase**:
 ```
-[资料补充] 执行完成。
-- 已有资料：[列出已有的资料项]
-- 用户补充：[列出用户本次提供的资料项，如无则为空]
-- 资料状态：[完整 / 部分 / 无额外资料]
+[Material Supply] Completed.
+- Existing materials: [List existing material items]
+- User supplemented: [List materials user provided this time, empty if none]
+- Material status: [Complete / Partial / No extra materials]
 
-接下来进入下一阶段：[实施研发]。
+Proceeding to next phase: [Implementation].
 ```
 
 ---
 
-## 快速判断表（便于 AI 执行）
+## Quick Judgment Table (For AI Execution)
 
-| 任务类型 | 已有资料检查 | 判断结果 | 执行动作 |
+| Task Type | Existing Material Check | Judgment Result | Execution Action |
 | --- | --- | --- | --- |
-| **优化** | 无需检查 | 始终跳过 | 直接进入 Stage 5 |
-| **重构** | 无新依赖 | 跳过 | 直接进入 Stage 5 |
-| **重构** | 有新依赖 + 无文档 | 需询问 | 询问三方库文档 |
-| **Bug** | 核心资料全有 + 用户确认不涉及接口 | 跳过 | 直接进入 Stage 5 |
-| **Bug** | 核心资料缺 2+ 项 | 需询问 | 询问缺失的核心资料 |
-| **Bug** | 用户未确认是否涉及接口 | 需询问 | **必须询问是否涉及接口** |
-| **Bug** | 用户确认涉及接口 + 无接口文档 | 需询问 | 询问接口文档 |
-| **需求** | 不涉及 UI + 用户确认不涉及接口 | 跳过 | 直接进入 Stage 5 |
-| **需求** | 设计稿已有 + 用户确认不涉及接口 | 跳过 | 直接进入 Stage 5 |
-| **需求** | 设计稿已有 + 用户确认涉及接口 + 接口文档已有 | 跳过 | 直接进入 Stage 5 |
-| **需求** | 涉及 UI + 无设计稿 | 需询问 | 询问设计稿 + **同时询问是否涉及接口** |
-| **需求** | 设计稿已有 + 用户未确认是否涉及接口 | 需询问 | **必须询问是否涉及接口** |
-| **需求** | 用户确认涉及接口 + 无接口文档 | 需询问 | 询问接口文档 |
+| **Optimize** | No need to check | Always skip | Directly enter Stage 5 |
+| **Refactor** | No new dependency | Skip | Directly enter Stage 5 |
+| **Refactor** | New dependency + No doc | Need inquiry | Inquire third-party library doc |
+| **Bug** | All core materials available + User confirms no API involved | Skip | Directly enter Stage 5 |
+| **Bug** | 2+ core materials missing | Need inquiry | Inquire missing core materials |
+| **Bug** | User hasn't confirmed if involves API | Need inquiry | **Must ask if involves API** |
+| **Bug** | User confirms involves API + No API doc | Need inquiry | Inquire API doc |
+| **Feature** | No UI involved + User confirms no API involved | Skip | Directly enter Stage 5 |
+| **Feature** | Design spec available + User confirms no API involved | Skip | Directly enter Stage 5 |
+| **Feature** | Design spec available + User confirms involves API + API doc available | Skip | Directly enter Stage 5 |
+| **Feature** | UI involved + No design spec | Need inquiry | Inquire design spec + **Also ask if involves API** |
+| **Feature** | Design spec available + User hasn't confirmed if involves API | Need inquiry | **Must ask if involves API** |
+| **Feature** | User confirms involves API + No API doc | Need inquiry | Inquire API doc |
 
-**⚠️ 核心规则**：不能自行判断"涉及接口"或"不涉及接口"，必须询问用户确认。
+**⚠️ Core Rule**: Cannot self-judge "involves API" or "no API involved", must ask user to confirm.
 
 ---
 
-## 输出
+## Output
 
-**必须至少形成一个最小 Stage 4 过站产物**：
+**Must at least form a minimum Stage 4 checkpoint artifact**:
 
 - `current_stage = stage4`
-- `current_stage_status`：`skipped`（跳过） / `completed`（完成） / `waiting_user`（等待用户）
+- `current_stage_status`: `skipped` (skip) / `completed` (complete) / `waiting_user` (wait for user)
 - `next_stage = stage5`
-- **资料状态表**：每项资料的状态（`provided | missing | pending | user_confirmed_not_applicable`）
-  - `provided`：已有资料
-  - `missing`：缺失资料，需询问
-  - `pending`：待用户确认是否涉及
-  - `user_confirmed_not_applicable`：用户明确确认不涉及（不能自行标记）
-- **判断结论**：跳过原因或询问内容
+- **Material Status Table**: Each material's status (`provided | missing | pending | user_confirmed_not_applicable`)
+  - `provided`: Existing material
+  - `missing`: Missing material, need inquiry
+  - `pending`: Wait for user to confirm if involved
+  - `user_confirmed_not_applicable`: User explicitly confirms not involved (cannot self-mark)
+- **Judgment Conclusion**: Skip reason or inquiry content
 
-## 回退条件
+## Fallback Conditions
 
-- 若后续研发阶段发现资料不足导致无法继续，可回退本阶段补充询问。
-- 若用户主动补充新资料，可重新进入本阶段合并。
+- If subsequent development phase discovers materials insufficient causing cannot continue, can fallback to this phase to supplement inquiry.
+- If user actively supplements new materials, can re-enter this phase to merge.

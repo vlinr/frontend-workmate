@@ -1,57 +1,57 @@
 # Capability Matrix Template
 
-## 1. 当前任务
+## 1. Current Task
 
-- 任务名称：
-- 任务类型：
-- 所属项目：
-- 若需要用户补充信息时的提问方式：`text_reply | choice_ui | not_applicable`
+- Task Name:
+- Task Type:
+- Belonging Project:
+- Inquiry Method When Need User Supplement Info: `text_reply | choice_ui | not_applicable`
 
-## 2. 能力判断规则
+## 2. Capability Judgment Rules
 
-在填写能力清单前，先判断能力是否真实存在、是否可调用、是否属于当前任务关键路径；若无此能力或本任务不需要，标记为 `not_applicable`，不要为了凑完整度补虚构能力。
+Before filling capability list, first judge whether capability truly exists, whether callable, whether belongs to current task critical path; if no such capability or this task doesn't need, mark as `not_applicable`, don't fabricate capability for completeness.
 
-| 判断项 | 判断问题 | 填写要求 |
+| Judgment Item | Judgment Question | Fill Requirement |
 | --- | --- | --- |
-| 是否相关 | 当前任务是否真的需要该能力域 | 不需要时标记 `not_applicable` |
-| 是否已具备 | 【工作目录】或环境是否已有可直接使用的能力 | 记录实际来源，不写猜测 |
-| 是否可封装 | 当前虽未现成具备，但能否通过 skill 直接接入 | 仅在有明确接入路径时填写 |
-| 是否缺失 | 当前任务关键能力是否缺失 | 若缺失且阻塞，进入待安装清单 |
-| 是否阻塞 | 缺失后是否影响主流程推进 | 必须显式标记阻塞与否 |
+| Is Relevant | Does current task really need this capability domain | Mark `not_applicable` when not needed |
+| Already Possessed | Does Working Directory or environment already have directly usable capability | Record actual source, don't write guesses |
+| Can Encapsulate | Though not currently possessed, can directly access via skill | Only fill when has clear access path |
+| Is Missing | Is current task critical capability missing | If missing and blocking, enter to-install list |
+| Is Blocking | Does missing affect main flow progression | Must explicitly mark blocking or not |
 
-## 3. 能力清单
+## 3. Capability List
 
-| 能力域 | 是否相关 | 目标能力 | 当前状态 | 来源 | 触发 skill | 缺失处理 |
-| --- | --- | --- | --- | --- | --- |
-| 文档 | `yes | no` |  | `已具备 | 可封装 | 缺失 | not_applicable` | `仓库 skill | MCP | 外部 skill | 其他` |  |  |
-| 浏览器 | `yes | no` |  | `已具备 | 可封装 | 缺失 | not_applicable` |  |  |  |
-| 设计 | `yes | no` |  | `已具备 | 可封装 | 缺失 | not_applicable` |  |  |  |
-| 代码分析 | `yes | no` |  | `已具备 | 可封装 | 缺失 | not_applicable` |  |  |  |
-| 测试验证 | `yes | no` |  | `已具备 | 可封装 | 缺失 | not_applicable` |  |  |  |
-| 线上问题 | `yes | no` |  | `已具备 | 可封装 | 缺失 | not_applicable` |  |  |  |
+| Capability Domain | Is Relevant | Target Capability | Current Status | Source | Trigger Skill | Missing Handling |
+| --- | --- | --- | --- | --- | --- | --- |
+| Documentation | `yes | no` |  | `Already Possessed | Can Encapsulate | Missing | not_applicable` | `Repository skill | MCP | External skill | Other` |  |  |
+| Browser | `yes | no` |  | `Already Possessed | Can Encapsulate | Missing | not_applicable` |  |  |  |
+| Design | `yes | no` |  | `Already Possessed | Can Encapsulate | Missing | not_applicable` |  |  |  |
+| Code Analysis | `yes | no` |  | `Already Possessed | Can Encapsulate | Missing | not_applicable` |  |  |  |
+| Test Verification | `yes | no` |  | `Already Possessed | Can Encapsulate | Missing | not_applicable` |  |  |  |
+| Production Issues | `yes | no` |  | `Already Possessed | Can Encapsulate | Missing | not_applicable` |  |  |  |
 
-## 4. 必需能力判定
+## 4. Required Capability Judgment
 
-| 能力 | 是否关键路径 | 缺失是否阻塞 | 说明 |
+| Capability | Is Critical Path | Missing Is Blocking | Description |
 | --- | --- | --- | --- |
-|  | `是 | 否` | `是 | 否` |  |
+|  | `Yes | No` | `Yes | No` |  |
 
-## 5. 待安装清单
+## 5. To-Install List
 
-| 名称 | 类型 | 用途 | 安装方式 | 是否必须 |
+| Name | Type | Purpose | Install Method | Is Required |
 | --- | --- | --- | --- | --- |
-|  | `skill | MCP | 其他` |  |  | `是 | 否` |
+|  | `skill | MCP | Other` |  |  | `Yes | No` |
 
-## 6. 执行策略
+## 6. Execution Strategy
 
-- 可直接执行的能力组合：
-- 需要用户先安装的能力：
-- 可降级替代的能力：
-- 主要技能路线：
-- 下一步建议：
+- Directly executable capability combination:
+- Capabilities needing user to first install:
+- Capabilities can downgrade substitute:
+- Main skill route:
+- Next step suggestion:
 
-## 7. 用户提问规则
+## 7. User Inquiry Rules
 
-- 当能力判断依赖用户补充文档、skills、路径、设计说明、接口说明或环境约束时，默认使用普通文本回复引导，不做成选择器。
-- 当能力接入存在有限方案分支时，可用数字、字母或短标签列项，但仍应明确告诉用户：既可以回复对应标记，也可以直接输入自己的想法或方案。
-- 若用户已给出 UI 库名称，则默认可先按该名称继续；未给版本时可按最新版暂记，只有在安装、导入或构建失败时再回头追问来源或路径。
+- When capability judgment depends on user supplementing documentation, skills, paths, design descriptions, interface descriptions or environment constraints, default use plain text reply guide, don't make as selector.
+- When capability access has limited plan branches, can use numbers, letters or short tags list items, but still should explicitly tell user: can reply corresponding tag, can also directly input own thoughts or plan.
+- If user already gave UI library name, default can first continue by that name; if no version given can temporarily record as latest version, only go back to ask source or path when installation, import or build fails.

@@ -1,95 +1,95 @@
 # Project Scan Profile
 
-## 目录概念说明
+## Directory Concept Description
 
-项目技能存放位置详见 `SKILL.md` 中的"目录概念映射表"。项目技能 `fw-project-develop` 存放于【技能目录】（和【当前技能目录】同级），而非【工作目录】或【代码改动目录】。
+Project skill storage location is detailed in `SKILL.md` under "Directory Concept Mapping". Project skill `fw-project-develop` is stored in Skill Directory (at the same level as Current Skill Directory), not in Working Directory or Code Change Directory.
 
 ## Outputs
 
-- 主产物：【工作目录】下的前端项目对应的项目技能产物；当前默认产物名固定为 `fw-project-develop`
-- 按需生成或刷新的项目级 UI 框架 skill
-- 若需要新建或标准化归档，则生成标准项目技能产物 `fw-project-develop`
-- 若需要为自研 UI 框架沉淀技能，则生成对应 UI 技能产物
-- 【当前技能目录】下的 `templates/project/project-architecture-profile.md`、`templates/project/project-dev-playbook.md`、`templates/project/project-skill-template.md` 仅作为扫描脚手架
-- 【当前技能目录】下的 `templates/project/project-ui-skill-template.md` 仅作为 UI 框架 skill 生成脚手架
+- Main artifact: Project skill artifact corresponding to frontend project under Working Directory; current default artifact name is fixed as `fw-project-develop`
+- As-needed generated or refreshed project-level UI framework skill
+- If need to newly create or standardize archive, then generate standard project skill artifact `fw-project-develop`
+- If need to consolidate skills for self-developed UI framework, then generate corresponding UI skill artifact
+- `templates/project/project-architecture-profile.md`, `templates/project/project-dev-playbook.md`, `templates/project/project-skill-template.md` under Current Skill Directory only serve as scan scaffolding
+- `templates/project/project-ui-skill-template.md` under Current Skill Directory only serves as UI framework skill generation scaffolding
 
 ## Workflow
 
-0. 对"由用户提供"的输入统一判定状态：`provided`、`not_provided`、`skipped`、`pending`、`not_applicable`；仅 `pending` 阻塞阶段推进
-1. 先检查【技能目录】下已有项目技能候选、目录结构与前端入口，识别【工作目录】下的前端项目数量与候选前端项目
-2. 将 Stage 1 首轮分成三种情况：
-   - 识别到唯一现有前端项目：直接锁定该项目，不向用户额外确认"是否基于现有项目继续"
-   - 识别到多个前端项目：首轮只围绕"本次基于哪个前端项目继续"发起一个 `choose` 问题
-   - 未识别到前端项目：首轮只围绕"是否初始化前端项目"发起一个 `confirm` 或 `choose` 问题
-3. 新会话首轮若仍停留在本阶段，则本轮只允许发出上述唯一项目基线问题；若已自动锁定唯一前端项目，则本轮可以直接进入扫描与技能生成，不得改问"是否继续现有项目"
-4. 若用户尚未明确回答"多项目选择"或"是否初始化"（`pending`），停留在本阶段等待，不继续初始化分支或追问后续资料
-5. 锁定【工作目录】下的前端项目后，优先按固定技能名检查是否已有可复用项目技能；当前默认优先检查 `fw-project-develop`
-6. 若已存在项目 skills，先向用户说明"已检测到现有项目 skills，我将检查是否需要更新"；检查完成后，把更新结果交给用户检查，用户若补充内容则继续合并到该 skills
-7. 若不存在可复用候选，则本阶段必须先停住，询问用户是否愿意提供现有项目 skills、项目文档或其他可沉淀为项目 skills 的资料；该轮问题属于 `provide`；默认提示语使用：`你可以直接回复提供的内容，我将优先采用您提供的资料生成项目的技能；如果你不提供，我再基于【工作目录】内容继续分析并生成。`
-8. 若用户直接提供项目 skills，则按【当前技能目录】下的 `templates/project/project-skill-template.md` 归档为标准项目技能产物，并使用固定技能名 `fw-project-develop` 作为最高优先级项目技能来源；若已有同名项目 skills，则执行合并/刷新
-9. 若用户提供项目文档，则优先基于文档生成或刷新固定项目技能名 `fw-project-develop`
-10. 若用户明确表示不提供项目 skills / 项目文档（`not_provided`），才按根级 `SKILL.md` 中定义的发现规则，继续内部扫描并生成首版 `fw-project-develop`
-11. 只允许把稳定项目知识写入 `fw-project-develop`，例如目录结构、技术栈、构建方式、路由模式、UI 框架、长期约束；不得把当前单次任务的临时目标、样式方案、实现偏好、页面级改法写入项目技能产物
-12. 若已有候选技能仍匹配当前项目结构与约束，则复用该项目 skills，并检查是否存在需要增量更新的内容
-13. 若用户选择初始化，则第二轮再询问初始化组合；推荐或记录时按"底层框架 + 语言框架 + 语言 + UI 库"四层结构表达
-14. 初始化提问至少覆盖：底层框架、底层框架版本、语言框架、语言框架版本（若适用）、语言、UI 库、UI 库版本（若适用）；默认使用普通文本直问，可列候选方案并允许用户回复数字、字母、短标签，或直接描述自己的想法；发问后立即结束当前回合
-15. 若用户对初始化组合回答不完整，则继续停留在本阶段等待，在补齐前不得自行初始化
-16. 若用户回复"退出"或"结束"，则终止流程，不再继续生成项目技能
-17. 若用户回复"跳过"或直接空回复，则采用默认方案（React + TypeScript + Ant Design）继续初始化
+0. For "user-provided" inputs, uniformly judge status: `provided`, `not_provided`, `skipped`, `pending`, `not_applicable`; only `pending` blocks phase progression
+1. First check existing project skill candidates, directory structure and frontend entry in Skill Directory, identify frontend project count and candidate frontend projects under Working Directory
+2. Split Stage 1 first round into three scenarios:
+   - Identified unique existing frontend project: Directly lock that project, don't additionally ask user to confirm "whether to continue based on existing project"
+   - Identified multiple frontend projects: First round only initiate one `choose` question around "which frontend project to continue based on this time"
+   - No frontend project identified: First round only initiate one `confirm` or `choose` question around "whether to initialize frontend project"
+3. New session first round if still staying in this phase, then this round only allowed to issue above sole project baseline question; if already auto-locked unique frontend project, then this round can directly enter scan and skill generation, must not change to ask "whether to continue existing project"
+4. If user hasn't explicitly answered "multiple project selection" or "whether to initialize" (pending), stay in this phase waiting, don't continue initialization branch or ask subsequent materials
+5. After locking frontend project under Working Directory, prioritize checking by fixed skill name whether reusable project skill exists; current default prioritize checking `fw-project-develop`
+6. If project skills already exist, first explain to user "already detected existing project skills, I will check whether need update"; after check completes, hand update results to user for checking, if user supplements content then continue merging to that skills
+7. If no reusable candidate exists, then this phase must first stop, ask user whether willing to provide existing project skills, project documentation or other materials that can be consolidated as project skills; that round question belongs to `provide`; default prompt use: `You can directly reply provided content, I will prioritize using your provided materials to generate project skills; if you don't provide, I will continue analyzing based on Working Directory content and generate.`
+8. If user directly provides project skills, then archive as standard project skill artifact per `templates/project/project-skill-template.md` under Current Skill Directory, and use fixed skill name `fw-project-develop` as highest priority project skill source; if project skills with same name already exist, then execute merge/refresh
+9. If user provides project documentation, then prioritize generating or refreshing fixed project skill name `fw-project-develop` based on documentation
+10. If user explicitly states not providing project skills / project documentation (not_provided), then continue internal scan and generate initial `fw-project-develop` per discovery rules defined in root-level `SKILL.md`
+11. Only allowed to write stable project knowledge into `fw-project-develop`, such as directory structure, tech stack, build method, routing mode, UI framework, long-term constraints; must not write current single task's temporary goals, style plans, implementation preferences, page-level approaches into project skill artifact
+12. If existing candidate skill still matches current project structure and constraints, then reuse that project skills, and check whether content needing incremental update exists
+13. If user chooses initialization, then second round ask initialization combination; when recommending or recording, express per "underlying framework + language framework + language + UI library" four-layer structure
+14. Initialization inquiry must at least cover: underlying framework, underlying framework version, language framework, language framework version (if applicable), language, UI library, UI library version (if applicable); default use plain text to ask directly, can list candidate plans and allow user to reply numbers, letters, short tags, or directly describe their thoughts; after asking immediately end current round
+15. If user's reply to initialization combination is incomplete, then continue staying in this phase waiting, must not self-initialize before completing
+16. If user replies "exit" or "end", then terminate workflow, no longer continue generating project skill
+17. If user replies "skip" or directly empty reply, then use default plan (React + TypeScript + Ant Design) to continue initialization
 
 ---
 
-### 初始化项目分支流程
+### Initialize Project Branch Flow
 
-17. **初始化成功后，不得把"项目已创建/依赖已安装"视为 Stage 1 完成**
-18. **初始化成功后，必须扫描新项目结构**：
-    - 提取目录结构、入口文件、构建命令、技术栈、UI 库
-    - 不得跳过扫描
-19. **扫描完成后，必须生成项目技能 fw-project-develop**
-20. **生成完成后，必须输出项目技能摘要并等待用户确认**
-21. **用户确认后，才能进入 Stage 2**
+17. **After initialization success, must not treat "project created/dependencies installed" as Stage 1 complete**
+18. **After initialization success, must scan new project structure**:
+    - Extract directory structure, entry files, build commands, tech stack, UI library
+    - Must not skip scan
+19. **After scan completes, must generate project skill fw-project-develop**
+20. **After generation completes, must output project skill summary and wait for user confirmation**
+21. **After user confirmation, can then enter Stage 2**
 
-23. 若识别到自研 UI 框架/设计系统，且仅已知库名称，则先记录该名称；若未提供版本，默认按最新版处理，不预先追问安装地址、本地路径或私仓来源
-21. 若后续安装、导入或源码证据表明该 UI 库是私有/自研组件库，则在进入研发前必须判断其组件规则是否清晰；若不清晰，先向用户询问是否提供组件库文档、skills 或关键组件说明
-22. 只有在后续依赖安装、导入验证或构建校验时，确认该 UI 库名称/版本无法解析，才回头请用户修正来源、路径或包信息
-23. 若后续分析确实依赖额外组件规则，再向用户询问是否补充框架 skills 或框架文档；该问题属于 `provide`，必须使用普通文本回复引导，发问后立即结束当前回合；若用户尚未回答（`pending`），停留在本阶段等待
-24. 只有在用户明确表示不提供框架文档 / skills（`not_provided`）后，且源码证据充分时，才能执行源码分析生成对应 UI 技能产物
-25. 若用户提供框架 skills 或框架文档，则优先吸收并归档，再决定是否刷新
-26. 本阶段必须命中已有固定项目技能名对应技能，或创建/刷新标准项目技能产物；若项目 skill 尚未形成，不得离开 Stage 1
-27. 若当前检测到已有项目 skills，则向用户说明：已存在该项目 skills、是否需要更新、已更新了什么、是否还需要用户提供补充内容合并到 skills
-28. 若当前是根据用户提供资料创建的项目 skills，则向用户说明：已按提供内容创建内置项目 skills，并请用户检查是否需要继续补齐
-29. 若当前是用户未提供资料后内部扫描生成的项目 skills，则向用户说明：已基于【工作目录】证据生成该 skills，并请用户检查是否需要补充内容继续完善
-30. 若用户认为 Stage 1 产物不准确，或补充了新的项目约束、目录、入口、技术栈信息，必须先判断这些内容是"稳定项目知识"还是"当前单次任务约束"；只有稳定项目知识才允许合并进 `fw-project-develop`
-31. 合并并刷新后，向用户回显最新项目基线摘要，并根据用户本轮回复类型选择提示语：
-   - 用户提供了项目 skills / 项目文档 / 项目约束：`我已接收并吸收你提供的资料，当前项目 skills 已更新。以上是当前项目基线的最新结果；如果还有偏差或补充，你可以直接告诉我。`
-   - 用户明确不提供资料：`我已记录你暂不提供该资料，当前项目 skills 已按【工作目录】证据更新。以上是当前项目基线的最新结果；如果还有偏差或补充，你可以直接告诉我。`
-   - 用户仅确认或仅要求进入下一步：`我已记录你的确认。` 后接当前阶段需要的下一步动作提示；不要误写成"已合并资料"
-32. 若用户未明确同意进入 Stage 2，也继续停留在本阶段
-33. 只有在项目 skill 已形成且用户已明确同意进入 Stage 2 后，才能离开 Stage 1
-34. 若创建或刷新项目技能，只保留必要变更说明，不额外制造长期字段
-35. 对每个可选逻辑域先判断是否存在；不存在时标记 `not_applicable`
-36. 若识别到当前流程缺少关键可复用技能，调用 `find-skills`
+23. If identified self-developed UI framework/design system, and only library name is known, then first record that name; if version not provided, default process per latest version, don't pre-ask install address, local path or private repository source
+21. If subsequent installation, import or source code evidence indicates that UI library is private/self-developed component library, then before entering development must judge whether its component rules are clear; if unclear, first ask user whether to provide component library documentation, skills or key component descriptions
+22. Only when subsequent dependency installation, import verification or build validation confirms that UI library name/version cannot be resolved, then ask user to correct source, path or package info
+23. If subsequent analysis indeed depends on extra component rules, then ask user whether to supplement framework skills or framework documentation; that question belongs to `provide`, must use plain text reply guide, after asking immediately end current round; if user hasn't answered (pending), stay in this phase waiting
+24. Only after user explicitly states not providing framework documentation / skills (not_provided), and source code evidence is sufficient, can execute source code analysis to generate corresponding UI skill artifact
+25. If user provides framework skills or framework documentation, then prioritize absorbing and archiving, then decide whether to refresh
+26. This phase must hit skill corresponding to existing fixed project skill name, or create/refresh standard project skill artifact; if project skill hasn't formed, must not leave Stage 1
+27. If currently detected project skills already exist, then explain to user: existing project skills, whether need update, already updated what, whether still need user to provide supplement content to merge into skills
+28. If currently project skills created based on user provided materials, then explain to user: already created internal project skills per provided content, and ask user to check whether need to continue supplementing
+29. If currently project skills generated by internal scan after user didn't provide materials, then explain to user: already generated skills based on Working Directory evidence, and ask user to check whether need to supplement content to continue refining
+30. If user thinks Stage 1 artifact is inaccurate, or supplemented new project constraints, directory, entry, tech stack info, must first judge whether these contents are "stable project knowledge" or "current single task constraints"; only stable project knowledge is allowed to merge into `fw-project-develop`
+31. After merging and refreshing, echo latest project baseline summary to user, and choose prompt based on user this round reply type:
+    - User provided project skills / project documentation / project constraints: `I have received and absorbed your provided materials, current project skills already updated. Above is current project baseline's latest result; if still have deviation or supplement, you can tell me directly.`
+    - User explicitly not providing materials: `I have recorded you temporarily not providing that material, current project skills already updated per Working Directory evidence. Above is current project baseline's latest result; if still have deviation or supplement, you can tell me directly.`
+    - User only confirms or only requests to enter next step: `I have recorded your confirmation.` followed by current phase's needed next action prompt; must not mistakenly write as "already merged materials"
+32. If user hasn't explicitly agreed to enter Stage 2, also continue staying in this phase
+33. Only after project skill has formed and user has explicitly agreed to enter Stage 2, can leave Stage 1
+34. If creating or refreshing project skill, only retain necessary change explanation, don't additionally create long-term fields
+35. For each optional logic domain, first judge whether exists; when not existing, mark `not_applicable`
+36. If identified current workflow lacks critical reusable skills, call `find-skills`
 
 ## Rules
 
-- 只保留可指导后续研发的稳定项目知识，不写一次性任务结论
-- 若用户在 Stage 1 补充的是当前单次任务的实现偏好、局部样式方案或临时改法，应标记为当前任务约束，不得写入项目技能产物
-- 若【工作目录】内有多个前端子项目，应分别生成或刷新对应项目技能；只有当本次前端项目存在歧义时才向用户询问选哪个
-- 项目技能是 Stage 1 的最终产物，模板分析只是生成过程
-- 项目技能中应明确记录可复用边界与刷新信号
-- 项目技能目录命名应稳定、可预测，并与【工作目录】下的前端项目根目录或稳定业务标识一致
-- 若用户提供外部技能或文档，应记录来源、吸收时间与刷新条件，防止后续技能过时
-- 自研 UI 框架 skill 应优先沉淀稳定组件规则、目录入口、约束与版本/来源，而不是复制整份源码分析过程
-- 凡是标记为"由用户提供"的信息，必须等待用户明确回答；仅 `pending` 阻塞，`not_provided`/`skipped` 可继续；不能用默认值替代用户选择
-- 首轮提问必须只收敛"多项目选择"或"是否初始化"这种真正歧义的项目基线，不得在唯一现有项目场景下多问一步
-- "框架"相关描述需区分四层：底层框架、语言框架、语言、UI 库；避免用一个"框架"同时指代 Vite、React、TypeScript、Ant Design
-- 资料型输入一律使用普通文本回复引导用户补充，不得做成"是否提供文档/skills"的选择器题；只有真正有限的分支决策才允许使用选择式交互
-- 即便是分支决策，也默认采用文本直问；可列出数字、字母或短标签方案，让用户通过文本回复对应标记，或直接描述选择与想法，不默认依赖可点击选项
-- 若自定义 UI 库名称已知，则默认可继续；版本缺失按最新版处理，不预先追问安装地址、本地路径或来源
-- 若该 UI 库在安装成功后表现为私有/自研组件库，且组件规则不清晰，则必须在 Stage 1 或 Stage 2 先得到"提供文档/skills/说明"或"明确不提供"的结论
-- 初始化后的初始项目也必须生成项目 skill，不能因为是新建项目就跳过项目技能沉淀
-- 单一现有前端项目场景下，优先直接扫描并生成/刷新项目 skill，而不是先向用户确认"是否继续现有项目"；完成后只需要用户确认项目基线是否正确
-- 仅在后续真实安装、导入或构建失败时，才回头请用户修正依赖来源或路径
-- 只要本阶段已经向用户发起提问，本回合就必须停止，不能继续深度扫描、生成技能、初始化项目或执行任何命令
-- 若路由权限、按钮权限、OEM、alias、构建重写等逻辑存在，应记录证据
-- 优先提炼项目级可复用规则，而不是抄样例项目表述
+- Only retain stable project knowledge that can guide subsequent development, don't write one-time task conclusions
+- If user in Stage 1 supplements current single task's implementation preferences, partial style plans or temporary approaches, should mark as current task constraints, must not write into project skill artifact
+- If multiple frontend sub-projects exist under Working Directory, should separately generate or refresh corresponding project skills; only when this frontend project has ambiguity, ask user which to choose
+- Project skill is Stage 1's final artifact, template analysis is only generation process
+- Project skill should clearly record reusable boundary and refresh signals
+- Project skill directory naming should be stable, predictable, and consistent with frontend project root directory or stable business identifier under Working Directory
+- If user provides external skills or documentation, should record source, absorption time and refresh conditions, prevent subsequent skill outdated
+- Self-developed UI framework skill should prioritize consolidating stable component rules, directory entry, constraints and version/source, not copying entire source code analysis process
+- All info marked as "user provided" must wait for user to explicitly answer; only pending blocks, not_provided/skipped can continue; cannot use default values to replace user choice
+- First round inquiry must only converge "multiple project selection" or "whether to initialize" this kind of truly ambiguous project baseline, must not additionally ask one more step under unique existing project scenario
+- "Framework" related descriptions need to distinguish four layers: underlying framework, language framework, language, UI library; avoid using one "framework" to simultaneously refer to Vite, React, TypeScript, Ant Design
+- Material-type inputs uniformly use plain text reply to guide user supplementing, must not make into "whether provide documentation/skills" selector question; only truly finite branch decisions allow using choice-style interaction
+- Even for branch decision, also default use text to ask directly; can list numbers, letters or short tag plans, let user through text reply corresponding marker, or directly describe choice and thoughts, don't default rely on clickable options
+- If custom UI library name is known, then default can continue; version missing process per latest version, don't pre-ask install address, local path or source
+- If that UI library after installation success appears as private/self-developed component library, and component rules unclear, then must in Stage 1 or Stage 2 first get "provide documentation/skills/description" or "explicitly not provide" conclusion
+- After initialization, initial project also must generate project skill, cannot because being newly created project skip project skill consolidation
+- Single existing frontend project scenario, prioritize directly scanning and generating/refreshing project skill, not first asking user to confirm "whether to continue existing project"; after completion only need user to confirm whether project baseline is correct
+- Only when subsequent real installation, import or build failure, then ask user to correct dependency source or path
+- As long as this phase has already initiated question to user, this round must stop, cannot continue deep scan, generate skills, initialize project or execute any commands
+- If routing permission, button permission, OEM, alias, build rewrite etc. logic exists, should record evidence
+- Prioritize extracting project-level reusable rules, not copying sample project expressions

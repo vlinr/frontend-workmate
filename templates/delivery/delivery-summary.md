@@ -1,52 +1,52 @@
 # Delivery Summary Template
 
-## 1. 交付概览
+## 1. Delivery Overview
 
-- 任务名称：
-- 交付对象：
-- 当前状态：
+- Task name:
+- Delivery target:
+- Current status:
 
-## 2. 修改摘要
+## 2. Modification Summary
 
-- 主要修改：
-- 影响范围：
-- 未纳入本次交付的内容：
+- Main modifications:
+- Impact scope:
+- Content not included in this delivery:
 
-## 3. 验证摘要
+## 3. Verification Summary
 
-- 验证结论：
-- 关键通过项：
-- 遗留问题：
+- Verification conclusion:
+- Key passed items:
+- Remaining issues:
 
-## 4. 用户审查摘要
+## 4. User Review Summary
 
-- 用户审查状态：`approved | revise_needed | pending | not_applicable`
-- 用户关注点：
-- 因用户反馈回退过的 Stage：
+- User review status: `approved | revise_needed | pending | not_applicable`
+- User focus points:
+- Stages rolled back due to user feedback:
 
-## 5. 风险与建议
+## 5. Risks and Recommendations
 
-- 已知风险：
-- 使用注意事项：
-- 后续建议：
+- Known risks:
+- Usage notes:
+- Follow-up recommendations:
 
-## 6. 续跑信息
+## 6. Resume Information
 
-- 续跑入口：
-- 若需继续，跳转到：[Stage 名称或 Step ID，如 Stage 5 或 步骤6]
-- 跳转类型：`stage_jump | step_jump`
-- 续跑前优先阅读的文件：
+- Resume entry:
+- If need to continue, jump to: [Stage name or Step ID, e.g., Stage 5 or Step 6]
+- Jump type: `stage_jump | step_jump`
+- Files to read before resuming:
 
-## 7. 可切换步骤列表
+## 7. Switchable Steps List
 
-用户可通过以下指令切换到任意步骤继续执行：
+User can switch to any step to continue execution via the following commands:
 
-| 用户指令 | 目标阶段 | 说明 |
+| User Command | Target Stage | Description |
 | --- | --- | --- |
-| "进入项目扫描" / "步骤2" | Stage 1 | 重新扫描项目，更新项目技能 |
-| "进入范围分析" / "步骤3" | Stage 2 | 重新分析需求范围 |
-| "进入执行计划" / "步骤4" | Stage 3 | 重新规划长任务（仅长任务适用） |
-| "进入资料补充" / "步骤5" | Stage 4 | 重新补充资料 |
-| "进入实施研发" / "步骤6" | Stage 5 | 直接开始代码修改 |
-| "进入内部验证" / "步骤7" | Stage 6 | 重新执行验证 |
-| "进入文档同步" / "步骤8" | Stage 7 | 重新同步文档 |
+| "enter project scan" / "step 2" | Stage 1 | Re-scan project, update project skill |
+| "enter scope analysis" / "step 3" | Stage 2 | Re-analyze requirement scope |
+| "enter execution plan" / "step 4" | Stage 3 | Re-plan long task (long task only) |
+| "enter material supply" / "step 5" | Stage 4 | Re-supply materials |
+| "enter implementation" / "step 6" | Stage 5 | Start code modification directly |
+| "enter internal verification" / "step 7" | Stage 6 | Re-run verification |
+| "enter documentation sync" / "step 8" | Stage 7 | Re-sync documentation |

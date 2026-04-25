@@ -1,245 +1,245 @@
-# Stage 2：分析需求与范围
+# Stage 2: Analyze Requirements and Scope
 
-## ⚠️ 强制规则（必须遵守）
+## ⚠️ Mandatory Rules (Must Follow)
 
-### 1. 单一阶段输出原则
+### 1. Single Phase Output Principle
 
-**本阶段输出只能包含范围分析内容，禁止幻想未来阶段**：
+**This phase output must only contain scope analysis content, prohibited from imagining future phases**:
 
-| 禁止内容 | 说明 |
+| Prohibited Content | Description |
 | --- | --- |
-| "实现方案" | 禁止输出实现阶段的内容 |
-| "具体修复步骤" | 禁止输出具体实现步骤 |
-| 任务分解列表 | 禁止自创任务列表 |
+| "Implementation plan" | Prohibited from outputting implementation phase content |
+| "Specific fix steps" | Prohibited from outputting specific implementation steps |
+| Task breakdown list | Prohibited from creating task lists |
 
-### 2. 任务ID携带原则
+### 2. Task ID Carrying Principle
 
-**本阶段必须携带任务ID**：
-- 第一行输出：`[范围分析] 任务ID: task_xxxxxxxx`
-- 状态文件更新必须携带任务ID
+**This phase must carry Task ID**:
+- First line output: `[Scope Analysis] Task ID: task_xxxxxxxx`
+- State file update must carry Task ID
 
-### 3. 必须等待用户确认
+### 3. Must Wait for User Confirmation
 
-**范围分析完成后**：
-- 输出分析结论摘要
-- 输出确认提示语
-- 结束当前回复
-- 等待用户回复"继续"或提出修改
+**After scope analysis completes**:
+- Output analysis conclusion summary
+- Output confirmation prompt
+- End current reply
+- Wait for user to reply "continue" or propose modifications
 
 ---
 
-## 目标
+## Goal
 
-- 把项目知识转为本次任务的明确修改范围。
-- 始终围绕 Stage 0 建立的最初需求锚点进行范围分析；阶段内新增约束只能细化实现边界，不能替换最初需求。
+- Convert project knowledge into clear modification scope for this task.
+- Always perform scope analysis around original requirement anchor established in Stage 0; constraints added within phase can only refine implementation boundary, cannot replace original requirement.
 
-## 内容处理规则（重要）
+## Content Handling Rules (Important)
 
-**本阶段职责边界**：
+**This Phase Responsibility Boundary**:
 
-| 属于本阶段的内容 | 不属于本阶段的内容（记录到上下文） |
+| Belongs to This Phase | Does Not Belong to This Phase (Record to Context) |
 | --- | --- | --- |
-| 范围分析、改动文件识别 | 具体实现方案、代码修改 |
-| 任务类型判断（bug/feature/refactor） | 具体修复方案、具体功能实现 |
-| 长任务判断 | 执行计划细节 |
-| 技能路线规划 | 实际技能调用 |
+| Scope analysis, change file identification | Specific implementation plan, code modification |
+| Task type judgment (bug/feature/refactor) | Specific fix plan, specific feature implementation |
+| Long task judgment | Execution plan details |
+| Skill route planning | Actual skill invocation |
 
-**用户可以提供任何内容，本阶段只处理属于范围分析的内容**：
-
-```
-用户可能提供的内容示例：
-- "登录页面验证失败，需要检查表单校验逻辑"
-- "用户管理要加权限控制，要改5个文件"
-- "首页优化要改 webpack 配置"
-
-处理方式：
-- 属于范围分析的信息 → 本阶段处理
-- 属于实现方案的信息 → 记录到任务上下文，等 stage5 处理
-- 不拒绝用户内容，只分阶段处理
-```
-
-## 第一步：更新状态文件
-
-**进入本阶段后，必须立即执行以下编辑操作**：
-
-### 进入本阶段时编辑
-
-**根据当前任务ID（从上下文获取 `current_task_id`）找到对应的状态块**：
-- 查找 `<!-- TASK_{任务ID大写}_START -->` 到 `<!-- TASK_{任务ID大写}_END -->` 之间的内容
-- 使用 edit 工具替换该状态块内容为：
+**User can provide any content, this phase only processes content belonging to scope analysis**:
 
 ```
-**任务ID**: {当前任务ID}
-**正在执行**: 范围分析
-**阶段**: stage2
-**状态**: in_progress
-**下一步**: 执行范围分析，判断任务类型和是否是长任务
-**用户提出修改时**: 状态保持 stage2 → 合并用户反馈 → 更新分析结论 → 再次输出
-**循环路径**: stage2 → stage2 → 循环直到用户回复"继续"
+Example content user may provide:
+- "Login page validation failed, need to check form validation logic"
+- "User management needs permission control, need to change 5 files"
+- "Homepage optimization needs to change webpack config"
+
+Handling method:
+- Info belonging to scope analysis → This phase processes
+- Info belonging to implementation plan → Record to task context, wait for stage5 to process
+- Don't reject user content, only process by phase
 ```
 
-### 输出结论后再次编辑
+## Step 1: Update State File
 
-等待用户确认时，再次使用 edit 工具更新该任务ID的状态块为：
+**After entering this phase, must immediately execute the following edit operations**:
+
+### Edit When Entering This Phase
+
+**Find corresponding status block based on current Task ID (get `current_task_id` from context)**:
+- Find content between `<!-- TASK_{TASK_ID_UPPERCASE}_START -->` and `<!-- TASK_{TASK_ID_UPPERCASE}_END -->`
+- Use edit tool to replace that status block content with:
 
 ```
-**任务ID**: {当前任务ID}
-**正在执行**: 范围分析
-**阶段**: stage2
-**状态**: waiting_user
-**下一步**: 等待用户确认分析结论
-**用户提出修改时**: 状态保持 stage2 → 执行合并更新 → 再次输出分析结论 → 等待确认
-**循环路径**: stage2 → stage2 → 循环直到用户回复"继续"
+**Task ID**: {Current Task ID}
+**Currently Executing**: Scope Analysis
+**Phase**: stage2
+**Status**: in_progress
+**Next Step**: Execute scope analysis, judge task type and if long task
+**User Proposed Modifications**: Status stays stage2 → merge user feedback → update analysis conclusion → re-output
+**Loop Path**: stage2 → stage2 → loop until user replies "continue"
 ```
 
-### 用户提出修改时再次编辑
+### Edit Again After Outputting Conclusion
 
-**用户提出修改/问题时的循环路径**：
+When waiting for user confirmation, use edit tool again to update that Task ID's status block to:
 
-1. **状态保持 stage2**：
+```
+**Task ID**: {Current Task ID}
+**Currently Executing**: Scope Analysis
+**Phase**: stage2
+**Status**: waiting_user
+**Next Step**: Wait for user to confirm analysis conclusion
+**User Proposed Modifications**: Status stays stage2 → execute merge update → re-output analysis conclusion → wait for confirmation
+**Loop Path**: stage2 → stage2 → loop until user replies "continue"
+```
+
+### Edit Again When User Proposes Modifications
+
+**Loop path when user proposes modifications/issues**:
+
+1. **Status stays stage2**:
    ```
-   **正在执行**: 范围分析
-   **阶段**: stage2
-   **状态**: in_progress
-   **下一步**: 合并用户反馈，更新分析结论
-   **用户提出修改时**: 状态保持 stage2 → 合并更新 → 再次输出分析结论
-   **循环路径**: stage2 → stage2 → 循环直到用户回复"继续"
-   ```
-
-2. **执行合并更新**：读取用户反馈 → 合并到分析结论
-
-3. **再次输出分析结论**：输出更新后的范围分析结果
-
-4. **再次进入等待状态**：
-   ```
-   **正在执行**: 范围分析
-   **阶段**: stage2
-   **状态**: waiting_user
-   **下一步**: 等待用户确认更新后的分析结论
-   **用户提出修改时**: 状态保持 stage2 → 合并更新 → 再次输出分析结论
-   **循环路径**: stage2 → stage2 → 循环直到用户回复"继续"
+   **Currently Executing**: Scope Analysis
+   **Phase**: stage2
+   **Status**: in_progress
+   **Next Step**: Merge user feedback, update analysis conclusion
+   **User Proposed Modifications**: Status stays stage2 → merge update → re-output analysis conclusion
+   **Loop Path**: stage2 → stage2 → loop until user replies "continue"
    ```
 
-5. **循环直到用户回复"继续"**，才进入下一阶段
+2. **Execute Merge Update**: Read user feedback → merge into analysis conclusion
 
-### 用户确认后再次编辑（根据长任务判断）
+3. **Re-output Analysis Conclusion**: Output updated scope analysis results
 
-再次使用 edit 工具更新该任务ID的状态块：
+4. **Re-enter Wait State**:
+   ```
+   **Currently Executing**: Scope Analysis
+   **Phase**: stage2
+   **Status**: waiting_user
+   **Next Step**: Wait for user to confirm updated analysis conclusion
+   **User Proposed Modifications**: Status stays stage2 → merge update → re-output analysis conclusion
+   **Loop Path**: stage2 → stage2 → loop until user replies "continue"
+   ```
 
-长任务：
+5. **Loop until user replies "continue"**, then proceed to next phase
+
+### Edit Again After User Confirmation (Based on Long Task Judgment)
+
+Use edit tool again to update that Task ID's status block:
+
+Long task:
 ```
-**任务ID**: {当前任务ID}
-**正在执行**: 执行计划
-**阶段**: stage3
-**状态**: in_progress
-**下一步**: 执行 stages/plan.md
-**用户提出修改时**: 回到 stage2 → 状态保持 stage2 → 重新分析
-**循环路径**: 无
+**Task ID**: {Current Task ID}
+**Currently Executing**: Execution Plan
+**Phase**: stage3
+**Status**: in_progress
+**Next Step**: Execute stages/plan.md
+**User Proposed Modifications**: Return to stage2 → status stays stage2 → re-analyze
+**Loop Path**: None
 ```
 
-短任务：
+Short task:
 ```
-**任务ID**: {当前任务ID}
-**正在执行**: 资料补充
-**阶段**: stage4
-**状态**: in_progress
-**下一步**: 执行 stages/supply.md
-**用户提出修改时**: 回到 stage2 → 状态保持 stage2 → 重新分析
-**循环路径**: 无
+**Task ID**: {Current Task ID}
+**Currently Executing**: Material Supply
+**Phase**: stage4
+**Status**: in_progress
+**Next Step**: Execute stages/supply.md
+**User Proposed Modifications**: Return to stage2 → status stays stage2 → re-analyze
+**Loop Path**: None
 ```
 
-### 禁止事项
+### Prohibited Actions
 
-- 禁止不读取配置文件就猜测路径
-- 禁止在等待用户时不更新状态为 waiting_user
+- Prohibited from guessing paths without reading config file
+- Prohibited from not updating status to waiting_user when waiting for user
 
-## 输入
+## Input
 
 - `request-brief`
-- 项目技能（**动态读取**）：
-  - **先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，获取三核心目录
-  - **项目技能引用**：`{project_ide_dir}/skills/fw-project-develop/SKILL.md`（**必须调用**）
-- 【代码改动目录】现有说明文档
+- Project skill (**Dynamic Read**):
+  - **First read config file** `{project_ide_dir}/.fw-session-config.json`, get three core directories
+  - **Project skill reference**: `{project_ide_dir}/skills/fw-project-develop/SKILL.md` (**Must Invoke**)
+- Existing documentation in code change directory
 
-## 执行动作
+## Execution Actions
 
-1. **必须先调用技能**：
-   - **先读取配置文件** `{project_ide_dir}/.fw-session-config.json`
-   - **项目技能引用**：`{project_ide_dir}/skills/fw-project-develop/SKILL.md`（若存在）
-   - 若【代码改动目录】缺少说明文档，**必须先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` 补充理解
-   - 调用后获取的约束作为范围分析参考
-2. 先读 `request-brief` 中的"用户原始描述""最初需求锚点"与截图/附件摘要；只要这些字段非空，就必须把它们视为当前任务主目标输入。
-3. 结合项目技能与【代码改动目录】现有说明文档进行范围分析。
-3. 只有当"用户原始描述""最初需求锚点""截图/附件摘要"同时为空、且当前任务目标确实无法判定时，才允许向用户追问"这次要做什么"；否则不得在 Stage 2 重问主需求。
-4. 若【代码改动目录】缺少说明文档，或实现关系不清晰，**先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，动态拼接 `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` 补充理解。
-5. 重点分析项目当前使用的 UI 框架，并区分通用框架与自研框架。
-6. 若是通用 UI 框架，明确记录框架名、版本、主要组件入口与替代边界。
-7. 若是自研 UI 框架，先确认 Stage 1 是否已命中对应框架 skill；若没有，则必须回到 Stage 1 先向用户询问是否提供框架文档或框架 skills。
-8. 若用户尚未明确回答（`pending`），则停留在本阶段等待，不得继续范围分析。
-9. 若用户提供框架文档，则基于文档生成并归档到【技能目录】下的 UI 框架 skill。
-10. 若用户提供框架 skills，则直接存放于【技能目录】并优先复用。
-11. 只有在用户明确表示不提供框架文档 / skills（`not_provided`）后，且源码中存在可分析的自研 UI 框架时，才能基于源码分析生成对应 skill；若源码也不足以支撑稳定技能，则标记 `not_applicable` 并继续。
-12. 参考 `rules/frontend-change-scope.md` 执行范围分析流程。
-13. **标记任务类型**（必须明确标记）：
-    - `需求`（feature）：新增功能、新页面、新组件等
-    - `bug`：问题修复、异常处理等
-    - `重构`：结构调整、代码优化但不改变行为等
-    - `优化`：性能优化、体验优化、代码质量提升等
-    - 输出时必须明确标注任务类型
-14. 无论任务是否复杂，都必须形成最小 Stage 2 过站产物；复杂任务再额外补充完整 `templates/analysis/change-scope.md` 或 `templates/analysis/capability-matrix.md`。
-15. 只分析本任务实际需要的能力，不为临时任务额外沉淀长期文档。
-16. **必须明确后续技能调用计划**（Stage 5 必须执行，动态读取）：
-- `bug` 任务 → **先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-systematic-debugging/SKILL.md`（Stage 5 必须执行）
-- React 技术栈（项目技能中标记） → **先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-react-best-practices/SKILL.md`（Stage 5 必须执行）
-- React 技术栈且涉及组件开发 → **先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-react-components/SKILL.md`（Stage 5 必须执行）
-- 复杂类型问题 → **先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-typescript-advanced-types/SKILL.md`（Stage 5 必须执行）
-- 页面/组件改动 → **先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-accessibility/SKILL.md`（Stage 6 必须执行）
-- 样式/UI 改动 → **先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-web-design-guidelines/SKILL.md`（Stage 6 实际调用）
-17. 若存在关键技能缺失，调用 `find-skills`，输出补充建议。
-18. **必须明确输出以下详细信息**：
-    - **改动文件数**：预估需要修改的文件数量（具体数字）
-    - **改动文件位置列表**：列出预估需要修改的文件路径
-    - **受影响模块**：哪些模块会受到影响
-    - **接口契约**：涉及的接口或数据结构变化
-    - **风险点**：可能存在的风险
-    - **回归范围**：需要回归验证的范围
-    - 给出"我将做什么、为什么这样做、暂不做什么"的清晰结论
-19. **用户确认循环机制（必须执行）**：
-    - 输出分析结论，等待用户确认"修改范围是否正确"
-    - 用户回复"继续" → 进入下一阶段
-    - 用户提出补充/修正/问题 → **理解并合并用户反馈** → 更新分析结论 → 再次输出等待确认
-    - **循环直到用户回复"继续"**
-    - **禁止**：用户未明确回复"继续"就进入下一阶段
+1. **Must First Invoke Skills**:
+   - **First read config file** `{project_ide_dir}/.fw-session-config.json`
+   - **Project skill reference**: `{project_ide_dir}/skills/fw-project-develop/SKILL.md` (if exists)
+   - If code change directory lacks documentation, **must first read config file**, dynamically concatenate `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` supplement understanding
+   - Constraints obtained after invocation as scope analysis reference
+2. First read "user original description", "original requirement anchor" and screenshot/attachment summary in `request-brief`; as long as these fields are non-empty, must treat them as current task main goal input.
+3. Combine project skill with existing documentation in code change directory for scope analysis.
+3. Only when "user original description", "original requirement anchor", "screenshot/attachment summary" are all empty, and current task goal truly cannot be determined, allow asking user "what to do this time"; otherwise cannot re-ask main requirement in Stage 2.
+4. If code change directory lacks documentation, or implementation relationships unclear, **first read config file** `{project_ide_dir}/.fw-session-config.json`, dynamically concatenate `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` supplement understanding.
+5. Focus on analyzing current UI framework used by project, distinguish common framework vs self-developed framework.
+6. If common UI framework, clearly record framework name, version, main component entry and replacement boundary.
+7. If self-developed UI framework, first confirm if Stage 1 already hit corresponding framework skill; if not, must return to Stage 1 first to ask user if provide framework documentation or framework skills.
+8. If user hasn't clearly answered (pending), stay in this phase waiting, cannot continue scope analysis.
+9. If user provides framework documentation, generate based on documentation and archive to UI framework skill under Skill Directory.
+10. If user provides framework skills, directly store in Skill Directory and prioritize reuse.
+11. Only after user explicitly states not providing framework documentation/skills (not_provided), and source code has analyzable self-developed UI framework, can generate corresponding skill based on source code analysis; if source code also insufficient to support stable skill, mark `not_applicable` and continue.
+12. Refer to `rules/frontend-change-scope.md` to execute scope analysis flow.
+13. **Mark Task Type** (Must clearly mark):
+    - `Feature`: New functionality, new page, new component etc.
+    - `bug`: Problem fix, exception handling etc.
+    - `refactor`: Structure adjustment, code optimization without behavior change etc.
+    - `optimize`: Performance optimization, experience optimization, code quality improvement etc.
+    - Must clearly mark task type when outputting
+14. Regardless of task complexity, must form minimum Stage 2 checkpoint artifact; complex tasks additionally supplement complete `templates/analysis/change-scope.md` or `templates/analysis/capability-matrix.md`.
+15. Only analyze capabilities actually needed for this task, don't additionally deposit long-term documentation for temporary tasks.
+16. **Must Clearly Output Subsequent Skill Invocation Plan** (Stage 5 must execute, dynamic read):
+- `bug` task → **First read config file**, dynamically concatenate `{static_config_dir}/skills/fw-systematic-debugging/SKILL.md` (Stage 5 must execute)
+- React tech stack (marked in project skill) → **First read config file**, dynamically concatenate `{static_config_dir}/skills/fw-react-best-practices/SKILL.md` (Stage 5 must execute)
+- React tech stack and involves component development → **First read config file**, dynamically concatenate `{static_config_dir}/skills/fw-react-components/SKILL.md` (Stage 5 must execute)
+- Complex type issues → **First read config file**, dynamically concatenate `{static_config_dir}/skills/fw-typescript-advanced-types/SKILL.md` (Stage 5 must execute)
+- Page/component changes → **First read config file**, dynamically concatenate `{static_config_dir}/skills/fw-accessibility/SKILL.md` (Stage 6 must execute)
+- Style/UI changes → **First read config file**, dynamically concatenate `{static_config_dir}/skills/fw-web-design-guidelines/SKILL.md` (Stage 6 actual invocation)
+17. If critical skill missing, invoke `find-skills`, output supplement suggestions.
+18. **Must Clearly Output the Following Details**:
+    - **Change File Count**: Estimated number of files to modify (specific number)
+    - **Change File Location List**: List estimated file paths to modify
+    - **Affected Modules**: Which modules will be affected
+    - **Interface Contract**: Involved interfaces or data structure changes
+    - **Risk Points**: Possible risks
+    - **Regression Scope**: Scope needing regression verification
+    - Give clear conclusion of "what I will do, why this way, what not to do temporarily"
+19. **User Confirmation Loop Mechanism (Must Execute)**:
+    - Output analysis conclusion, wait for user to confirm "modification scope is correct"
+    - User replies "continue" → Proceed to next phase
+    - User proposes supplement/correction/issues → **Understand and merge user feedback** → Update analysis conclusion → Re-output wait for confirmation
+    - **Loop until user replies "continue"**
+    - **Prohibited**: Proceed to next phase before user explicitly replies "continue"
 
-## 长任务判断（必须执行）
+## Long Task Judgment (Must Execute)
 
-**范围分析完成后，必须判断是否是长任务**：
+**After scope analysis completes, must judge if long task**:
 
-### 判断标准
+### Judgment Criteria
 
-| 条件 | 是否长任务 |
+| Condition | Is Long Task |
 | --- | --- |
-| 预估修改文件数 > 5 | ✅ 长任务 |
-| 涉及 3+ 个不同目录/模块 | ✅ 长任务 |
-| 需要跨多个功能模块协调 | ✅ 长任务 |
-| 预估需要多轮对话才能完成 | ✅ 长任务 |
-| 单一文件修改、单一功能点 | ❌ 短任务 |
-| 小范围 bug 修复 | ❌ 短任务 |
-| 单一组件调整 | ❌ 短任务 |
+| Estimated modification file count > 5 | ✅ Long task |
+| Involves 3+ different directories/modules | ✅ Long task |
+| Needs coordination across multiple feature modules | ✅ Long task |
+| Estimated need multiple conversation rounds to complete | ✅ Long task |
+| Single file modification, single feature point | ❌ Short task |
+| Small scope bug fix | ❌ Short task |
+| Single component adjustment | ❌ Short task |
 
-### 流程分支
+### Flow Branch
 
 ```
-范围分析完成 → 判断是否长任务：
-  ├─ 是长任务 → 输出"接下来进入下一阶段：[执行计划]"
-  │              → 进入 Stage 3
-  └─ 不是长任务 → 输出"接下来进入下一阶段：[资料补充]"
-                   → 直接进入 Stage 4（跳过 Stage 3）
+Scope analysis complete → Judge if long task:
+  ├─ Yes long task → Output "Proceeding to next phase: [Execution Plan]"
+  │              → Enter Stage 3
+  └─ Not long task → Output "Proceeding to next phase: [Material Supply]"
+                    → Directly enter Stage 4 (Skip Stage 3)
 ```
 
-## 输出
+## Output
 
-- 必须至少形成一个最小 Stage 2 过站产物，默认写入 `templates/analysis/change-scope.md` 或内部状态：
+- Must at least form a minimum Stage 2 checkpoint artifact, default write to `templates/analysis/change-scope.md` or internal state:
   - `current_stage = stage2`
   - `current_stage_status`
   - `stage_goal`
@@ -247,38 +247,38 @@
   - `completion_conditions`
   - `next_stage`
   - `stage_block_reason`
-  - 任务类型、修改范围、风险与技能路线
+  - Task type, modification scope, risks and skill route
 
-**用户确认提示语**（阶段结束确认）：
+**User Confirmation Prompt** (Phase end confirmation):
 
-输出分析结论后，**必须先判断是否是长任务**，然后根据判断结果输出对应的提示语：
+After outputting analysis conclusion, **must first judge if long task**, then output corresponding prompt based on judgment result:
 
-### 长任务时：
-
-```
-以上是本阶段的结论：[简要分析结论]。
-
-【长任务判断】本次任务预估涉及多个文件/模块，属于长任务，需要建立执行计划。
-
-请确认是否可以继续进入下一阶段：[执行计划]。
-- 如有偏差或补充，请直接告诉我。
-- 如无其他修改，回复"继续"即可。
-```
-
-### 短任务时：
+### When Long Task:
 
 ```
-以上是本阶段的结论：[简要分析结论]。
+Above is this phase conclusion: [Brief analysis conclusion].
 
-【长任务判断】本次任务预估范围较小，不属于长任务，将直接进入资料补充阶段。
+[Long Task Judgment] This task estimated to involve multiple files/modules, belongs to long task, need to build execution plan.
 
-请确认是否可以继续进入下一阶段：[资料补充]。
-- 如有偏差或补充，请直接告诉我。
-- 如无其他修改，回复"继续"即可。
+Please confirm if we can proceed to next phase: [Execution Plan].
+- If have deviation or supplement, please tell me directly.
+- If no other modifications, reply "continue" is fine.
 ```
 
-**禁止**：输出模糊的"[执行计划]或[资料补充]"，必须根据判断输出明确的下一阶段名称。
+### When Short Task:
 
-## 回退条件
+```
+Above is this phase conclusion: [Brief analysis conclusion].
 
-- 若验证或交付阶段发现范围判断有偏差，回退本阶段重析。
+[Long Task Judgment] This task estimated scope is small, not long task, will directly enter material supply phase.
+
+Please confirm if we can proceed to next phase: [Material Supply].
+- If have deviation or supplement, please tell me directly.
+- If no other modifications, reply "continue" is fine.
+```
+
+**Prohibited**: Output vague "[Execution Plan] or [Material Supply]", must output clear next phase name based on judgment.
+
+## Fallback Conditions
+
+- If verification or delivery phase discovers scope judgment deviation, fallback to this phase to re-analyze.

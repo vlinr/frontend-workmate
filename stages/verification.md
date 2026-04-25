@@ -1,131 +1,131 @@
-# Stage 6：内部验证
+# Stage 6: Verification
 
-## ⚠️ 强制规则（必须遵守）
+## ⚠️ Mandatory Rules (Must Follow)
 
-### 1. 单一阶段输出原则
+### 1. Single Phase Output Principle
 
-**本阶段输出只能包含验证内容，禁止幻想未来阶段**：
+**This phase output must only contain verification content, prohibited from imagining future phases**:
 
-| 禁止内容 | 说明 |
+| Prohibited Content | Description |
 | --- | --- |
-| "文档更新计划" | 禁止输出文档阶段的内容 |
-| "交付后用户反馈" | 禁止幻想用户反馈 |
-| "接下来进入文档同步" | 禁止输出后续阶段计划 |
+| "Documentation update plan" | Prohibited from outputting documentation phase content |
+| "After delivery user feedback" | Prohibited from imagining user feedback |
+| "Proceeding to documentation sync next" | Prohibited from outputting subsequent phase plans |
 
-### 2. 任务ID携带原则
+### 2. Task ID Carrying Principle
 
-**本阶段必须携带任务ID**：
-- 第一行输出：`[内部验证] 任务ID: task_xxxxxxxx`
-- 状态文件更新必须携带任务ID
+**This phase must carry Task ID**:
+- First line output: `[Verification] Task ID: task_xxxxxxxx`
+- State file update must carry Task ID
 
-### 3. 完成后自动进入下一阶段
+### 3. After Completion, Automatically Proceed to Next Phase
 
-**验证完成后**：
-- 不输出确认提示语
-- 不等待用户确认
-- 自动进入 stage7（文档同步）
+**After verification completes**:
+- Don't output confirmation prompt
+- Don't wait for user confirmation
+- Automatically proceed to stage7 (Documentation Sync)
 
 ---
 
-## 目标
+## Goal
 
-- 在交付前验证修改真实有效。
-- **完成后自动进入 stage7，不暂停等待用户确认**（用户确认在 stage8 统一处理）。
+- Verify modifications truly effective before delivery.
+- **After completion automatically proceed to stage7, no pause waiting for user confirmation** (user confirmation handled uniformly in stage8).
 
-## 内容处理规则（重要）
+## Content Handling Rules (Important)
 
-**本阶段职责边界**：
+**This Phase Responsibility Boundary**:
 
-| 属于本阶段的内容 | 不属于本阶段的内容（记录到上下文） |
+| Belongs to This Phase | Does Not Belong to This Phase (Record to Context) |
 | --- | --- | --- |
-| 功能验证、lint/type/build/test | 代码修改（回 stage5） |
-| 验证结果记录 | 文档更新（stage7） |
-| 验证失败判断 | 用户确认（stage8） |
+| Functional verification, lint/type/build/test | Code modification (return to stage5) |
+| Verification result recording | Documentation update (stage7) |
+| Verification failure judgment | User confirmation (stage8) |
 
-**本阶段是自动执行阶段，不接收用户输入**：
-
-```
-用户在本阶段无法提供内容，因为：
-- 本阶段不暂停等待用户
-- 自动执行验证流程
-- 完成后自动进入 stage7
-
-用户在 stage8 提出验证问题时，会回到 stage5 → stage6 重新验证
-```
-
-**注意**：
-- 本阶段不接收用户内容，自动执行验证
-- 验证失败时回到 stage5，不处理用户反馈
-
-## 第一步：更新状态文件
-
-**进入本阶段后，必须立即执行以下编辑操作**：
-
-### 进入本阶段时编辑
-
-**根据当前任务ID（从上下文获取 `current_task_id`）找到对应的状态块**：
-- 查找 `<!-- TASK_{任务ID大写}_START -->` 到 `<!-- TASK_{任务ID大写}_END -->` 之间的内容
-- 使用 edit 工具替换该状态块内容为：
+**This phase is automatic execution phase, doesn't receive user input**:
 
 ```
-**任务ID**: {当前任务ID}
-**正在执行**: 内部验证
-**阶段**: stage6
-**状态**: in_progress
-**下一步**: 执行功能验证、lint/type/build/test，完成后自动进入 stage7
-**用户提出修改时**: 无（不在此阶段暂停，在 stage8 统一处理）
-**循环路径**: stage5 → stage6 → stage7 → stage8 → 循环
+User cannot provide content in this phase, because:
+- This phase doesn't pause waiting for user
+- Automatically executes verification flow
+- After completion automatically proceeds to stage7
+
+User proposes verification issues in stage8, will return to stage5 → stage6 to re-verify
 ```
 
-### 验证完成后再次编辑
+**Note**:
+- This phase doesn't receive user content, automatically executes verification
+- When verification fails return to stage5, doesn't process user feedback
 
-**验证完成后，直接更新状态为 stage7**（不暂停等待用户确认）：
+## Step 1: Update State File
+
+**After entering this phase, must immediately execute the following edit operations**:
+
+### Edit When Entering This Phase
+
+**Find corresponding status block based on current Task ID (get `current_task_id` from context)**:
+- Find content between `<!-- TASK_{TASK_ID_UPPERCASE}_START -->` and `<!-- TASK_{TASK_ID_UPPERCASE}_END -->`
+- Use edit tool to replace that status block content with:
 
 ```
-**正在执行**: 文档同步
-**阶段**: stage7
-**状态**: in_progress
-**下一步**: 判断是否更新项目技能 + 生成目录说明文档
-**用户提出修改时**: 在 stage8 统一处理
-**循环路径**: stage5 → stage6 → stage7 → stage8 → 循环
+**Task ID**: {Current Task ID}
+**Currently Executing**: Verification
+**Phase**: stage6
+**Status**: in_progress
+**Next Step**: Execute functional verification, lint/type/build/test, after completion automatically proceed to stage7
+**User Proposed Modifications**: None (don't pause in this phase, handle uniformly in stage8)
+**Loop Path**: stage5 → stage6 → stage7 → stage8 → loop
 ```
 
-### 禁止事项
+### Edit Again After Verification Completion
 
-- 禁止不读取配置文件就猜测路径
-- **禁止在 stage6 暂停等待用户确认**（直接执行到 stage8）
+**After verification completes, directly update status to stage7** (no pause waiting for user confirmation):
 
-## 执行动作
+```
+**Currently Executing**: Documentation Sync
+**Phase**: stage7
+**Status**: in_progress
+**Next Step**: Judge if update project skill + Generate directory documentation
+**User Proposed Modifications**: Handle uniformly in stage8
+**Loop Path**: stage5 → stage6 → stage7 → stage8 → loop
+```
 
-1. 参考 `rules/frontend-verification.md` 执行验证流程。
-2. **Stage 5 完成后自动进入本阶段，无需用户确认即可开始验证**。
-3. **开始验证前，必须先调用技能**：
-   - **先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，获取三核心目录
-   - **项目技能引用**：`{project_ide_dir}/skills/fw-project-develop/SKILL.md` 获取验证约束
-   - 将约束作为验证参考，避免违背项目规则
-4. 最少覆盖：
-   - 功能正确性
-   - lint / type / build 基础校验
-   - 关键交互和回归路径
-5. **根据改动类型，必须调用对应技能**（动态读取）：
-- **项目技能存在** → **先读取配置文件**，动态拼接 `{project_ide_dir}/skills/fw-project-develop/SKILL.md`
-- **改动涉及页面、组件、表单、键盘交互** → **先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-accessibility/SKILL.md`
-- **改动涉及布局、样式、UI 一致性** → **先读取配置文件**，动态拼接 `{static_config_dir}/skills/fw-web-design-guidelines/SKILL.md`
-6. 仅在需要留痕、进入长任务记录或验证过程较复杂时，填写 `templates/verification/verification-report.md`。
-7. 只有在功能验证、关键回归以及可执行的 lint/type/build/test 校验都达到"通过"或"有明确合理的 not_applicable 结论"时，才可视为内部验证通过。
-8. 若校验失败的根因是代码问题，回到 Stage 5 修复 → **自动进入 Stage 6 → Stage 7 → Stage 8**。
-9. 若校验失败的根因是环境问题、Node 版本问题、依赖缺失、命令不可运行或宿主条件不满足，则输出明确的环境修复建议，停留在 Stage 5/Stage 6 等待修复。
-10. **验证完成后，直接进入 Stage 7，不输出用户确认提示语**（用户确认在 Stage 8 统一处理）。
+### Prohibited Actions
 
-## 输出
+- Prohibited from guessing paths without reading config file
+- **Prohibited from pausing in stage6 waiting for user confirmation** (directly execute to stage8)
 
-- 验证结果（内部记录，不输出给用户确认）：
-   - 修改文件列表
-   - 验证通过项（lint/type/build/test/功能）
-   - 剩余风险
-- 完成后自动进入 Stage 7
+## Execution Actions
 
-## 回退条件
+1. Refer to `rules/frontend-verification.md` to execute verification flow.
+2. **Stage 5 completion automatically enters this phase, no user confirmation needed before starting verification**.
+3. **Before starting verification, must first invoke skills**:
+   - **First read config file** `{project_ide_dir}/.fw-session-config.json`, get three core directories
+   - **Project skill reference**: `{project_ide_dir}/skills/fw-project-develop/SKILL.md` get verification constraints
+   - Use constraints as verification reference, avoid violating project rules
+4. Minimum coverage:
+   - Functional correctness
+   - lint / type / build basic validation
+   - Key interactions and regression paths
+5. **Based on modification type, must invoke corresponding skills** (dynamic read):
+- **Project skill exists** → **First read config file**, dynamically concatenate `{project_ide_dir}/skills/fw-project-develop/SKILL.md`
+- **Modifications involve pages, components, forms, keyboard interactions** → **First read config file**, dynamically concatenate `{static_config_dir}/skills/fw-accessibility/SKILL.md`
+- **Modifications involve layout, styles, UI consistency** → **First read config file**, dynamically concatenate `{static_config_dir}/skills/fw-web-design-guidelines/SKILL.md`
+6. Only fill `templates/verification/verification-report.md` when need to leave trace, enter long task record or verification process complex.
+7. Only when functional verification, key regression and executable lint/type/build/test validation all reach "pass" or "have clear reasonable not_applicable conclusion", can treat as internal verification pass.
+8. If validation failure root cause is code issue, return to Stage 5 to fix → **automatically enter Stage 6 → Stage 7 → Stage 8**.
+9. If validation failure root cause is environment issue, Node version issue, dependency missing, command not runnable or host condition not satisfied, output clear environment fix suggestions, stay in Stage 5/Stage 6 waiting for fix.
+10. **After verification completes, directly enter Stage 7, don't output user confirmation prompt** (user confirmation handled uniformly in Stage 8).
 
-- 若任一关键验证失败，返回 Stage 5，修复后自动执行 Stage 6 → Stage 7 → Stage 8。
-- 若失败原因属于环境阻塞，输出环境修复建议，停留在 Stage 5/Stage 6 等待修复。
+## Output
+
+- Verification results (internal record, don't output for user confirmation):
+   - Modified file list
+   - Passed verification items (lint/type/build/test/functional)
+   - Remaining risks
+- After completion automatically enter Stage 7
+
+## Fallback Conditions
+
+- If any key verification fails, return to Stage 5, after fix automatically execute Stage 6 → Stage 7 → Stage 8.
+- If failure reason belongs to environment blocker, output environment fix suggestions, stay in Stage 5/Stage 6 waiting for fix.

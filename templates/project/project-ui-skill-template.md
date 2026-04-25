@@ -3,69 +3,69 @@
 ## Frontmatter
 
 - `name`: `<project-slug>-<ui-skill-slug>-skill`
-- `description`: 当前项目 UI 库或设计系统说明技能。用于在 `<project-name>` 中继续定位 `<ui-framework-name>` 的组件入口、使用边界、替代规则、版本信息与刷新条件。
+- `description`: Current project UI library or design system explanation skill. Used in `<project-name>` to continue locating `<ui-framework-name>` component entry, usage boundaries, substitution rules, version info, and refresh conditions.
 
-## 建议结构
+## Recommended Structure
 
-### 1. UI 库定位
+### 1. UI Library Positioning
 
-- 所属项目：
-- UI 库名称：
-- UI 库类型：`通用 | 自研`
-- UI 库版本：
-- 资料来源：`用户提供 skills | 用户提供文档 | 源码分析`
-- 是否已得到用户明确确认：`是 | 否`
-- 若版本留空是否按最新版处理：`是 | 否`
-- 适用范围：
+- Belongs to project:
+- UI library name:
+- UI library type: `General | Custom`
+- UI library version:
+- Material source: `User provided skills | User provided docs | Source code analysis`
+- Has user explicitly confirmed: `Yes | No`
+- If version blank, use latest version: `Yes | No`
+- Applicable scope:
 
-### 2. 目录与入口
+### 2. Directory and Entry
 
-| 对象 | 位置 | 说明 |
+| Object | Location | Description |
 | --- | --- | --- |
-| 组件主入口 |  |  |
-| 样式入口 |  |  |
-| 主题入口 |  |  |
-| 图标入口 |  |  |
-| 文档入口 |  |  |
+| Component main entry |  |  |
+| Style entry |  |  |
+| Theme entry |  |  |
+| Icon entry |  |  |
+| Docs entry |  |  |
 
-### 3. 使用规则
+### 3. Usage Rules
 
-- 组件选型优先级：
-- 常用组件映射：
-- 二次封装规则：
-- 样式覆盖规则：
-- 主题变量规则：
-- 禁止直接使用的能力：
-- 替代策略：
+- Component selection priority:
+- Common component mapping:
+- Secondary encapsulation rules:
+- Style override rules:
+- Theme variable rules:
+- Forbidden direct usage capabilities:
+- Substitution strategy:
 
-### 4. 研发边界
+### 4. Development Boundaries
 
-- 可以直接复用的场景：
-- 需要先查文档或 skill 的场景：
-- 需要回退源码分析的场景：
-- 与业务组件的边界：
+- Directly reusable scenarios:
+- Must check docs or skill first scenarios:
+- Must fallback to source analysis scenarios:
+- Boundary with business components:
 
-### 5. 回归重点
+### 5. Regression Focus
 
-- 组件回归：
-- 主题与样式回归：
-- 兼容性回归：
-- 文档同步要求：
+- Component regression:
+- Theme and style regression:
+- Compatibility regression:
+- Documentation sync requirements:
 
-### 6. 技能有效性与刷新条件
+### 6. Skill Validity and Refresh Conditions
 
-- 当前技能覆盖的项目边界：
-- 可直接复用的条件：
-- 必须刷新的信号：
-- 刷新时优先检查的目录、文档或配置：
+- Current skill coverage project boundaries:
+- Direct reuse conditions:
+- Must-refresh signals:
+- Prioritized directories, docs, or configs to check during refresh:
 
-## 使用要求
+## Usage Requirements
 
-- 当前项目的 UI 库 skill 默认存放在 `<shared-skill-root>/<project-slug>/ui/<ui-skill-slug>/SKILL.md`。
-- 若用户直接提供 UI 库 skills，则优先归档并复用，不重复生成。
-- 若用户只提供 UI 库文档，则先基于文档生成，再用仓库证据补齐入口与边界。
-- 只有在用户明确表示不提供 UI 库 skills / 文档后，且工作区存在可分析的自研 UI 库源码时，才可基于源码生成技能。
-- 若用户已给出 UI 库名称，则默认视为依赖名已知；若未给版本，可按最新版处理，不预先追问安装地址、本地路径或来源。
-- 只有在后续安装、导入或构建校验失败时，才回头向用户说明需要补充的包名、版本、来源或路径。
-- 当需要用户补充文档、skills、路径或组件规则时，应使用普通文本回复引导，明确告诉用户可以提供什么；也可以补一句“如果你暂时不提供，请回复继续/跳过，我会记录风险后继续”。
-- 不把一次性页面实现细节写入 UI 库 skill，只保留稳定的组件规则、入口、边界与刷新条件。
+- Current project's UI library skill defaults to `<shared-skill-root>/<project-slug>/ui/<ui-skill-slug>/SKILL.md`.
+- If user directly provides UI library skills, prioritize archiving and reuse, don't regenerate.
+- If user only provides UI library docs, first generate from docs, then supplement entries and boundaries with repository evidence.
+- Only after user explicitly says not providing UI library skills/docs, and workspace has analyzable custom UI library source, can generate skill from source.
+- If user already gave UI library name, default treat as dependency name known; if version not given, can use latest version, don't pre-ask install location, local path, or source.
+- Only when subsequent install, import, or build verification fails, then explain to user what package name, version, source, or path needs supplementing.
+- When needing user to supplement docs, skills, paths, or component rules, use plain text reply guidance, clearly tell user what can be provided; can also add "If you temporarily don't provide, please reply continue/skip, I'll record risk and proceed".
+- Don't write one-time page implementation details into UI library skill, only retain stable component rules, entries, boundaries, and refresh conditions.

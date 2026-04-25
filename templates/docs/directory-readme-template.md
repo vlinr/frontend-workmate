@@ -1,67 +1,67 @@
-# 目录说明模板
+# Directory Documentation Template
 
-## 1. 功能作用
+## 1. Purpose and Function
 
-- 当前目录用途：
-- 核心能力：
-- 与其他目录的关系：
+- Current directory purpose:
+- Core capabilities:
+- Relationship with other directories:
 
-## 2. 适用场景
+## 2. Applicable Scenarios
 
-- 适合处理的业务场景：
-- 不适合放在本目录的内容：
+- Suitable business scenarios to handle:
+- Content not suitable for this directory:
 
-## 3. 对外契约
+## 3. External Contracts
 
-- 主要导出或入口：
-- 关键参数/配置：
-- 依赖前提：
+- Main exports or entries:
+- Key parameters/configurations:
+- Dependency prerequisites:
 
-## 4. 项目内引用分析
+## 4. In-Project Reference Analysis
 
-### 模式 A
-
-```tsx
-// 在这里放代表性引用片段
-```
-
-来源场景：标准接入
-
-### 模式 B
+### Pattern A
 
 ```tsx
-// 在这里放代表性引用片段
+// Place representative reference snippet here
 ```
 
-来源场景：变体接入
+Source scenario: Standard integration
 
-### 模式 C
+### Pattern B
 
 ```tsx
-// 在这里放边界或特殊用法片段
+// Place representative reference snippet here
 ```
 
-来源场景：边界用法
+Source scenario: Variant integration
 
-## 5. 使用规则
-
-- 目录放置规则：
-- 命名规则：
-- 接入规则：
-- 约束与禁忌：
-
-## 6. 使用案例
+### Pattern C
 
 ```tsx
-// 最小可用示例
+// Place boundary or special usage snippet here
+```
+
+Source scenario: Boundary usage
+
+## 5. Usage Rules
+
+- Directory placement rules:
+- Naming rules:
+- Integration rules:
+- Constraints and prohibitions:
+
+## 6. Usage Examples
+
+```tsx
+// Minimal working example
 ```
 
 ```tsx
-// 特殊用法示例
+// Special usage example
 ```
 
-## 7. 注意事项
+## 7. Notes
 
-- 容易踩坑点：
-- 兼容性注意点：
-- 文档同步要求：
+- Common pitfalls:
+- Compatibility notes:
+- Documentation sync requirements:

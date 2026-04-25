@@ -1,56 +1,56 @@
 # Project Architecture Profile Template
 
-## 1. 项目概览
+## 1. Project Overview
 
-- 项目名称：
-- 项目定位：
-- 是否多前端子项目：`是 | 否`
-- 【工作目录】下的前端项目根目录：
-- 主要技术栈：
-- 底层框架：
-- 底层框架版本：
-- 语言框架：
-- 语言框架版本：
-- 语言：
-- UI 库：
-- UI 库版本：
-- 项目来源：`用户提供 skills | 用户提供文档 | 仓库扫描 | 空白初始化`
-- 是否为空白项目：`是 | 否`
-- 是否存在前端项目：`是 | 否`
-- 若不存在前端项目是否初始化：`是 | 否 | 跳过`
-- 初始化组合：`底层框架 + 语言框架 + 语言 + UI 库`
-- UI 库类型：`通用 | 自研 | not_applicable`
-- UI 库名称：
-- UI 库版本：
-- UI 库主入口：
-- UI 库资料来源：`用户提供 skills | 用户提供文档 | 源码分析 | not_applicable`
+- Project name:
+- Project positioning:
+- Is multi-frontend sub-projects: `Yes | No`
+- Frontend project root directory under [Work Directory]:
+- Main tech stack:
+- Base framework:
+- Base framework version:
+- Language framework:
+- Language framework version:
+- Language:
+- UI library:
+- UI library version:
+- Project source: `User provided skills | User provided docs | Repository scan | Blank initialization`
+- Is blank project: `Yes | No`
+- Does frontend project exist: `Yes | No`
+- If no frontend project, should initialize: `Yes | No | Skip`
+- Initialization combo: `Base framework + Language framework + Language + UI library`
+- UI library type: `General | Custom | not_applicable`
+- UI library name:
+- UI library version:
+- UI library main entry:
+- UI library material source: `User provided skills | User provided docs | Source code analysis | not_applicable`
 
-## 2. 条件判断清单
+## 2. Condition Judgment Checklist
 
-在补齐以下内容前，先判断项目是否真实存在对应结构或能力；不存在时标记为 `not_applicable`，不要为了模板完整性补虚构信息。
+Before filling the following content, first judge whether the project truly has corresponding structure or capability; if not, mark as `not_applicable`, don't fabricate info for template completeness.
 
-| 逻辑域 | 是否存在 | 判断条件 | 若不存在如何处理 |
+| Logic Domain | Exists | Judgment Condition | If Not Exists, How to Handle |
 | --- | --- | --- | --- |
-| 多前端子项目 | `yes | no` | 【工作目录】内存在多个可独立启动/构建的前端项目 | 标记 `not_applicable`，仅维护单项目画像 |
-| 路由层 | `yes | no` | 项目存在集中式或约定式路由入口 | 标记 `not_applicable`，说明页面直连或轻路由模式 |
-| 状态管理层 | `yes | no` | 存在 store、model、context、redux/rematch、zustand 等 | 标记 `not_applicable`，说明以局部状态为主 |
-| 国际化层 | `yes | no` | 存在 locale、语言包、翻译函数、多语言配置 | 标记 `not_applicable`，说明项目无国际化要求 |
-| 构建重写层 | `yes | no` | 存在 webpack/vite/cra 重写配置、自定义构建链路 | 标记 `not_applicable`，仅保留基础构建命令 |
-| OEM / 多变体 | `yes | no` | 存在品牌配置、差异打包、运行时品牌判断 | 标记 `not_applicable`，不要补 OEM 相关结论 |
-| alias | `yes | no` | 存在 tsconfig paths、webpack alias、vite alias | 标记 `not_applicable`，按相对路径说明 |
-| Mock / 联调环境 | `yes | no` | 存在 mock 脚本、代理配置、联调环境约定 | 标记 `not_applicable`，仅保留基础启动方式 |
-| UI 框架 | `yes | no` | 存在通用 UI 库或自研 UI 组件体系 | 标记 `not_applicable`，不要虚构框架约束 |
-| 自研 UI 框架 | `yes | no` | UI 能力主要来自【工作目录】内自研组件库或设计系统 | 标记 `not_applicable`，只保留通用框架信息 |
+| Multi-frontend sub-projects | `yes | no` | Multiple independently startable/buildable frontend projects in [Work Directory] | Mark `not_applicable`, only maintain single project profile |
+| Route layer | `yes | no` | Project has centralized or conventional route entry | Mark `not_applicable`, explain page direct-connect or light route mode |
+| State management layer | `yes | no` | Exists store, model, context, redux/rematch, zustand, etc. | Mark `not_applicable`, explain primarily local state |
+| Internationalization layer | `yes | no` | Exists locale, language packs, translation functions, multilingual config | Mark `not_applicable`, explain project has no internationalization requirement |
+| Build rewrite layer | `yes | no` | Exists webpack/vite/cra rewrite config, custom build chain | Mark `not_applicable`, only retain basic build commands |
+| OEM / Multi-variant | `yes | no` | Exists brand config, differential packaging, runtime brand judgment | Mark `not_applicable`, don't add OEM-related conclusions |
+| alias | `yes | no` | Exists tsconfig paths, webpack alias, vite alias | Mark `not_applicable`, explain by relative path |
+| Mock / Integration environment | `yes | no` | Exists mock scripts, proxy config, integration environment convention | Mark `not_applicable`, only retain basic startup method |
+| UI framework | `yes | no` | Exists general UI library or custom UI component system | Mark `not_applicable`, don't fabricate framework constraints |
+| Custom UI framework | `yes | no` | UI capability primarily from custom component library or design system within [Work Directory] | Mark `not_applicable`, only retain general framework info |
 
-## 3. 子项目清单
+## 3. Sub-Project List
 
-| 子项目 | 用途 | 技术栈 | 入口 | 启动命令 | 构建命令 |
+| Sub-Project | Purpose | Tech Stack | Entry | Start Command | Build Command |
 | --- | --- | --- | --- | --- | --- |
 | `<sub-project>` |  |  |  |  |  |
 
-## 4. 目录结构摘要
+## 4. Directory Structure Summary
 
-| 目录 | 作用 | 研发关注点 |
+| Directory | Purpose | Development Focus |
 | --- | --- | --- |
 | `src/` |  |  |
 | `src/pages/` |  |  |
@@ -58,60 +58,60 @@
 | `src/service/` |  |  |
 | `src/models/` |  |  |
 
-## 5. 关键入口
+## 5. Key Entries
 
-- 应用入口是否存在：
-- 应用入口：
-- 路由入口是否存在：
-- 路由入口：
-- API 配置入口是否存在：
-- API 配置入口：
-- 状态管理入口是否存在：
-- 状态管理入口：
-- 国际化入口是否存在：
-- 国际化入口：
-- 样式入口是否存在：
-- 样式入口：
-- 构建配置入口是否存在：
-- 构建配置入口：
+- Application entry exists:
+- Application entry:
+- Route entry exists:
+- Route entry:
+- API config entry exists:
+- API config entry:
+- State management entry exists:
+- State management entry:
+- Internationalization entry exists:
+- Internationalization entry:
+- Style entry exists:
+- Style entry:
+- Build config entry exists:
+- Build config entry:
 
-## 6. 架构约束
+## 6. Architecture Constraints
 
-- UI 组件选型规则：
-- UI 框架识别规则：
-- UI 框架版本识别依据：
-- 自研 UI 框架目录入口：
-- 自研 UI 框架 skill 归档路径：
-- UI 框架 skill 刷新信号：
-- 路由接入规则：
-- API 与 service 约束：
-- 状态管理约束：
-- 国际化约束：
-- 样式约束：
-- 构建与发布约束：
+- UI component selection rules:
+- UI framework identification rules:
+- UI framework version identification basis:
+- Custom UI framework directory entry:
+- Custom UI framework skill archive path:
+- UI framework skill refresh signals:
+- Route integration rules:
+- API and service constraints:
+- State management constraints:
+- Internationalization constraints:
+- Style constraints:
+- Build and release constraints:
 
-## 7. 开发命令
+## 7. Development Commands
 
-| 场景 | 命令 | 说明 |
+| Scenario | Command | Description |
 | --- | --- | --- |
-| 安装依赖 |  |  |
-| 本地启动 |  |  |
-| 测试 |  |  |
-| 构建 |  |  |
-| 代码质量 |  |  |
+| Install dependencies |  |  |
+| Local start |  |  |
+| Test |  |  |
+| Build |  |  |
+| Code quality |  |  |
 
-## 8. 风险与边界
+## 8. Risks and Boundaries
 
-- 高频风险点：
-- 历史兼容点：
-- 禁止直接改动区域：
-- 联调依赖：
+- High-frequency risk points:
+- Historical compatibility points:
+- Forbidden direct modification areas:
+- Integration dependencies:
 
-## 9. 输出结论
+## 9. Output Conclusions
 
-- 生成或刷新后的项目技能路径：
-- 生成或刷新后的 UI 框架 skill 路径：
-- 推荐优先使用的项目技能：
-- 推荐优先使用的 UI 框架 skill：
-- 后续需要补齐的项目知识：
-- 是否可进入需求分析：`是 | 否`
+- Generated or refreshed project skill path:
+- Generated or refreshed UI framework skill path:
+- Recommended project skill to prioritize:
+- Recommended UI framework skill to prioritize:
+- Project knowledge needing supplementation:
+- Can proceed to requirement analysis: `Yes | No`

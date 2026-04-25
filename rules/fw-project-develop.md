@@ -1,72 +1,72 @@
-# frontend-workmate 工具包维护文档
+# frontend-workmate Toolkit Maintenance Documentation
 
-> 说明：当前文件保留在【当前技能目录】内作为维护副本；这里描述的是项目技能产物 `fw-project-develop`，项目技能由 Stage 1（项目扫描）生成或刷新。
+> Note: Current file is retained in Current Skill Directory as maintenance copy; here describes project skill artifact `fw-project-develop`, project skill is generated or refreshed by Stage 1 (Project Scan).
 
-## 目录概念说明
+## Directory Concept Description
 
-项目技能存放位置详见 `SKILL.md` 中的"目录概念映射表"。项目技能 `fw-project-develop` 存放于【技能目录】（和【当前技能目录】同级），而非【工作目录】或【代码改动目录】。
+Project skill storage location is detailed in `SKILL.md` under "Directory Concept Mapping". Project skill `fw-project-develop` is stored in Skill Directory (at the same level as Current Skill Directory), not in Working Directory or Code Change Directory.
 
-## 项目定位
+## Project Positioning
 
-- 本仓库不是业务前端应用，而是"前端研发流程工具包"。
-- 主目标是沉淀可复用的前端研发编排技能、项目扫描技能、需求分析模板、执行模板、验证模板与目录说明规范。
-- 后续围绕本仓库的修改，优先视为"编排协议、模板、技能库"层面的维护，而不是页面业务开发。
+- This repository is not a business frontend application, but a "frontend development workflow toolkit".
+- Main goal is consolidating reusable frontend development orchestration skills, project scan skills, requirement analysis templates, execution templates, verification templates and directory documentation standards.
+- Subsequent modifications around this repository, prioritize treating as "orchestration protocol, templates, skill library" level maintenance, not page business development.
 
-## 目录路由
+## Directory Routing
 
-| 研发对象 | 优先目录 | 说明 |
+| Development Object | Priority Directory | Description |
 | --- | --- | --- |
-| 主编排入口 | `SKILL.md` | 【当前技能目录】的总编排协议 |
-| 通用模板 | `templates/` | 放需求、项目、分析、任务、验证、文档模板 |
-| 共享公共技能 | 公共技能包 | Stage 0 初始化后可直接按技能名调用的公共能力 |
-| 流程规则文档 | `rules/frontend-orchestrator`、`rules/project-scan-profile`、`rules/frontend-change-scope`、`rules/frontend-implementation`、`rules/frontend-verification`、`rules/directory-doc-sync` | 主流程各阶段规则 |
-| 项目级技能 | `fw-project-develop` | 项目技能产物，由 Stage 1 生成或刷新 |
-| 任务续跑记录 | `temp/task-runs/` | 仅在长任务或断点续跑时创建的临时记录 |
-| 目录文档模板 | `templates/docs/directory-readme-template.md` | 目录说明文档生成模板 |
+| Master orchestration entry | `SKILL.md` | Current Skill Directory's master orchestration protocol |
+| Common templates | `templates/` | Place requirement, project, analysis, task, verification, documentation templates |
+| Shared public skills | Public skill pack | After Stage 0 initialization, can directly invoke public capabilities by skill name |
+| Workflow rule documents | `rules/frontend-orchestrator`, `rules/project-scan-profile`, `rules/frontend-change-scope`, `rules/frontend-implementation`, `rules/frontend-verification`, `rules/directory-doc-sync` | Main workflow each phase rules |
+| Project-level skills | `fw-project-develop` | Project skill artifact, generated or refreshed by Stage 1 |
+| Task resume records | `temp/task-runs/` | Temporary records only created when long task or checkpoint resume |
+| Directory doc template | `templates/docs/directory-readme-template.md` | Directory documentation generation template |
 
-## 当前研发约束
+## Current Development Constraints
 
-- 根级 `SKILL.md` 是实际可执行的编排协议，后续要继续围绕它打磨。
-- Stage 0 若存在 `scripts/init-skills.js`，应先把【静态配置目录】下的 `skills/curated/`、`skills/external/` 里的技能整理为可直接调用的公共技能包（拷贝到【静态技能目录】），再进入正式阶段扫描。
-- Stage 1 应先检查是否已存在项目技能 `fw-project-develop`；只有找不到合适候选时，才生成或刷新该产物。
-- 若用户提供项目 skills、项目文档、UI 框架 skills 或 UI 框架文档，应优先吸收并归档，再决定是否继续内部生成。
-- 若【工作目录】为空白项目或不存在前端工程，Stage 1 需要先确认是否协助初始化；用户回复"退出"或"结束"时流程终止；用户回复"跳过"或空回复时采用默认方案继续初始化。
-- 凡是需要用户提供的信息，都必须等待用户明确回答；不能由 AI 直接假设并执行初始化、选型或技能生成。
-- Stage 1 生成或刷新项目技能后，需要向用户展示项目结构、底层框架、语言框架、语言、UI 库与关键约束，并等待确认；用户若纠正，则留在 Stage 1 继续修正。
-- Stage 2 形成任务类型、修改范围、风险与技能路线后，需要先让用户确认分析结论是否正确；若用户补充，则继续留在分析回路中合并修正。
-- 若只是完成项目初始化或依赖安装，但尚未形成项目 skill 或尚未完成 Stage 2 确认，仍不得进入研发。
-- 若已安装的是私有/自研 UI 库，且组件规则尚不清晰，需要先得到"提供文档/skills/说明"或"明确不提供"的结论，再进入研发。
-- Stage 5 在正式执行前负责按任务类型吸收前置资料：`feature` 默认确认，`bug` 仅在涉及接口、联调、权限、设计或三方库时确认，`refactor` 默认可跳过。
-- Stage 5 依赖的公共技能优先按配置文件路径调用：**先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，动态拼接 `{static_config_dir}/skills/fw-systematic-debugging/SKILL.md`、`{static_config_dir}/skills/fw-task-plan-checkpoint/SKILL.md`、`{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md`。
-- Stage 6 内部验证输出后，应先等待用户确认；用户确认后再进入 Stage 7 与 Stage 8，若用户提出问题再回退修正。
-- 所有路径统一使用【当前技能目录】内相对路径。
-- 若某项逻辑当前不存在，必须标记 `not_applicable`，不能为了完整性补虚构信息。
-- 当前阶段不保留 `skills/external/` 扩展技能层。
-- 历史样例目录不属于主流程依赖，目录说明文档统一以 `templates/docs/directory-readme-template.md` 与 `rules/directory-doc-sync.md` 为准。
+- Root-level `SKILL.md` is actually executable orchestration protocol, subsequent should continue polishing around it.
+- Stage 0 if `scripts/init-skills.js` exists, should first organize skills under `skills/curated/`, `skills/external/` in Static Config Directory into directly callable public skill pack (copy to Static Skill Directory), then enter formal phase scan.
+- Stage 1 should first check whether project skill `fw-project-develop` already exists; only when suitable candidate cannot be found, then generate or refresh that artifact.
+- If user provides project skills, project documentation, UI framework skills or UI framework documentation, should prioritize absorbing and archiving, then decide whether to continue internal generation.
+- If Working Directory is blank project or frontend engineering doesn't exist, Stage 1 needs first to confirm whether to assist initialization; when user replies "exit" or "end", workflow terminates; when user replies "skip" or empty reply, use default plan to continue initialization.
+- All info requiring user to provide must wait for user to explicitly answer; cannot have AI directly assume and execute initialization, selection or skill generation.
+- After Stage 1 generates or refreshes project skill, needs to show user project structure, underlying framework, language framework, language, UI library and key constraints, and wait for confirmation; if user corrects, then stay in Stage 1 to continue fixing.
+- After Stage 2 forms task type, modification scope, risks and skill route, needs first to let user confirm whether analysis conclusion is correct; if user supplements, then continue staying in analysis loop to merge corrections.
+- If only completed project initialization or dependency installation, but project skill hasn't formed or Stage 2 confirmation hasn't completed, still must not enter development.
+- If installed is private/self-developed UI library, and component rules still unclear, needs first to get "provide documentation/skills/description" or "explicitly not provide" conclusion, then enter development.
+- Stage 5 before formal execution, responsible for absorbing prerequisite materials by task type: `feature` default confirm, `bug` only confirm when involves interface, integration, permission, design or third-party library, `refactor` default can skip.
+- Stage 5 dependent public skills prioritize invoking by config file path: **First read config file** `{project_ide_dir}/.fw-session-config.json`, dynamically concatenate `{static_config_dir}/skills/fw-systematic-debugging/SKILL.md`, `{static_config_dir}/skills/fw-task-plan-checkpoint/SKILL.md`, `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md`.
+- After Stage 6 internal verification output, should first wait for user confirmation; after user confirmation then enter Stage 7 and Stage 8, if user raises questions then fallback to fix.
+- All paths uniformly use relative paths within Current Skill Directory.
+- If some logic currently doesn't exist, must mark `not_applicable`, cannot fabricate information for completeness.
+- Current phase doesn't retain `skills/external/` extension skill layer.
+- Historical sample directories don't belong to main workflow dependency, directory documentation uniformly based on `templates/docs/directory-readme-template.md` and `rules/directory-doc-sync.md`.
 
-## 研发优先级
+## Development Priority
 
-- 修改根级编排协议时，优先同步 `rules/frontend-orchestrator.md` 与相关阶段规则。
-- 修改 Stage 1 逻辑时，优先同步 `rules/project-scan-profile.md`、`templates/project/` 与 `fw-project-develop` 的产物约定。
-- 修改阶段产物契约时，优先同步对应 `templates/` 文件。
-- 修改交付规则或续跑规则时，优先同步 `fw-task-plan-checkpoint` 与 `temp/task-runs/` 的约定。
+- When modifying root-level orchestration protocol, prioritize syncing `rules/frontend-orchestrator.md` and related phase rules.
+- When modifying Stage 1 logic, prioritize syncing `rules/project-scan-profile.md`, `templates/project/` and `fw-project-develop` artifact conventions.
+- When modifying phase artifact contract, prioritize syncing corresponding `templates/` files.
+- When modifying delivery rules or resume rules, prioritize syncing `fw-task-plan-checkpoint` and `temp/task-runs/` conventions.
 
-## 回归重点
+## Regression Focus
 
-- 根级 `SKILL.md` 与阶段规则是否一致。
-- Stage 1 是否体现"先查【技能目录】下已有项目技能候选，再决定是否扫描并标准化归档"。
-- Stage 1 是否体现"先吸收用户提供资料、再处理空白初始化、再决定是否内部扫描与生成"。
-- Stage 1 项目技能结论是否增加了显式用户确认闭环。
-- Stage 2 范围分析结论是否增加了显式用户确认闭环。
-- Stage 5 执行前资料补充是否按任务类型触发，而不是默认全量询问。
-- Stage 6 是否体现"内部验证通过后仍需用户审查"的门禁。
-- 所有"由用户提供"的字段是否都存在明确等待门禁，而不是被 AI 自动补齐。
-- 模板契约与编排协议是否一致。
-- 任务记录中的版本号与实际改动是否一致。
+- Whether root-level `SKILL.md` and phase rules are consistent.
+- Whether Stage 1 reflects "first check existing project skill candidates in Skill Directory, then decide whether to scan and standardize archive".
+- Whether Stage 1 reflects "first absorb user provided materials, then handle blank initialization, then decide whether internal scan and generation".
+- Whether Stage 1 project skill conclusion added explicit user confirmation loop.
+- Whether Stage 2 scope analysis conclusion added explicit user confirmation loop.
+- Whether Stage 5 pre-execution material supplement triggers by task type, not default full inquiry.
+- Whether Stage 6 reflects "after internal verification pass still needs user review" gate.
+- Whether all "user provided" fields have explicit wait gate, not being automatically filled by AI.
+- Whether template contract and orchestration protocol are consistent.
+- Whether version number in task record and actual changes are consistent.
 
-## 技能有效性与刷新条件
+## Skill Validity and Refresh Conditions
 
-- 当前技能覆盖的项目边界：`frontend-workmate` 根级编排协议、模板目录、技能目录、项目技能发现规则与任务记录约定。
-- 可直接复用的条件：根级流程阶段未发生结构性调整，`templates/` 与 `skills/` 的主目录职责未发生明显变化，项目技能发现与标准化归档机制仍然成立。
-- 必须刷新的信号：新增或删除关键阶段技能、模板契约发生明显变化、项目技能发现顺序变化、空白初始化分支变化、UI 框架技能接入规则变化、主编排协议调整了 Stage 含义、用户确认闭环或技能调用规则。
-- 刷新时优先检查的目录或配置：`SKILL.md`、`templates/`、`scripts/init-skills.js`、`rules/` 目录下的各规则文档与 `fw-project-develop`。
+- Current skill covered project boundary: `frontend-workmate` root-level orchestration protocol, template directories, skill directories, project skill discovery rules and task record conventions.
+- Directly reusable conditions: Root-level workflow phases haven't undergone structural adjustment, main directory responsibilities under `templates/` and `skills/` haven't significantly changed, project skill discovery and standardize archive mechanism still holds.
+- Must refresh signals: Added or removed critical phase skills, template contract significantly changed, project skill discovery order changed, blank initialization branch changed, UI framework skill access rules changed, master orchestration protocol adjusted Stage meaning, user confirmation loop or skill invocation rules.
+- When refreshing prioritize checking directories or config: `SKILL.md`, `templates/`, `scripts/init-skills.js`, rule documents under `rules/` directory and `fw-project-develop`.

@@ -1,58 +1,58 @@
 # Execution Plan Template
 
-## 1. 任务概览
+## 1. Task Overview
 
-- 任务名称：
-- 对应需求：
-- 执行模式：`直接执行 | 长任务`
-- 负责人：
-- 任务标识：
-- 当前阶段：`stage0 | stage1 | stage2 | stage3 | stage4 | stage5 | stage6 | stage7 | stage8`
-- 当前阶段状态：`pending | in_progress | waiting_user | completed | blocked`
-- 下一阶段：`stage0 | stage1 | stage2 | stage3 | stage4 | stage5 | stage6 | stage7 | stage8 | not_applicable`
-- 当前阶段目标：
-- 当前阶段进入条件：
-- 当前阶段完成条件：
-- 阶段阻塞原因：
+- Task name:
+- Corresponding requirement:
+- Execution mode: `Direct execute | Long task`
+- Responsible person:
+- Task identifier:
+- Current stage: `stage0 | stage1 | stage2 | stage3 | stage4 | stage5 | stage6 | stage7 | stage8`
+- Current stage status: `pending | in_progress | waiting_user | completed | blocked`
+- Next stage: `stage0 | stage1 | stage2 | stage3 | stage4 | stage5 | stage6 | stage7 | stage8 | not_applicable`
+- Current stage goal:
+- Current stage entry condition:
+- Current stage completion condition:
+- Stage blocking reason:
 
-## 2. 步骤拆解
+## 2. Step Breakdown
 
-| Step ID | 标题 | 目标 | 输入/依赖 | 预期产出 | 状态 | 版本 |
+| Step ID | Title | Goal | Input/Dependencies | Expected Output | Status | Version |
 | --- | --- | --- | --- | --- | --- | --- |
 | S01 |  |  |  |  | `pending` | `v1` |
 
-## 3. 能力绑定
+## 3. Skill Binding
 
-| 步骤 | 使用的 skill | 是否调用 MCP | 失败降级策略 |
+| Step | Skill Used | MCP Invoked | Fallback Strategy |
 | --- | --- | --- | --- |
-| S01 |  | `是 | 否` |  |
+| S01 |  | `Yes | No` |  |
 
-## 4. 关键门禁
+## 4. Key Gates
 
-- 进入研发前门禁：
-- 进入验证前门禁：
-- 进入交付前门禁：
-- Stage 1 用户确认状态：`approved | revise_needed | not_applicable`
-- Stage 2 用户确认状态：`approved | revise_needed | pending`
-- Stage 6 用户审查状态：`approved | revise_needed | pending | not_applicable`
+- Pre-development gate:
+- Pre-verification gate:
+- Pre-delivery gate:
+- Stage 1 user confirmation status: `approved | revise_needed | not_applicable`
+- Stage 2 user confirmation status: `approved | revise_needed | pending`
+- Stage 6 user review status: `approved | revise_needed | pending | not_applicable`
 
-## 5. 风险与回退
+## 5. Risks and Rollback
 
-- 高风险步骤：
-- 回退点：
-- 用户确认点：
-- 用户审查点：
+- High-risk steps:
+- Rollback points:
+- User confirmation points:
+- User review points:
 
-## 6. 执行结论
+## 6. Execution Conclusion
 
-- 是否可直接执行：`yes | no`
-- 若否，阻塞项：
-- 断点续跑策略：
-- 下一步：
-- 当前等待对象：`用户确认 | 用户审查 | 内部执行 | 无`
+- Can execute directly: `yes | no`
+- If no, blocking items:
+- Checkpoint resume strategy:
+- Next step:
+- Currently waiting for: `User confirmation | User review | Internal execution | None`
 
-## 7. 阶段切换要求
+## 7. Stage Switch Requirements
 
-- 切换阶段前，必须先更新“当前阶段 / 当前阶段状态 / 下一阶段 / 阶段阻塞原因”。
-- 若当前阶段状态不是 `completed`，不得切换到下一阶段。
-- 若当前阶段状态为 `waiting_user` 或 `blocked`，执行计划必须停留在当前阶段，不得继续执行后续步骤。
+- Before switching stage, must first update "current stage / current stage status / next stage / stage blocking reason".
+- If current stage status is not `completed`, cannot switch to next stage.
+- If current stage status is `waiting_user` or `blocked`, execution plan must stay at current stage, cannot continue executing subsequent steps.

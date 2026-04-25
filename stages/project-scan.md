@@ -1,576 +1,576 @@
-# Stage 1：扫描仓库与项目
+# Stage 1: Scan Repository and Project
 
-## ⚠️ 强制规则（必须遵守）
+## ⚠️ Mandatory Rules (Must Follow)
 
-### 1. 单一阶段输出原则
+### 1. Single Phase Output Principle
 
-**本阶段输出只能包含项目扫描内容，禁止幻想未来阶段**：
+**This phase output must only contain project scan content, prohibited from imagining future phases**:
 
-| 禁止内容 | 说明 |
+| Prohibited Content | Description |
 | --- | --- |
-| "页面实现计划" | 禁止输出实现阶段的内容 |
-| "接下来要开发xxx" | 禁止输出未来阶段的计划 |
-| 任务分解列表 | 禁止自创任务列表 |
-| "验证和优化" | 禁止输出验证阶段的内容 |
+| "Page implementation plan" | Prohibited from outputting implementation phase content |
+| "Will develop xxx next" | Prohibited from outputting future phase plans |
+| Task breakdown list | Prohibited from creating task lists |
+| "Verification and optimization" | Prohibited from outputting verification phase content |
 
-**正确输出**：
+**Correct Output**:
 ```
-[项目扫描] 任务ID: task_xxxxxxxx
-正在扫描项目...
-[项目扫描] 已生成项目技能 fw-project-develop。
-请确认是否可以继续进入下一阶段：[范围分析]。
+[Project Scan] Task ID: task_xxxxxxxx
+Scanning project...
+[Project Scan] Generated project skill fw-project-develop.
+Please confirm if we can proceed to next phase: [Scope Analysis].
 ```
 
-### 2. 任务ID携带原则
+### 2. Task ID Carrying Principle
 
-**本阶段必须携带任务ID**：
-- 第一行输出必须包含任务ID：`[项目扫描] 任务ID: task_xxxxxxxx`
-- 状态文件更新必须携带任务ID
-- 禁止脱离任务上下文执行操作
+**This phase must carry Task ID**:
+- First line output must contain Task ID: `[Project Scan] Task ID: task_xxxxxxxx`
+- State file update must carry Task ID
+- Prohibited from executing operations outside task context
 
-### 3. 必须等待用户确认
+### 3. Must Wait for User Confirmation
 
-**项目技能生成后**：
-- 输出项目技能摘要
-- 输出确认提示语
-- 结束当前回复
-- 等待用户回复"继续"或提出修改
+**After project skill generation**:
+- Output project skill summary
+- Output confirmation prompt
+- End current reply
+- Wait for user to reply "continue" or propose modifications
 
 ---
 
-## 目标
+## Goal
 
-- 以当前项目的固定项目技能名 `fw-project-develop` 作为本阶段主产物。
-- **项目技能存放位置**：存放于【技能目录】。
-- 若已有项目 skills，则先检查是否仍可复用、是否需要刷新。
-- 若尚无项目 skills，则扫描项目并生成首版 `fw-project-develop`。
-- 若用户补充项目 skills、项目文档或项目约束，则必须先判断其属于"项目长期规则"还是"当前任务约束"；只有项目长期规则才合并到项目技能产物，再决定是否刷新。
+- Use fixed project skill name `fw-project-develop` as this phase's main artifact.
+- **Project Skill Location**: Stored in Skill Directory.
+- If project skills already exist, first check if still reusable, if needs refresh.
+- If no project skills yet, scan project and generate initial `fw-project-develop`.
+- If user supplements project skills, project documentation or project constraints, must first determine if they belong to "project long-term rules" or "current task constraints"; only project long-term rules are merged into project skill artifact, then decide if refresh needed.
 
-## 第一步：更新状态文件
+## Step 1: Update State File
 
-**进入本阶段后，必须立即执行以下编辑操作**：
+**After entering this phase, must immediately execute the following edit operations**:
 
-### 进入本阶段时编辑
+### Edit When Entering This Phase
 
-**根据当前任务ID（从上下文获取 `current_task_id`）找到对应的状态块**：
-- 查找 `<!-- TASK_{任务ID大写}_START -->` 到 `<!-- TASK_{任务ID大写}_END -->` 之间的内容
-- 使用 edit 工具替换该状态块内容为：
-
-```
-**任务ID**: {当前任务ID}
-**正在执行**: 项目扫描
-**阶段**: stage1
-**状态**: in_progress
-**下一步**: 执行项目扫描，输出项目技能摘要
-**用户提出修改时**: 状态保持 stage1 → 合并用户反馈 → 更新 fw-project-develop → 再次输出摘要
-**循环路径**: stage1 → stage1 → 循环直到用户回复"继续"
-```
-
-### 输出摘要后再次编辑
-
-等待用户确认时，再次使用 edit 工具更新该任务ID的状态块为：
+**Find corresponding status block based on current Task ID (get `current_task_id` from context)**:
+- Find content between `<!-- TASK_{TASK_ID_UPPERCASE}_START -->` and `<!-- TASK_{TASK_ID_UPPERCASE}_END -->`
+- Use edit tool to replace that status block content with:
 
 ```
-**任务ID**: {当前任务ID}
-**正在执行**: 项目扫描
-**阶段**: stage1
-**状态**: waiting_user
-**下一步**: 等待用户确认项目技能是否正确
-**用户提出修改时**: 状态保持 stage1 → 执行合并更新 → 再次输出摘要 → 等待确认
-**循环路径**: stage1 → stage1 → 循环直到用户回复"继续"
+**Task ID**: {Current Task ID}
+**Currently Executing**: Project Scan
+**Phase**: stage1
+**Status**: in_progress
+**Next Step**: Execute project scan, output project skill summary
+**User Proposed Modifications**: Status stays stage1 → merge user feedback → update fw-project-develop → re-output summary
+**Loop Path**: stage1 → stage1 → loop until user replies "continue"
 ```
 
-### 用户提出修改时再次编辑
+### Edit Again After Outputting Summary
 
-**用户提出修改/问题时的循环路径**：
+When waiting for user confirmation, use edit tool again to update that Task ID's status block to:
 
-1. **状态保持 stage1**：
+```
+**Task ID**: {Current Task ID}
+**Currently Executing**: Project Scan
+**Phase**: stage1
+**Status**: waiting_user
+**Next Step**: Wait for user to confirm if project skill is correct
+**User Proposed Modifications**: Status stays stage1 → execute merge update → re-output summary → wait for confirmation
+**Loop Path**: stage1 → stage1 → loop until user replies "continue"
+```
+
+### Edit Again When User Proposes Modifications
+
+**Loop path when user proposes modifications/issues**:
+
+1. **Status stays stage1**:
    ```
-   **正在执行**: 项目扫描
-   **阶段**: stage1
-   **状态**: in_progress
-   **下一步**: 合并用户反馈，更新 fw-project-develop
-   **用户提出修改时**: 状态保持 stage1 → 合并更新 → 再次输出摘要
-   **循环路径**: stage1 → stage1 → 循环直到用户回复"继续"
-   ```
-
-2. **执行合并更新**：读取用户反馈 → 合并到 fw-project-develop
-
-3. **再次输出摘要**：输出更新后的项目技能摘要
-
-4. **再次进入等待状态**：
-   ```
-   **正在执行**: 项目扫描
-   **阶段**: stage1
-   **状态**: waiting_user
-   **下一步**: 等待用户确认更新后的项目技能
-   **用户提出修改时**: 状态保持 stage1 → 合并更新 → 再次输出摘要
-   **循环路径**: stage1 → stage1 → 循环直到用户回复"继续"
+   **Currently Executing**: Project Scan
+   **Phase**: stage1
+   **Status**: in_progress
+   **Next Step**: Merge user feedback, update fw-project-develop
+   **User Proposed Modifications**: Status stays stage1 → merge update → re-output summary
+   **Loop Path**: stage1 → stage1 → loop until user replies "continue"
    ```
 
-5. **循环直到用户回复"继续"**，才进入下一阶段
+2. **Execute Merge Update**: Read user feedback → merge into fw-project-develop
 
-### 用户确认后再次编辑
+3. **Re-output Summary**: Output updated project skill summary
 
-进入下一阶段前，再次使用 edit 工具更新该任务ID的状态块为：
+4. **Re-enter Wait State**:
+   ```
+   **Currently Executing**: Project Scan
+   **Phase**: stage1
+   **Status**: waiting_user
+   **Next Step**: Wait for user to confirm updated project skill
+   **User Proposed Modifications**: Status stays stage1 → merge update → re-output summary
+   **Loop Path**: stage1 → stage1 → loop until user replies "continue"
+   ```
+
+5. **Loop until user replies "continue"**, then proceed to next phase
+
+### Edit Again After User Confirmation
+
+Before proceeding to next phase, use edit tool again to update that Task ID's status block to:
 
 ```
-**任务ID**: {当前任务ID}
-**正在执行**: 范围分析
-**阶段**: stage2
-**状态**: in_progress
-**下一步**: 执行 stages/scope-analysis.md
-**用户提出修改时**: 状态保持 stage2 → 合并用户反馈 → 更新分析结论 → 再次输出
-**循环路径**: stage2 → stage2 → 循环直到用户回复"继续"
+**Task ID**: {Current Task ID}
+**Currently Executing**: Scope Analysis
+**Phase**: stage2
+**Status**: in_progress
+**Next Step**: Execute stages/scope-analysis.md
+**User Proposed Modifications**: Status stays stage2 → merge user feedback → update analysis conclusion → re-output
+**Loop Path**: stage2 → stage2 → loop until user replies "continue"
 ```
 
-### 禁止事项
+### Prohibited Actions
 
-- 禁止不读取配置文件就猜测路径
-- 禁止在等待用户时不更新状态为 waiting_user
+- Prohibited from guessing paths without reading config file
+- Prohibited from not updating status to waiting_user when waiting for user
 
-详见 `SKILL.md` 中的"目录概念映射表"。
+See "Directory Concept Mapping" in `SKILL.md`.
 
-## 输入
+## Input
 
-- 【工作目录】
-- 【技能目录】下已有项目技能候选，包括历史项目技能候选与已生成的项目技能产物
-- 已有目录文档、入口文件、构建文件、脚本配置
-- 用户补充的项目 skills、项目文档、UI 框架文档、UI 框架 skills
+- Working Directory
+- Existing project skill candidates in Skill Directory, including historical project skill candidates and generated project skill artifacts
+- Existing directory documentation, entry files, build files, script configurations
+- User-supplemented project skills, project documentation, UI framework documentation, UI framework skills
 
-## 项目技能失效判定
+## Project Skill Invalidity Determination
 
-- 【工作目录】下的前端项目根目录、核心目录结构或入口文件已明显变化。
-- 技术栈、构建方式、路由方案、权限模型、状态管理方案发生变化。
-- UI 框架类型、框架版本、组件主入口或自研框架目录发生变化。
-- 现有项目技能缺少本次任务必需的关键目录路由或研发约束。
-- 用户提供了新的项目 skills、项目文档、UI 框架文档或 UI 框架 skills，且已覆盖旧来源。
-- 用户明确指出项目技能内容不准确或已过期。
-- 【工作目录】新增了前端子项目，但项目技能尚未覆盖。
+- Frontend project root directory, core directory structure or entry files in Working Directory have significantly changed.
+- Tech stack, build method, routing scheme, permission model, state management solution changed.
+- UI framework type, version, component main entry or self-developed framework directory changed.
+- Existing project skill lacks critical directory routing or development constraints required for this task.
+- User provided new project skills, project documentation, UI framework documentation or UI framework skills, and have overridden old sources.
+- User explicitly stated project skill content is inaccurate or expired.
+- Working Directory added new frontend sub-project, but project skill hasn't covered it yet.
 
-## 执行动作
+## Execution Actions
 
-### 通用扫描规则（所有分支必须遵循）
+### General Scan Rules (All Branches Must Follow)
 
-**在执行任何项目扫描动作前，必须遵循以下规则**：
+**Before executing any project scan action, must follow these rules**:
 
-1. **优先读取目录说明文档**：
-   - 在扫描任何目录前，先检查该目录下是否存在说明文档（如 `README.md`、`AGENTS.md`）
-   - 若存在说明文档 → **优先读取说明文档获取目录信息**，减少代码分析工作量
-   - 说明文档信息优先级：高于代码分析结果
-   - **禁止**：跳过说明文档直接分析代码
+1. **Prioritize Reading Directory Documentation**:
+   - Before scanning any directory, first check if directory documentation exists (like `README.md`, `AGENTS.md`)
+   - If documentation exists → **Prioritize reading documentation to get directory info**, reduce code analysis workload
+   - Documentation info priority: higher than code analysis results
+   - **Prohibited**: Skip documentation and directly analyze code
 
-2. **必须调用代码分析技能**：
-   - 项目扫描**必须调用** `fw-code-analysis-doc` 技能辅助分析
-  - 调用方式：**先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，动态拼接 `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md`
-   - 调用时机：需要分析目录结构、提取技术栈、理解模块关系时
-   - 调用目的：提升分析准确度，减少遗漏
-   - **禁止**：跳过技能调用直接分析代码
+2. **Must Invoke Code Analysis Skill**:
+   - Project scan **must invoke** `fw-code-analysis-doc` skill for auxiliary analysis
+   - Invocation method: **First read config file** `{project_ide_dir}/.fw-session-config.json`, dynamically concatenate `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md`
+   - Invocation timing: When need to analyze directory structure, extract tech stack, understand module relationships
+   - Invocation purpose: Improve analysis accuracy, reduce omissions
+   - **Prohibited**: Skip skill invocation and directly analyze code
 
-### 第一优先级：检查项目技能是否已存在
+### First Priority: Check if Project Skill Already Exists
 
-**必须先执行以下动作，再决定是否需要扫描项目**：
+**Must execute the following actions first, then decide if need to scan project**:
 
-1. **检查【技能目录】是否已存在固定项目技能名** `fw-project-develop`
-2. **检查【技能目录】是否已有历史项目技能候选**（如旧技能目录中的项目专项技能）
+1. **Check if fixed project skill name `fw-project-develop` already exists in Skill Directory**
+2. **Check if historical project skill candidates already exist in Skill Directory** (like project-specific skills in old skill directories)
 
-### 分支 A：项目技能已存在
+### Branch A: Project Skill Already Exists
 
-**若已存在可复用的项目技能，按以下顺序处理**：
+**If reusable project skill exists, process in the following order**:
 
-3. **先快速验证技能是否过期**（不扫描全项目，只检查关键锚点）：
-   - 检查【工作目录】下的前端项目根目录是否存在（与技能记录一致）
-   - 检查核心入口文件是否存在（如 `package.json`、`src/main.*`、`src/index.*`）
-   - 检查技术栈标识是否变化（读取 `package.json` 的 dependencies/devDependencies 关键字段）
-   - 若以上锚点均无变化 → **技能可复用，跳过项目扫描**
-   - 若任一锚点变化 → **技能需要刷新，进入增量扫描**
+3. **First quick verify if skill is expired** (don't scan whole project, only check key anchors):
+   - Check if frontend project root directory exists in Working Directory (consistent with skill record)
+   - Check if core entry files exist (like `package.json`, `src/main.*`, `src/index.*`)
+   - Check if tech stack identifiers changed (read `package.json` dependencies/devDependencies key fields)
+   - If all anchors unchanged → **Skill reusable, skip project scan**
+   - If any anchor changed → **Skill needs refresh, enter incremental scan**
 
-4. 若技能可复用：
-   - 输出：`已检测到现有项目技能 [fw-project-develop]，经快速验证技能内容与项目当前状态一致，无需更新。请确认项目技能是否正确。`
-   - 等待用户确认
-   - 用户确认后 → 技能作为 Stage 1 主产物，进入 Stage 2
+4. If skill reusable:
+   - Output: `Detected existing project skill [fw-project-develop], after quick verification skill content is consistent with project current state, no update needed. Please confirm if project skill is correct.`
+   - Wait for user confirmation
+   - After user confirmation → Skill as Stage 1 main artifact, proceed to Stage 2
 
-5. 若技能需要刷新：
-   - 输出：`已检测到现有项目技能 [fw-project-develop]，但项目关键锚点已变化（具体变化点），需要更新技能。我将执行增量扫描并刷新技能。`
-   - **执行增量扫描流程**：
-     - 1) 优先读取变化目录下的说明文档
-     - 2) **必须先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，动态拼接 `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` 分析变化部分
-     - 3) 合并新旧信息，刷新技能
-   - 刷新技能后输出摘要，等待用户确认
-   - **用户确认循环机制**：若用户提出修改或问题 → 理解并合并用户反馈 → 更新技能 → 再次输出摘要等待确认 → 直到用户回复"继续"
+5. If skill needs refresh:
+   - Output: `Detected existing project skill [fw-project-develop], but project key anchors have changed (specific change points), need to update skill. I will execute incremental scan and refresh skill.`
+   - **Execute incremental scan flow**:
+     - 1) Prioritize reading documentation in changed directories
+     - 2) **Must first read config file** `{project_ide_dir}/.fw-session-config.json`, dynamically concatenate `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` analyze changed parts
+     - 3) Merge old and new info, refresh skill
+   - After refreshing skill, output summary, wait for user confirmation
+   - **User confirmation loop mechanism**: If user proposes modifications or issues → Understand and merge user feedback → Update skill → Re-output summary wait for confirmation → Until user replies "continue"
 
-### 分支 B：项目技能不存在
+### Branch B: Project Skill Does Not Exist
 
-**若不存在可复用的项目技能，按以下顺序处理**：
+**If no reusable project skill exists, process in the following order**:
 
-6. **识别前端项目数量**（三种情况）：
-   - 未识别到前端项目 → 进入"是否初始化前端项目"询问分支
-   - 识别到唯一前端项目 → 直接锁定该项目，继续执行
-   - 识别到多个前端项目 → 向用户询问本次基于哪个项目继续
+6. **Identify frontend project count** (three scenarios):
+   - No frontend project identified → Enter "whether to initialize frontend project" inquiry branch
+   - Single frontend project identified → Directly lock that project, continue execution
+   - Multiple frontend projects identified → Ask user which project to continue based on
 
-7. 仅当多项目或无项目时，才在首轮向用户发起分支选择问题；若已锁定唯一前端项目，首轮不额外发问。
+7. Only when multiple projects or no project, ask user branch selection question in first round; if already locked single frontend project, first round no extra inquiry.
 
-8. 若用户尚未对"多项目选择"或"是否初始化"明确回答（`pending`），则停留在本阶段等待，不继续扫描。
+8. If user hasn't clearly answered "multiple project selection" or "whether to initialize" (pending), stay in this phase waiting, don't continue scanning.
 
 ---
 
-### 分支 B-0：未识别到前端项目（关键分支）
+### Branch B-0: No Frontend Project Identified (Critical Branch)
 
-**流程描述**：
+**Flow Description**:
 
-当未识别到前端项目时，按以下顺序执行：
+When no frontend project identified, execute in the following order:
 
-#### 第一步：询问用户意图
+#### Step 1: Ask User Intent
 
-**必须先询问用户意图，明确后续流程**：
+**Must first ask user intent, clarify subsequent flow**:
 
-**建议：询问提示语应作为本轮回复的主要内容，避免同时输出其他分析内容，确保用户能清晰理解当前需要回答的问题。**
+**Recommendation: Inquiry prompt should be main content of this round reply, avoid outputting other analysis content simultaneously, ensure user can clearly understand current question to answer.**
 
-输出以下询问提示语：
+Output the following inquiry prompt:
 
 ```
-[项目扫描] 未在【工作目录】下识别到前端项目。
+[Project Scan] No frontend project identified in Working Directory.
 
-请回复您的意图：
+Please reply your intent:
 
-1. 若要创建新项目，请提供技术栈：
-   - 框架：React / Vue / Angular / Svelte
-   - 语言：TypeScript / JavaScript
-   - UI库：Ant Design / Element Plus / Tailwind CSS 等
+1. If want to create new project, please provide tech stack:
+   - Framework: React / Vue / Angular / Svelte
+   - Language: TypeScript / JavaScript
+   - UI Library: Ant Design / Element Plus / Tailwind CSS etc.
    
-   示例："创建项目：React + TypeScript + Ant Design"
+   Example: "Create project: React + TypeScript + Ant Design"
 
-2. 若不想创建项目，回复"不创建"或"跳过"
+2. If don't want to create project, reply "no create" or "skip"
 
-3. 若有现有项目，请提供路径："路径是：xxx"
+3. If have existing project, please provide path: "Path is: xxx"
 
-您可以同时提供功能需求、页面描述等内容，我将先完成项目初始化，后续再处理研发需求。
+You can also provide feature requirements, page descriptions etc., I will first complete project initialization, then process development requirements later.
 ```
 
-**发问后必须结束当前回复，等待用户答复**
+**After asking must end current reply, wait for user response**
 
 ---
 
-#### 第二步：用户答复后的内容提取（必须执行）
+#### Step 2: Content Extraction After User Response (Must Execute)
 
-**收到用户回复后，必须先提取内容，再决定执行路径**：
+**After receiving user response, must first extract content, then decide execution path**:
 
-### 内容提取规则
+### Content Extraction Rules
 
-**从用户回复中提取两类信息**：
+**Extract two types of info from user response**:
 
-| 信息类型 | 提取规则 | 处理方式 |
+| Info Type | Extraction Rule | Handling Method |
 | --- | --- | --- |
-| **初始化信息** | 技术栈、框架、语言、UI库等 | 当前阶段（stage1）立即处理 |
-| **研发需求信息** | 功能需求、页面描述、bug描述等 | 记录到任务上下文，等 stage2 处理 |
+| **Initialization Info** | Tech stack, framework, language, UI library etc. | Current phase (stage1) immediately process |
+| **Development Requirement Info** | Feature requirements, page descriptions, bug descriptions etc. | Record to task context, wait for stage2 to process |
 
-### 提取示例
+### Extraction Example
 
 ```
-用户回复："创建项目：React + TypeScript + Ant Design，要有登录页面、用户管理、权限控制"
+User response: "Create project: React + TypeScript + Ant Design, need login page, user management, permission control"
 
-提取结果：
-- 初始化信息：React + TypeScript + Ant Design
-- 研发需求信息：登录页面、用户管理、权限控制
+Extraction result:
+- Initialization info: React + TypeScript + Ant Design
+- Development requirement info: Login page, user management, permission control
 
-处理方式：
-1. 当前阶段：使用初始化信息执行项目初始化
-2. 记录研发需求信息到任务上下文（供 stage2 使用）
-3. 项目初始化完成后，进入 stage2 处理研发需求
+Handling method:
+1. Current phase: Use initialization info to execute project initialization
+2. Record development requirement info to task context (for stage2 use)
+3. After project initialization completes, proceed to stage2 to process development requirements
 ```
 
 ---
 
-#### 第三步：意图判断
+#### Step 3: Intent Judgment
 
-**根据提取的初始化信息，判断意图类型**：
+**Based on extracted initialization info, judge intent type**:
 
-| 提取结果 | 意图类型 | 执行路径 |
+| Extraction Result | Intent Type | Execution Path |
 | --- | --- | --- |
-| 提取到技术栈（如 React/Vue/Angular） | **初始化意图** | 进入项目初始化流程 |
-| 用户回复"退出"或"结束" | **终止意图** | 终止流程 |
-| 空回复或"跳过" | **默认方案意图** | 采用默认技术栈初始化（React + TypeScript + Ant Design） |
-| 用户提供现有项目路径 | **路径切换意图** | 切换路径重新扫描 |
-| 仅提取到研发需求，无技术栈信息 | **需要补充技术栈** | 询问补充 |
+| Extracted tech stack (like React/Vue/Angular) | **Initialization Intent** | Enter project initialization flow |
+| User replied "exit" or "end" | **Terminate Intent** | Terminate flow |
+| Empty reply or "skip" | **Default Plan Intent** | Use default tech stack initialization (React + TypeScript + Ant Design) |
+| User provided existing project path | **Path Switch Intent** | Switch path and re-scan |
+| Only extracted development requirements, no tech stack info | **Need Supplement Tech Stack** | Ask for supplement |
 
 ---
 
-#### 第四步：记录研发需求信息
+#### Step 4: Record Development Requirement Info
 
-**若用户提供了研发需求信息（如功能需求、页面描述），必须记录到任务上下文**：
+**If user provided development requirement info (like feature requirements, page descriptions), must record to task context**:
 
 ```
-[项目扫描] 已记录您的研发需求：
-- 登录页面
-- 用户管理
-- 权限控制
+[Project Scan] Recorded your development requirements:
+- Login page
+- User management
+- Permission control
 
-这些需求将在项目初始化完成后的[范围分析]阶段详细处理。
+These requirements will be processed in [Scope Analysis] phase after project initialization completes.
 ```
 
-**记录位置**：任务上下文变量 `pending_requirements`
+**Record Location**: Task context variable `pending_requirements`
 
 ---
 
-#### 第五步：需要补充技术栈时
+#### Step 5: When Need to Supplement Tech Stack
 
-**若用户仅提供研发需求，未提供技术栈，必须询问补充**：
+**If user only provided development requirements, didn't provide tech stack, must ask for supplement**:
 
-**建议：询问提示语应作为本轮回复的主要内容，避免同时输出对研发需求的详细分析。**
+**Recommendation: Inquiry prompt should be main content of this round reply, avoid outputting detailed analysis of development requirements simultaneously.**
 
 ```
-[项目扫描] 我理解您有研发需求，但当前需要先创建前端项目。
+[Project Scan] I understand you have development requirements, but currently need to create frontend project first.
 
-请补充技术栈信息：
-- 框架：React / Vue / Angular / Svelte
-- 语言：TypeScript / JavaScript  
-- UI库：Ant Design / Element Plus / Tailwind CSS 等
+Please supplement tech stack info:
+- Framework: React / Vue / Angular / Svelte
+- Language: TypeScript / JavaScript  
+- UI Library: Ant Design / Element Plus / Tailwind CSS etc.
 
-示例："React + TypeScript + Ant Design"
+Example: "React + TypeScript + Ant Design"
 
-补充后我将先完成项目初始化，再处理您的研发需求。
+After supplementing I will first complete project initialization, then process your development requirements.
 ```
 
-**发问后必须结束当前回复，等待用户补充**
+**After asking must end current reply, wait for user supplement**
 
 ---
 
-#### 第六步：执行项目初始化
+#### Step 6: Execute Project Initialization
 
-**用户补充完整技术栈后，执行初始化**：
+**After user supplements complete tech stack, execute initialization**:
 
-1. **输出初始化提示**：
+1. **Output initialization prompt**:
    ```
-   [项目扫描] 正在初始化项目：[框架] + [语言] + [UI库]...
-   [项目扫描] 已记录研发需求：[研发需求摘要]，将在后续阶段处理
+   [Project Scan] Initializing project: [Framework] + [Language] + [UI Library]...
+   [Project Scan] Recorded development requirements: [Development requirements summary], will process in subsequent phases
    ```
 
-2. **执行初始化命令**
+2. **Execute initialization command**
 
-3. **初始化成功后** → 执行项目扫描 → 生成项目技能 → 等待用户确认
+3. **After initialization success** → Execute project scan → Generate project skill → Wait for user confirmation
 
-4. **用户确认后** → 进入 stage2（处理研发需求）
+4. **After user confirmation** → Proceed to stage2 (process development requirements)
 
 ---
 
-### 分支 B-1：锁定唯一前端项目，不存在技能
+### Branch B-1: Locked Single Frontend Project, No Skill Exists
 
-**流程描述**：
+**Flow Description**:
 
-当锁定唯一前端项目且不存在项目技能时，按以下顺序执行：
+When locked single frontend project and no project skill exists, execute in the following order:
 
-1. **询问用户是否愿意提供项目资料**（中途询问提示）
-   - 提示语：`你可以直接回复提供项目 skills、项目文档或其他项目约束，我将优先采用您的资料生成项目技能。如果你不提供，我将基于【工作目录】内容分析并生成。`
-   - **发问后必须结束当前回复，等待用户答复**
-   - **禁止**：发问后继续分析、设计、实现
+1. **Ask user if willing to provide project materials** (mid-way inquiry prompt)
+   - Prompt: `You can directly reply to provide project skills, project documentation or other project constraints, I will prioritize using your materials to generate project skill. If you don't provide, I will analyze based on Working Directory content and generate.`
+   - **After asking must end current reply, wait for user response**
+   - **Prohibited**: After asking continue analyzing, designing, implementing
 
-2. **用户答复后，必须继续当前阶段（项目扫描），不得跳到其他阶段**
-    - 用户提供资料 → **优先读取用户资料**
-    - **先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，获取三核心目录，**动态拼接路径** `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` 补充分析 → 基于资料和分析结果生成 `fw-project-develop`
-   - 用户明确"不提供"/"跳过" → **执行项目扫描流程**：
-     - 1) 优先读取各目录说明文档
-- 2) **先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，动态拼接 `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` 并执行分析项目结构
-      - 3) 生成 `fw-project-develop`
-   - **禁止**：用户答复后跳到范围分析、实施研发等阶段
+2. **After user response, must continue current phase (Project Scan), cannot jump to other phases**
+    - User provides materials → **Prioritize reading user materials**
+    - **First read config file** `{project_ide_dir}/.fw-session-config.json`, get three core directories, **dynamically concatenate path** `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` supplement analysis → Generate `fw-project-develop` based on materials and analysis results
+   - User explicitly says "not provide"/"skip" → **Execute project scan flow**:
+     - 1) Prioritize reading each directory's documentation
+     - 2) **First read config file** `{project_ide_dir}/.fw-session-config.json`, dynamically concatenate `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` and execute project structure analysis
+      - 3) Generate `fw-project-develop`
+   - **Prohibited**: After user response jump to scope analysis, implementation etc. phases
 
-3. **生成项目技能后，输出摘要，等待用户确认**
-   - **建议：摘要和确认提示语应作为本轮回复的主要内容**
-   - 输出项目技能摘要
-   - 附加提示语：
+3. **After generating project skill, output summary, wait for user confirmation**
+   - **Recommendation: Summary and confirmation prompt should be main content of this round reply**
+   - Output project skill summary
+   - Append prompt:
      ```
-     以上是本阶段的结论：已生成项目技能 fw-project-develop。
+     Above is this phase conclusion: Generated project skill fw-project-develop.
      
-     请确认是否可以继续进入下一阶段：[范围分析]。
-     - 如有偏差或补充，请直接告诉我。
-     - 如无其他修改，回复"继续"即可。
+     Please confirm if we can proceed to next phase: [Scope Analysis].
+     - If have deviation or supplement, please tell me directly.
+     - If no other modifications, reply "continue" is fine.
      ```
-   - **发问后必须结束当前回复，等待用户确认**
+   - **After asking must end current reply, wait for user confirmation**
 
-4. **用户确认循环机制（必须执行）**
-   - 用户回复"继续" → 输出 `[项目扫描] 执行完成。接下来进入下一阶段：[范围分析]。` → 进入 Stage 2
-   - 用户提出修改或问题 → **理解并合并用户反馈** → 更新 `fw-project-develop` → 再次输出摘要等待确认
-   - **循环直到用户回复"继续"**
-   - **禁止**：用户未明确回复"继续"就进入下一阶段
-
----
-
-### 分支 B-2：用户选择初始化新项目
-
-**流程描述**：
-
-当用户明确选择初始化新前端项目时，按以下顺序执行：
-
-#### 第一步：解析用户初始化意图
-
-**从用户回复中解析初始化参数**：
-
-```
-用户回复示例：
-- "创建项目：React + TypeScript + Ant Design"
-- "初始化一个Vue3项目"
-- "新建Angular项目，用Tailwind CSS"
-
-解析规则：
-- 底层框架：React / Vue / Angular / Svelte 等
-- 语言：TypeScript / JavaScript
-- UI库：Ant Design / Element UI / Tailwind CSS 等
-
-若用户回复不完整（只说"创建项目"但未指定框架）：
-→ 输出询问提示语补充信息，不得自行推断
-```
-
-**建议：询问提示语应作为本轮回复的主要内容。**
-
-**若信息不完整，输出询问提示语**：
-
-```
-[项目扫描] 请补充初始化参数：
-
-请回复完整格式：
-- "创建项目：React/Vue/Angular + TypeScript/JavaScript + [UI库]"
-
-示例：
-- "创建项目：React + TypeScript + Ant Design"
-- "创建项目：Vue3 + TypeScript + Element Plus"
-```
-
-**发问后必须结束当前回复，等待用户补充**
+4. **User Confirmation Loop Mechanism (Must Execute)**
+   - User replies "continue" → Output `[Project Scan] Completed. Proceeding to next phase: [Scope Analysis].` → Proceed to Stage 2
+   - User proposes modifications or issues → **Understand and merge user feedback** → Update `fw-project-develop` → Re-output summary wait for confirmation
+   - **Loop until user replies "continue"**
+   - **Prohibited**: Proceed to next phase before user explicitly replies "continue"
 
 ---
 
-#### 第二步：执行项目初始化
+### Branch B-2: User Chooses to Initialize New Project
 
-**用户补充完整后，执行初始化**：
+**Flow Description**:
 
-1. **输出初始化提示**：
-   ```
-   [项目扫描] 正在初始化项目：[框架] + [语言] + [UI库]...
-   ```
+When user explicitly chooses to initialize new frontend project, execute in the following order:
 
-2. **执行初始化命令**（根据框架选择对应命令）：
-   - React：`npm create vite@latest` 或 `npx create-react-app`
-   - Vue：`npm create vue@latest`
-   - Angular：`ng new`
-   - 其他框架：对应官方初始化命令
+#### Step 1: Parse User Initialization Intent
 
-3. **初始化结果处理**：
-   - 成功 → 输出 `[项目扫描] 项目初始化完成。` → 继续
-   - 失败 → 输出错误信息，等待用户处理
+**Parse initialization parameters from user response**:
+
+```
+User response examples:
+- "Create project: React + TypeScript + Ant Design"
+- "Initialize a Vue3 project"
+- "New Angular project, use Tailwind CSS"
+
+Parse rules:
+- Underlying framework: React / Vue / Angular / Svelte etc.
+- Language: TypeScript / JavaScript
+- UI Library: Ant Design / Element UI / Tailwind CSS etc.
+
+If user response incomplete (only says "create project" but didn't specify framework):
+→ Output inquiry prompt to supplement info, cannot infer by yourself
+```
+
+**Recommendation: Inquiry prompt should be main content of this round reply.**
+
+**If info incomplete, output inquiry prompt**:
+
+```
+[Project Scan] Please supplement initialization parameters:
+
+Please reply complete format:
+- "Create project: React/Vue/Angular + TypeScript/JavaScript + [UI Library]"
+
+Examples:
+- "Create project: React + TypeScript + Ant Design"
+- "Create project: Vue3 + TypeScript + Element Plus"
+```
+
+**After asking must end current reply, wait for user supplement**
 
 ---
 
-#### 第三步：扫描新项目结构
+#### Step 2: Execute Project Initialization
 
-**初始化成功后，必须执行项目扫描**（不得跳过）：
+**After user supplements complete, execute initialization**:
 
-1. **输出扫描提示**：
+1. **Output initialization prompt**:
    ```
-   [项目扫描] 正在扫描新项目结构...
+   [Project Scan] Initializing project: [Framework] + [Language] + [UI Library]...
    ```
 
-2. **扫描流程**：
-    - 1) 优先读取各目录下的说明文档
-- 2) **先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，动态拼接 `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` 并执行分析项目结构
-    - 3) 提取：目录结构、入口文件、构建命令、技术栈、UI 库、耦合约束
+2. **Execute initialization command** (choose corresponding command based on framework):
+   - React: `npm create vite@latest` or `npx create-react-app`
+   - Vue: `npm create vue@latest`
+   - Angular: `ng new`
+   - Other frameworks: Corresponding official initialization command
 
-3. **扫描完成后**，生成项目技能
-
----
-
-#### 第四步：生成项目技能
-
-**扫描完成后，必须生成项目技能**：
-
-1. **基于扫描结果生成初始项目技能 `fw-project-develop`**
-2. **不得跳过技能生成**
+3. **Initialization result handling**:
+   - Success → Output `[Project Scan] Project initialization complete.` → Continue
+   - Failure → Output error info, wait for user handling
 
 ---
 
-#### 第五步：输出项目技能摘要并等待用户确认
+#### Step 3: Scan New Project Structure
 
-输出摘要后，附加提示语：
+**After initialization success, must execute project scan** (cannot skip):
+
+1. **Output scan prompt**:
+   ```
+   [Project Scan] Scanning new project structure...
+   ```
+
+2. **Scan flow**:
+    - 1) Prioritize reading documentation under each directory
+    - 2) **First read config file** `{project_ide_dir}/.fw-session-config.json`, dynamically concatenate `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` and execute project structure analysis
+    - 3) Extract: Directory structure, entry files, build commands, tech stack, UI library, coupling constraints
+
+3. **After scan completes**, generate project skill
+
+---
+
+#### Step 4: Generate Project Skill
+
+**After scan completes, must generate project skill**:
+
+1. **Generate initial project skill `fw-project-develop` based on scan results**
+2. **Cannot skip skill generation**
+
+---
+
+#### Step 5: Output Project Skill Summary and Wait for User Confirmation
+
+After outputting summary, append prompt:
 
 ```
-以上是本阶段的结论：已初始化项目并生成项目技能 fw-project-develop。
+Above is this phase conclusion: Initialized project and generated project skill fw-project-develop.
 
-项目信息：
-- 框架：[解析的框架]
-- 语言：[解析的语言]
-- UI库：[解析的UI库]
-- 目录结构：[摘要]
+Project info:
+- Framework: [Parsed framework]
+- Language: [Parsed language]
+- UI Library: [Parsed UI library]
+- Directory structure: [Summary]
 
-请确认是否可以继续进入下一阶段：[范围分析]。
-- 如有偏差或补充，请直接告诉我。
-- 如无其他修改，回复"继续"即可。
+Please confirm if we can proceed to next phase: [Scope Analysis].
+- If have deviation or supplement, please tell me directly.
+- If no other modifications, reply "continue" is fine.
 ```
 
-**发问后结束当前回复，等待用户确认**
+**After asking end current reply, wait for user confirmation**
 
 ---
 
-#### 第六步：用户确认循环机制
+#### Step 6: User Confirmation Loop Mechanism
 
-- 用户回复"继续" → 输出 `[项目扫描] 执行完成。接下来进入下一阶段：[范围分析]。` → 进入 Stage 2
-- 用户提出修改或问题 → 理解并合并用户反馈 → 更新 `fw-project-develop` → 再次输出摘要等待确认
-- **循环直到用户回复"继续"**
+- User replies "continue" → Output `[Project Scan] Completed. Proceeding to next phase: [Scope Analysis].` → Proceed to Stage 2
+- User proposes modifications or issues → Understand and merge user feedback → Update `fw-project-develop` → Re-output summary wait for confirmation
+- **Loop until user replies "continue"**
 
-**注意**：
-- 不得把"项目已创建"或"依赖已安装"视为 Stage 1 完成
-- 必须完成扫描 → 生成技能 → 用户确认，才算 Stage 1 完成
+**Note**:
+- Cannot treat "project created" or "dependencies installed" as Stage 1 complete
+- Must complete scan → generate skill → user confirmation, that counts as Stage 1 complete
 
 ---
 
-### 分支 B-3：用户退出技能
+### Branch B-3: User Exits Skill
 
-- 若用户回复"退出"或"结束" → **终止流程**，不进入 Stage 2 及之后阶段
-- 输出：`已记录您退出本次技能。任务终止。`
+- If user replies "exit" or "end" → **Terminate flow**, don't enter Stage 2 and subsequent phases
+- Output: `Recorded your exit from this skill. Task terminated.`
 
-### 分支 B-4：用户跳过/空回复（采用默认方案）
+### Branch B-4: User Skip/Empty Reply (Use Default Plan)
 
-- 若用户回复"跳过"或直接空回复 → **采用默认方案**（React + TypeScript + Ant Design）
-- 执行默认技术栈的项目初始化流程
-- 输出：`已采用默认方案：React + TypeScript + Ant Design。正在初始化项目...`
+- If user replies "skip" or empty reply → **Use default plan** (React + TypeScript + Ant Design)
+- Execute default tech stack project initialization flow
+- Output: `Using default plan: React + TypeScript + Ant Design. Initializing project...`
 
-### 通用规则（所有分支）
+### General Rules (All Branches)
 
-11. 本阶段只允许把"稳定项目知识"写入 `fw-project-develop`（目录结构、技术栈、构建方式、路由模式、UI 框架、长期约束），不得写入当前任务的临时改法或实现偏好。
+11. This phase only allows writing "stable project knowledge" to `fw-project-develop` (directory structure, tech stack, build method, routing mode, UI framework, long-term constraints), cannot write current task's temporary implementation methods or preferences.
 
-12. Stage 1 完成条件是：`fw-project-develop` 已确认存在、可复用、已刷新或新生成，并已交用户确认。
+12. Stage 1 completion condition is: `fw-project-develop` confirmed to exist, reusable, refreshed or newly generated, and already user confirmed.
 
-13. 若尚未生成/刷新技能或未等待用户确认，不得进入 Stage 2。
+13. If skill hasn't generated/refreshed or hasn't waited for user confirmation, cannot enter Stage 2.
 
-14. 若识别到 UI 库或自研组件体系，判断是通用库还是自研框架：
-    - 通用库：记录名称与版本
-    - 自研框架：判断是否需要向用户询问文档/skills
+14. If identified UI library or self-developed component system, determine if common library or self-developed framework:
+    - Common library: Record name and version
+    - Self-developed framework: Determine if need to ask user for documentation/skills
 
-15. 若用户尚未回答 UI 框架资料问题（`pending`），停留本阶段，不得跳到研发实现。
+15. If user hasn't answered UI framework materials question (pending), stay in this phase, cannot jump to development implementation.
 
-16. 使用以下模板作为分析脚手架：
+16. Use the following templates as analysis scaffolding:
     - `templates/project/project-skill-template.md`
     - `templates/project/project-ui-skill-template.md`
 
-17. 若用户纠正项目理解或发现技能过期，重新执行本阶段并刷新技能。
+17. If user corrects project understanding or discovers skill expired, re-execute this phase and refresh skill.
 
-## 输出
+## Output
 
-- 主产物：`fw-project-develop`
-- 按需生成或刷新后的项目级 UI 框架 skill
-- 若用户补充了项目 skills / 项目文档 / 项目约束，则这些内容已被合并进主产物，或被明确标记为待补齐来源
+- Main artifact: `fw-project-develop`
+- Generated or refreshed project-level UI framework skill as needed
+- If user supplemented project skills / project documentation / project constraints, these contents have been merged into main artifact, or explicitly marked as pending source
 
-**用户确认提示语**（阶段结束确认）：
+**User Confirmation Prompt** (Phase end confirmation):
 
-输出项目技能摘要后，必须附加以下提示语：
+After outputting project skill summary, must append the following prompt:
 
 ```
-以上是本阶段的结论：已生成项目技能 fw-project-develop。
+Above is this phase conclusion: Generated project skill fw-project-develop.
 
-请确认是否可以继续进入下一阶段：[范围分析]。
-- 如有偏差或补充，请直接告诉我。
-- 如无其他修改，回复"继续"即可。
+Please confirm if we can proceed to next phase: [Scope Analysis].
+- If have deviation or supplement, please tell me directly.
+- If no other modifications, reply "continue" is fine.
 ```
 
-## 回退条件
+## Fallback Conditions
 
-- 若实现阶段发现项目技能与真实结构不一致，回退本阶段重扫并刷新项目技能。
-- 若后续发现初始化选型、项目技能来源或 UI 框架结论失真，回退本阶段重扫并刷新对应技能。
-- 若本阶段依赖的用户输入缺失、变更或被撤回，回到本阶段重新询问并覆盖旧结论。
+- If implementation phase discovers project skill inconsistent with actual structure, fallback to this phase to re-scan and refresh project skill.
+- If later discovers initialization selection, project skill source or UI framework conclusion distorted, fallback to this phase to re-scan and refresh corresponding skill.
+- If this phase's dependent user input is missing, changed or withdrawn, return to this phase to re-ask and override old conclusion.
