@@ -1,6 +1,6 @@
 ---
 name: frontend-workmate
-description: Full-stack frontend development orchestration skill covering the complete execution pipeline for feature development, bug fixes, refactoring, and project initialization (9 phases: Initialization → Project Scan → Scope Analysis → Execution Plan → Material Supply → Implementation → Verification → Documentation Sync → Delivery). Automatically invoked when user tasks involve frontend code modifications (React/Vue/Angular/TypeScript/JavaScript/CSS/HTML) or when prompts contain `/frontend-workmate`.
+description: Frontend development workflow orchestration skill with 9-stage process (init → scan → scope → plan → supply → implement → verify → docs → deliver). Use for ANY frontend task: bug fixes, new features, refactoring, UI changes, style adjustments, component updates, page modifications, API integration, state management, routing, form handling, performance optimization, or accessibility improvements. Automatically triggers when user says "fix", "add", "change", "optimize", "refactor" or similar frontend-related keywords, or explicitly with `/frontend-workmate`.
 user-invocable: true
 layer: 1
 ---
