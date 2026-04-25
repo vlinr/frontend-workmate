@@ -1,37 +1,37 @@
 #!/usr/bin/env node
 
 /**
- * init-skills.js - 前端研发技能包初始化脚本
+ * init-skills.js - Frontend Development Skill Pack Initialization Script
  * 
- * 核心设计：三个核心目录（配置文件仅存储这3个，其他路径通过拼接）
+ * Core Design: Three Core Directories (config only stores these 3, other paths via concatenation)
  * 
- * 1. project_work_dir - 用户项目根目录（用户打开的目录）
- * 2. project_ide_dir - 项目IDE配置根目录（如 .opencode/）
- * 3. static_config_dir - 静态资源根目录（IDE配置根目录，如 ~/.qoder）
+ * 1. project_work_dir - User project root directory (directory opened by user)
+ * 2. project_ide_dir - Project IDE config root directory (e.g., .opencode/)
+ * 3. static_config_dir - Static resources root directory (IDE config root, e.g., ~/.qoder)
  * 
- * 其他路径拼接规则：
- * - 静态技能：{static_config_dir}/skills/{技能名}/SKILL.md
- * - 静态规则：{static_config_dir}/rules/{规则名}.md
- * - 项目技能：{project_ide_dir}/skills/fw-project-develop/SKILL.md
- * - 项目规则：{project_ide_dir}/rules/fw-skill-rule.md
- * - 项目状态：{project_ide_dir}/rules/fw-session-state.md
- * - 改动代码：{project_work_dir}/src/...
+ * Path Concatenation Rules:
+ * - Static skill: {static_config_dir}/skills/{skill_name}/SKILL.md
+ * - Static rule: {static_config_dir}/rules/{rule_name}.md
+ * - Project skill: {project_ide_dir}/skills/fw-project-develop/SKILL.md
+ * - Project rule: {project_ide_dir}/rules/fw-skill-rule.md
+ * - Project state: {project_ide_dir}/rules/fw-session-state.md
+ * - Modified code: {project_work_dir}/src/...
  * 
- * 静态技能拷贝逻辑：
- * - 源目录：skills/curated/ 和 skills/external/（frontend-workmate 内）
- * - 目标目录：{static_config_dir}/skills/（与 frontend-workmate 同级）
+ * Static Skill Copy Logic:
+ * - Source: skills/curated/ and skills/external/ (inside frontend-workmate)
+ * - Target: {static_config_dir}/skills/ (at the same level as frontend-workmate)
  * 
- * 改进逻辑：
- * - 技能同步：检查版本号或 SKILL.md 内容变化，有变化则更新
- * - 配置文件：验证三核心目录是否正确，不正确则更新
- * - rules 文件：检查模板是否有变更，有变更则更新
- * - 状态文件：保留现有内容，不覆盖（有任务数据）
+ * Improved Logic:
+ * - Skill sync: Check version number or SKILL.md content changes, update if changed
+ * - Config file: Validate three core directories, update if incorrect
+ * - Rules file: Check template for changes, update if changed
+ * - State file: Preserve existing content, do not overwrite (contains task data)
  */
 
 const fs = require("fs");
 const path = require("path");
 
-// IDE 目录名（可配置）- 常见AI编辑器配置目录
+// IDE directory names (configurable) - Common AI editor config directories
 const IDE_DIR_NAMES = [
   ".opencode",      // OpenCode
   ".trae",          // Trae IDE (ByteDance)
@@ -50,7 +50,7 @@ const IDE_DIR_NAMES = [
   ".agents",        // agents.md format
 ];
 
-// 源技能目录名（可配置）
+// Source skill directory names (configurable)
 const SOURCE_SKILL_DIRS = ["curated", "external"];
 
 function printHelp() {
@@ -101,8 +101,8 @@ function parseArgs(argv) {
 }
 
 /**
- * 检测 IDE 目录名
- * 在项目目录下查找已存在的 IDE 目录名
+ * Detect IDE directory name
+ * Search for existing IDE directory name in the project directory
  */
 function detectIdeDirName(projectWorkDir) {
   for (const ideName of IDE_DIR_NAMES) {
@@ -111,48 +111,48 @@ function detectIdeDirName(projectWorkDir) {
       return ideName;
     }
   }
-  // 默认使用 .opencode
+  // Default to .opencode
   return ".opencode";
 }
 
 /**
- * 检测三个核心目录
- * 配置文件只存储这3个，其他路径通过拼接
+ * Detect three core directories
+ * Config file only stores these 3, other paths via concatenation
  */
 function detectPaths(options) {
-  // 1. 静态资源根目录：通过脚本位置确定（IDE配置根目录，如 ~/.qoder）
-  const scriptsDir = __dirname;                                              // scripts 目录
-  const skillPackageDir = path.resolve(scriptsDir, "..");                    // frontend-workmate 目录
-  const skillsDir = path.resolve(skillPackageDir, "..");                     // skills 目录
-  const staticConfigDir = path.resolve(skillsDir, "..");                     // IDE配置根目录（如 ~/.qoder）
+  // 1. Static resources root directory: determined by script location (IDE config root, e.g., ~/.qoder)
+  const scriptsDir = __dirname;                                              // scripts directory
+  const skillPackageDir = path.resolve(scriptsDir, "..");                    // frontend-workmate directory
+  const skillsDir = path.resolve(skillPackageDir, "..");                     // skills directory
+  const staticConfigDir = path.resolve(skillsDir, "..");                     // IDE config root directory (e.g., ~/.qoder)
 
-  // 2. 用户项目根目录：通过参数或 process.cwd() 确定
+  // 2. User project root directory: determined by options or process.cwd()
   const projectWorkDir = options.workdir || process.cwd();
 
-  // 3. 项目IDE配置根目录：基于项目工作目录推导
+  // 3. Project IDE config root directory: derived from project work directory
   const ideDirName = options.ide || detectIdeDirName(projectWorkDir);
   const projectIdeDir = path.resolve(projectWorkDir, ideDirName);
 
-  // 用于内部处理（不存入配置文件）
-  const staticSkillsSourceDir = path.resolve(skillPackageDir, "skills");     // 源技能目录
+  // For internal processing (not stored in config)
+  const staticSkillsSourceDir = path.resolve(skillPackageDir, "skills");     // Source skill directory
 
   console.log("[detect] Three core directories (stored in config):");
   console.log(`  1. project_work_dir:    ${projectWorkDir}`);
   console.log(`  2. project_ide_dir:     ${projectIdeDir}`);
-  console.log(`  3. static_config_dir:   ${staticConfigDir} (IDE配置根目录)`);
+  console.log(`  3. static_config_dir:   ${staticConfigDir} (IDE config root directory)`);
   console.log("");
   console.log("[detect] Derived paths (computed at runtime):");
-  console.log(`  - 静态技能: {static_config_dir}/skills/{技能名}/`);
-  console.log(`  - 静态规则: {static_config_dir}/rules/{规则名}`);
-  console.log(`  - 本技能包: ${skillPackageDir}`);
-  console.log(`  - 项目技能: ${projectIdeDir}/skills/fw-project-develop/`);
+  console.log(`  - Static skill: {static_config_dir}/skills/{skill_name}/`);
+  console.log(`  - Static rule: {static_config_dir}/rules/{rule_name}`);
+  console.log(`  - This skill pack: ${skillPackageDir}`);
+  console.log(`  - Project skill: ${projectIdeDir}/skills/fw-project-develop/`);
 
   return {
-    // 三核心目录（存入配置）
+    // Three core directories (stored in config)
     staticConfigDir,
     projectWorkDir,
     projectIdeDir,
-    // 内部处理（不存入配置）
+    // Internal processing (not stored in config)
     skillPackageDir,
     staticSkillsSourceDir,
     ideDirName,
@@ -175,8 +175,8 @@ function fileExists(filePath) {
 }
 
 /**
- * 获取技能版本信息
- * 从 SKILL.md 的 YAML frontmatter 中提取 description 或其他标识
+ * Get skill version information
+ * Extract description or other identifier from SKILL.md YAML frontmatter
  */
 function getSkillVersion(skillDir) {
   const skillMdPath = path.resolve(skillDir, "SKILL.md");
@@ -185,7 +185,7 @@ function getSkillVersion(skillDir) {
   }
   
   const content = fs.readFileSync(skillMdPath, "utf-8");
-  // 提取 frontmatter 中的 description 作为版本标识
+  // Extract description from frontmatter as version identifier
   const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
   if (frontmatterMatch) {
     const frontmatter = frontmatterMatch[1];
@@ -195,14 +195,14 @@ function getSkillVersion(skillDir) {
     }
   }
   
-  // 如果没有 description，使用文件修改时间作为版本
+  // If no description, use file modification time as version
   const stat = fs.statSync(skillMdPath);
   return stat.mtimeMs.toString();
 }
 
 /**
- * 检查技能是否需要更新
- * 对比源目录和目标目录的 SKILL.md 内容
+ * Check if skill needs update
+ * Compare SKILL.md content between source and target directories
  */
 function needsSkillUpdate(sourceDir, targetDir, force) {
   if (!directoryExists(targetDir)) {
@@ -213,7 +213,7 @@ function needsSkillUpdate(sourceDir, targetDir, force) {
     return { needsUpdate: true, reason: "force_update" };
   }
   
-  // 检查源目录是否还存在（如果存在说明还没清理，需要同步）
+  // Check if source directory still exists (if exists, means not cleaned yet, needs sync)
   if (directoryExists(sourceDir)) {
     return { needsUpdate: true, reason: "source_still_exists" };
   }
@@ -229,17 +229,17 @@ function needsSkillUpdate(sourceDir, targetDir, force) {
 }
 
 /**
- * 同步静态技能目录（改进版）
+ * Sync static skill directories (improved version)
  * 
- * 新逻辑：
- * 1. 如果目标不存在 → 拷贝
- * 2. 如果源目录还存在 → 更新（说明技能包有变更）
- * 3. 如果 force=true → 强制更新
- * 4. 否则检查版本变化 → 有变化则更新
+ * New logic:
+ * 1. If target doesn't exist → copy
+ * 2. If source directory still exists → update (skill pack has changes)
+ * 3. If force=true → force update
+ * 4. Otherwise check version changes → update if changed
  */
 function syncStaticSkills(skillPackageDir, staticConfigDir, dirNames, force, dryRun) {
   const results = [];
-  const targetSkillsDir = path.resolve(staticConfigDir, "skills");  // 目标: ~/.qoder/skills/
+  const targetSkillsDir = path.resolve(staticConfigDir, "skills");  // Target: ~/.qoder/skills/
 
   for (const dirName of dirNames) {
     const sourceCategoryDir = path.resolve(skillPackageDir, "skills", dirName);
@@ -250,7 +250,7 @@ function syncStaticSkills(skillPackageDir, staticConfigDir, dirNames, force, dry
       continue;
     }
 
-    // 遍历子目录，检查是否需要更新
+    // Traverse subdirectories, check if update needed
     const childDirs = fs.readdirSync(sourceCategoryDir);
     
     for (const childName of childDirs) {
@@ -261,7 +261,7 @@ function syncStaticSkills(skillPackageDir, staticConfigDir, dirNames, force, dry
         continue;
       }
 
-      // 改进：检查是否需要更新
+// Improved: check if update needed
       const updateCheck = needsSkillUpdate(childSourceDir, childTargetDir, force);
       
       if (!updateCheck.needsUpdate) {
@@ -277,7 +277,7 @@ function syncStaticSkills(skillPackageDir, staticConfigDir, dirNames, force, dry
         continue;
       }
 
-      // 需要更新：先删除目标目录（如果存在），再拷贝
+      // Needs update: remove target directory (if exists), then copy
       if (!dryRun) {
         if (directoryExists(childTargetDir)) {
           fs.rmSync(childTargetDir, { recursive: true, force: true });
@@ -304,8 +304,8 @@ function syncStaticSkills(skillPackageDir, staticConfigDir, dirNames, force, dry
 }
 
 /**
- * 清理源目录
- * 删除 frontend-workmate/skills/curated/ 和 skills/external/
+ * Clean up source directories
+ * Delete frontend-workmate/skills/curated/ and skills/external/
  */
 function cleanupSourceDirs(skillPackageDir, dirNames, dryRun) {
   for (const dirName of dirNames) {
@@ -323,8 +323,8 @@ function cleanupSourceDirs(skillPackageDir, dirNames, dryRun) {
 }
 
 /**
- * 检查配置文件是否需要更新
- * 验证三核心目录是否正确
+ * Check if config file needs update
+ * Validate three core directories are correct
  */
 function needsConfigUpdate(configFilePath, paths) {
   if (!fileExists(configFilePath)) {
@@ -334,7 +334,7 @@ function needsConfigUpdate(configFilePath, paths) {
   try {
     const existingConfig = JSON.parse(fs.readFileSync(configFilePath, "utf-8"));
     
-    // 检查三核心目录是否正确
+    // Check three core directories are correct
     const errors = [];
     
     if (existingConfig.project_work_dir !== paths.projectWorkDir) {
@@ -372,17 +372,17 @@ function needsConfigUpdate(configFilePath, paths) {
 }
 
 /**
- * 创建或更新项目配置文件（改进版）
+ * Create or update project config file (improved version)
  * 
- * 新逻辑：
- * 1. 配置不存在 → 创建
- * 2. 配置存在但路径不正确 → 更新
- * 3. 配置正确 → 跳过
+ * New logic:
+ * 1. Config doesn't exist → create
+ * 2. Config exists but paths incorrect → update
+ * 3. Config correct → skip
  */
 function createOrUpdateConfigFile(paths, dryRun) {
   const configFilePath = path.resolve(paths.projectIdeDir, ".fw-session-config.json");
 
-  // 只存储3个核心目录
+  // Only store 3 core directories
   const expectedConfig = {
     project_work_dir: paths.projectWorkDir,
     project_ide_dir: paths.projectIdeDir,
@@ -390,7 +390,7 @@ function createOrUpdateConfigFile(paths, dryRun) {
     created_at: new Date().toISOString(),
   };
 
-  // 改进：检查是否需要更新
+  // Improved: check if update needed
   const updateCheck = needsConfigUpdate(configFilePath, paths);
   
   if (!updateCheck.needsUpdate) {
@@ -416,8 +416,8 @@ function createOrUpdateConfigFile(paths, dryRun) {
 }
 
 /**
- * 检查 rules 文件是否需要更新
- * 对比模板文件和现有文件内容
+ * Check if rules file needs update
+ * Compare template file and existing file content
  */
 function needsRulesUpdate(templatePath, filePath) {
   if (!fileExists(filePath)) {
@@ -431,7 +431,7 @@ function needsRulesUpdate(templatePath, filePath) {
   const templateContent = fs.readFileSync(templatePath, "utf-8");
   const fileContent = fs.readFileSync(filePath, "utf-8");
   
-  // 对比内容是否相同
+  // Compare content for equality
   if (templateContent !== fileContent) {
     return { needsUpdate: true, reason: "content_changed" };
   }
@@ -440,14 +440,14 @@ function needsRulesUpdate(templatePath, filePath) {
 }
 
 /**
- * 创建或更新项目规则文件（改进版）
+ * Create or update project rules files (improved version)
  * 
- * 新逻辑：
- * 1. 文件不存在 → 创建
- * 2. 文件存在但模板有变更 → 更新
- * 3. 内容相同 → 跳过
+ * New logic:
+ * 1. File doesn't exist → create
+ * 2. File exists but template changed → update
+ * 3. Content matches → skip
  * 
- * 注意：状态文件不更新（保留任务数据）
+ * Note: State file is not updated (preserve task data)
  */
 function createOrUpdateProjectRules(paths, dryRun) {
   const ruleTemplatePath = path.resolve(paths.skillPackageDir, "templates", "fw-skill-rule.template.md");
@@ -460,7 +460,7 @@ function createOrUpdateProjectRules(paths, dryRun) {
     state: { filePath: stateFilePath }
   };
 
-  // 处理 rule 文件（改进：检查模板变更）
+  // Process rule file (improved: check template changes)
   if (!fileExists(ruleTemplatePath)) {
     console.log(`[skip] Rule template not found: ${ruleTemplatePath}`);
     results.rule.status = "template_missing";
@@ -483,7 +483,7 @@ function createOrUpdateProjectRules(paths, dryRun) {
     }
   }
 
-  // 处理 state 文件（保留现有内容，不覆盖）
+  // Process state file (preserve existing content, do not overwrite)
   if (!fileExists(stateFilePath)) {
     if (!fileExists(stateTemplatePath)) {
       console.log(`[skip] State template not found: ${stateTemplatePath}`);
@@ -507,7 +507,7 @@ function createOrUpdateProjectRules(paths, dryRun) {
 }
 
 /**
- * 创建项目技能目录（fw-project-develop）
+ * Create project skill directory (fw-project-develop)
  */
 function createProjectSkillsDir(paths, dryRun) {
   const projectSkillDir = path.resolve(paths.projectIdeDir, "skills", "fw-project-develop");
@@ -532,23 +532,23 @@ function main() {
   console.log("");
   console.log("=== frontend-workmate init-skills ===");
   console.log("");
-  console.log("核心设计：三个目录（配置文件仅存储这3个）");
-  console.log("  1. project_work_dir  - 用户项目根目录");
-  console.log("  2. project_ide_dir   - 项目IDE配置根目录");
-  console.log("  3. static_config_dir - 静态资源根目录（IDE配置根目录）");
+  console.log("Core Design: Three directories (config only stores these 3)");
+  console.log("  1. project_work_dir  - User project root directory");
+  console.log("  2. project_ide_dir   - Project IDE config root directory");
+  console.log("  3. static_config_dir - Static resources root directory (IDE config root)");
   console.log("");
-  console.log("改进逻辑：");
-  console.log("  - 技能同步：检查版本变化，有变化则更新");
-  console.log("  - 配置文件：验证路径正确性，不正确则更新");
-  console.log("  - rules 文件：检查模板变更，有变更则更新");
-  console.log("  - 状态文件：保留现有内容（有任务数据）");
+  console.log("Improved Logic:");
+  console.log("  - Skill sync: Check version changes, update if changed");
+  console.log("  - Config file: Validate path correctness, update if incorrect");
+  console.log("  - Rules file: Check template changes, update if changed");
+  console.log("  - State file: Preserve existing content (contains task data)");
   console.log("");
-  console.log("其他路径拼接：");
-  console.log("  - 静态技能: {static_config_dir}/skills/{技能名}/SKILL.md");
-  console.log("  - 静态规则: {static_config_dir}/rules/{规则名}.md");
-  console.log("  - 项目技能: {project_ide_dir}/skills/fw-project-develop/SKILL.md");
-  console.log("  - 项目规则: {project_ide_dir}/rules/fw-skill-rule.md");
-  console.log("  - 项目状态: {project_ide_dir}/rules/fw-session-state.md");
+  console.log("Other paths via concatenation:");
+  console.log("  - Static skill: {static_config_dir}/skills/{skill_name}/SKILL.md");
+  console.log("  - Static rule: {static_config_dir}/rules/{rule_name}.md");
+  console.log("  - Project skill: {project_ide_dir}/skills/fw-project-develop/SKILL.md");
+  console.log("  - Project rule: {project_ide_dir}/rules/fw-skill-rule.md");
+  console.log("  - Project state: {project_ide_dir}/rules/fw-session-state.md");
   console.log("");
 
   const paths = detectPaths(options);
@@ -559,11 +559,11 @@ function main() {
   console.log(`Source dirs: ${options.dirs.join(", ")}`);
   console.log("");
 
-  // 同步静态技能到 {static_config_dir}/skills/
+  // Sync static skills to {static_config_dir}/skills/
   console.log("=== Syncing static skills ===");
   const syncResults = syncStaticSkills(paths.skillPackageDir, paths.staticConfigDir, options.dirs, options.force, options.dryRun);
 
-  // 确保项目IDE目录结构存在
+  // Ensure project IDE directory structure exists
   console.log("");
   console.log("=== Creating project IDE directories ===");
   ensureDirectory(paths.projectIdeDir, options.dryRun);
@@ -571,79 +571,79 @@ function main() {
   ensureDirectory(path.resolve(paths.projectIdeDir, "rules"), options.dryRun);
   ensureDirectory(path.resolve(paths.projectIdeDir, "output"), options.dryRun);
 
-  // 创建或更新项目配置文件
+  // Create or update project config file
   console.log("");
   console.log("=== Creating/Updating config file ===");
   const configResult = createOrUpdateConfigFile(paths, options.dryRun);
 
-  // 创建或更新项目规则文件
+  // Create or update project rules files
   console.log("");
   console.log("=== Creating/Updating project rules ===");
   const rulesResult = createOrUpdateProjectRules(paths, options.dryRun);
 
-  // 创建项目技能目录
+  // Create project skill directory
   console.log("");
   console.log("=== Creating project skill directory ===");
   const skillResult = createProjectSkillsDir(paths, options.dryRun);
 
-  // 清理源目录（同步完成后删除）
+  // Clean up source directories (after sync completes)
   if (!options.dryRun) {
     console.log("");
     console.log("=== Cleaning up source directories ===");
     cleanupSourceDirs(paths.skillPackageDir, options.dirs, options.dryRun);
   }
 
-  // 输出摘要
+  // Output summary
   console.log("");
   console.log("=== Summary ===");
   console.log("");
-  console.log("配置文件存储的三核心目录：");
+  console.log("Three core directories stored in config:");
   console.log(`  project_work_dir:  ${paths.projectWorkDir}`);
   console.log(`  project_ide_dir:   ${paths.projectIdeDir}`);
   console.log(`  static_config_dir: ${paths.staticConfigDir}`);
   console.log("");
-  console.log("静态技能同步：");
+  console.log("Static skill sync:");
   const copiedSkills = syncResults.filter(r => r.status === "copied");
   const updatedSkills = syncResults.filter(r => r.status === "updated");
   const skippedSkills = syncResults.filter(r => r.status === "no_update_needed");
   const existingSkills = syncResults.filter(r => r.status === "target_exists");
   
   if (copiedSkills.length > 0) {
-    console.log(`  新增 (${copiedSkills.length}):`);
+    console.log(`  Added (${copiedSkills.length}):`);
     for (const r of copiedSkills) {
       console.log(`    - ${r.skillName}`);
     }
   }
   
   if (updatedSkills.length > 0) {
-    console.log(`  更新 (${updatedSkills.length}):`);
+    console.log(`  Updated (${updatedSkills.length}):`);
     for (const r of updatedSkills) {
       console.log(`    - ${r.skillName} (${r.reason})`);
     }
   }
   
   if (skippedSkills.length > 0) {
-    console.log(`  无需更新 (${skippedSkills.length}):`);
+    console.log(`  No update needed (${skippedSkills.length}):`);
     for (const r of skippedSkills) {
       console.log(`    - ${r.skillName} (${r.reason})`);
     }
   }
   
   console.log("");
-  console.log("生成的/更新的文件：");
-  console.log(`  配置文件: ${configResult.configFilePath} (${configResult.status})`);
-  console.log(`  规则文件: ${rulesResult.rule.filePath} (${rulesResult.rule.status})`);
-  console.log(`  状态文件: ${rulesResult.state.filePath} (${rulesResult.state.status})`);
-  console.log(`  项目技能: ${skillResult.projectSkillDir}`);
+  console.log("Generated/Updated files:");
+  console.log(`  Config file: ${configResult.configFilePath} (${configResult.status})`);
+  console.log(`  Rule file: ${rulesResult.rule.filePath} (${rulesResult.rule.status})`);
+  console.log(`  State file: ${rulesResult.state.filePath} (${rulesResult.state.status})`);
+  console.log(`  Project skill: ${skillResult.projectSkillDir}`);
   console.log("");
 
-  // 目录结构说明
+  // Directory structure explanation
   console.log("=== Directory structure ===");
   console.log("");
-  console.log("# 静态资源根目录（static_config_dir）");
+  console.log("# Static resources root directory (static_config_dir)");
   console.log(`${paths.staticConfigDir}/`);
   console.log("  ├── skills/");
-  console.log("  │   ├── frontend-workmate/    # 本技能包");
+  console.log("  │   ├── frontend-workmate/    # This skill pack");
   console.log("  │   ├── fw-react-best-practices/");
   console.log("  │   ├── fw-systematic-debugging/");
   for (const r of [...copiedSkills, ...updatedSkills]) {
@@ -654,7 +654,7 @@ function main() {
   console.log("  │   └── ...");
   console.log("  └── ...");
   console.log("");
-  console.log("# 项目IDE配置目录（project_ide_dir）");
+  console.log("# Project IDE config directory (project_ide_dir)");
   console.log(`${paths.projectIdeDir}/`);
   console.log("  ├── .fw-session-config.json");
   console.log("  ├── skills/");
@@ -664,7 +664,7 @@ function main() {
   console.log("  │   └── fw-session-state.md");
   console.log("  └── output/");
   console.log("");
-  console.log("# 项目工作目录（project_work_dir）");
+  console.log("# Project work directory (project_work_dir)");
   console.log(`${paths.projectWorkDir}/`);
   console.log("  ├── src/");
   console.log("  ├── package.json");

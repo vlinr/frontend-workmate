@@ -27,7 +27,7 @@ Project skill storage location is detailed in `SKILL.md` under "Directory Concep
 ## Current Development Constraints
 
 - Root-level `SKILL.md` is actually executable orchestration protocol, subsequent should continue polishing around it.
-- Stage 0 if `scripts/init-skills.js` exists, should first organize skills under `skills/curated/`, `skills/external/` in Static Config Directory into directly callable public skill pack (copy to Static Skill Directory), then enter formal phase scan.
+- Stage 0 if `scripts/init-skills.js` exists, should first execute that script. Script adopts improved logic: check skill version changes and update, validate config path correctness, check rules template changes, preserve state file task data; ensure users always use latest version skills and rules.
 - Stage 1 should first check whether project skill `fw-project-develop` already exists; only when suitable candidate cannot be found, then generate or refresh that artifact.
 - If user provides project skills, project documentation, UI framework skills or UI framework documentation, should prioritize absorbing and archiving, then decide whether to continue internal generation.
 - If Working Directory is blank project or frontend engineering doesn't exist, Stage 1 needs first to confirm whether to assist initialization; when user replies "exit" or "end", workflow terminates; when user replies "skip" or empty reply, use default plan to continue initialization.

@@ -100,7 +100,14 @@ This phase executes in the following order (see "Execution Actions" section belo
 
 - Check if `scripts/init-skills.js` exists
 - If exists, immediately execute the script
-- Script will generate config file `.fw-session-config.json` (stored in `{project_ide_dir}`)
+- Script will execute the following improved logic:
+  - **Skill sync**: Check version changes, update if changed (not simply skip)
+  - **Config file**: Validate three core directories correctness, update if incorrect
+  - **Rules file**: Check template changes, update if changed
+  - **State file**: Preserve existing content (has task data, do not overwrite)
+- Script will generate or update config file `.fw-session-config.json` (stored in `{project_ide_dir}`)
+
+**Note**: Even if skills already exist, script will check version changes and update, ensuring users always use latest version.
 
 ### 3. Update State File (Must Execute)
 

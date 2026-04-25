@@ -9,7 +9,7 @@
 
 ## Core Chain
 
-1. When Stage 0 starts, if Current Skill Directory contains `scripts/init-skills.js`, must first actively execute that script, before continuing any subsequent initialization actions; if not actually executed this round, Stage 0 cannot be treated as complete. Script organizes skill directory into directly callable public skill pack; if source directory no longer exists or target skill already exists and non-empty, record as skipped
+1. When Stage 0 starts, if Current Skill Directory contains `scripts/init-skills.js`, must first actively execute that script, before continuing any subsequent initialization actions; if not actually executed this round, Stage 0 cannot be treated as complete. Script executes improved logic: check skill version changes and update, validate config path correctness, check rules template changes, preserve state file task data; ensure users always use latest version skills and rules
 2. Before each phase formally executes, first scan current available skill sources: user-provided skills/docs, project skill `fw-project-develop`, archived skills in project, other reusable public skill packs
 3. If already matched suitable skill, prioritize invoking and execute according to its constraints; don't first run phase nakedly then go back to supplement skills
 4. Align with `templates/intake/request-brief.md`
