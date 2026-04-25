@@ -99,6 +99,42 @@
 - Only when current phase status is `completed`, can switch to next phase.
 - If current phase status is `waiting_user` or `blocked`, must stop in current phase, cannot because project already created, dependencies already installed or code editable then automatically proceed.
 
+## New Session Task Association Rules
+
+**New session starts → First check state file and user input context**
+
+### Task ID Extraction Logic
+
+| User Input Pattern | Action |
+| --- | --- |
+| Contains explicit `Task ID: task_xxxxxxxx` | Extract Task ID → Find matching task in state file → Continue from recorded phase |
+| References previous AI output containing Task ID | Extract Task ID from referenced content → Continue that task |
+| No Task ID reference detected | **Default: Create new task** → Generate new Task ID → Start from Stage 0 |
+
+### Important: Every AI Output Must Carry Task ID
+
+- First line of every output: `[Phase Name] Task ID: task_xxxxxxxx`
+- This ensures:
+  - Task context not lost even if context window overflows
+  - User can reference AI output to continue specific task
+  - New session can extract Task ID from user-referenced content
+
+### Example Handling
+
+```
+User: "继续刚才的任务"
+AI: Check if user input references previous AI output → Extract Task ID → Continue
+
+User: "添加用户管理模块" (no reference)
+AI: No Task ID extracted → Create new task (task_new123) → Start Stage 0
+```
+
+### Prohibited Behavior
+
+- **Prohibited**: Assume user wants to continue active task without checking for Task ID reference
+- **Prohibited**: Force unrelated new request onto existing active task
+- **Prohibited**: Skip Task ID extraction before determining task association
+
 ## Failure Fallback
 
 - If project skill missing, naming chaotic or cannot match, return to project scan phase and generate standardized project skill.

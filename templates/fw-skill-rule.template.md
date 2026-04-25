@@ -16,10 +16,22 @@ description: "frontend-workmate skill rules (static rules part)"
 
 ## 2. Task ID Carrying Principle
 
-**Each output must carry Task ID**:
-- First line output: `[Phase Name] Task ID: task_xxxxxxxx`
+**Each AI output must carry Task ID at the beginning**:
+- First line of every output: `[Phase Name] Task ID: task_xxxxxxxx`
 - State update carries Task ID
 - Prohibited from executing operations outside task context
+
+**Why every output carries Task ID**:
+- Prevents context overflow causing task context loss
+- New session can determine whether to continue existing task by extracting Task ID from user-referenced content
+- User can explicitly reference Task ID to continue specific task
+
+**New Session Task Association Logic**:
+1. New session starts → Read state file, check if active tasks exist
+2. Extract Task ID from user input/referenced AI output:
+   - User input explicitly contains `Task ID: task_xxxxxxxx` → Continue that task
+   - User input references AI output that contains Task ID → Continue that task
+   - User input does not contain Task ID reference → **Default: Create new task**
 
 ## 3. Phase Confirmation Loop Principle
 
@@ -143,8 +155,14 @@ Config file `.fw-session-config.json` stored in `{project_ide_dir}`, **only stor
 
 **After receiving user input**:
 1. **Read config file** `{project_ide_dir}/.fw-session-config.json`
-2. **Read state file** `{project_ide_dir}/rules/fw-session-state.md` → Get current phase, Task ID
-3. **Process input based on phase**:
+2. **Read state file** `{project_ide_dir}/rules/fw-session-state.md` → Get active tasks list
+3. **Extract Task ID from user input** (New Session Task Association):
+   | Pattern | Action |
+   | --- | --- |
+   | User input contains `Task ID: task_xxxxxxxx` | Extract → Continue that task |
+   | User input references AI output with Task ID | Extract from reference → Continue that task |
+   | No Task ID reference | **Create new task** → Generate new Task ID → Start Stage 0 |
+4. **Process input based on phase**:
    | Phase | Status | Input Type | Handling |
    | --- | --- | --- | --- |
    | stage8 | waiting | Modification content | **First update status to stage5 + reset phases** |
@@ -152,7 +170,7 @@ Config file `.fw-session-config.json` stored in `{project_ide_dir}`, **only stor
    | stage1-7 | waiting | Any content | Execute current phase reply handling |
    | completed | - | New requirement | Generate new Task ID → stage0 |
 
-4. **Execute phase action** → Prohibited from skipping status update
+5. **Execute phase action** → Prohibited from skipping status update
 
 ---
 
