@@ -69,4 +69,4 @@
 - 当前技能覆盖的项目边界：`frontend-workmate` 根级编排协议、模板目录、技能目录、项目技能发现规则与任务记录约定。
 - 可直接复用的条件：根级流程阶段未发生结构性调整，`templates/` 与 `skills/` 的主目录职责未发生明显变化，项目技能发现与标准化归档机制仍然成立。
 - 必须刷新的信号：新增或删除关键阶段技能、模板契约发生明显变化、项目技能发现顺序变化、空白初始化分支变化、UI 框架技能接入规则变化、主编排协议调整了 Stage 含义、用户确认闭环或技能调用规则。
-- 刷新时优先检查的目录或配置：`SKILL.md`、`templates/`、`scripts/init-skills.js`、`rules/` 目录下的各规则文档与 `fw-project-develop`。
+- 刷新时优先检查的目录或配置：`../SKILL.md`、`../templates/`、`../scripts/init-skills.js`、`./` 目录下的各规则文档与 `fw-project-develop`。

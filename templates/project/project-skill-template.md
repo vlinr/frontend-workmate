@@ -2,12 +2,23 @@
 
 ## 目录概念说明
 
-项目技能存放位置详见 `SKILL.md` 中的"目录概念映射表"。项目技能存放于【技能目录】（和【当前技能目录】同级），而非【工作目录】或【代码改动目录】。
+项目技能存放位置：`{project_ide_dir}/skills/fw-project-develop/`。
+
+三核心目录概念（运行时动态读取）：
+- **project_work_dir**：用户打开的目录，研发改动参考依据
+- **project_ide_dir**：存放项目配置、项目技能、项目规则、项目状态
+- **static_config_dir**：IDE配置根目录，存放静态技能、静态规则
+
+**引用方式**：
+- 项目技能：`fw-project-develop`（技能名，IDE 自动识别并查找）
+- 项目规则：`{project_ide_dir}/rules/fw-skill-rule.md`（文件路径）
+- 项目状态：`{project_ide_dir}/rules/fw-session-state.md`（文件路径）
+- 配置文件：`{project_ide_dir}/.fw-session-config.json`（文件路径）
 
 ## Frontmatter
 
 - `name`: 固定项目技能名，当前默认使用 `fw-project-develop`
-- `description`: 项目说明技能，用于继续定位目录、路由、接口、状态、样式、构建、验证与文档更新规则。
+- `description`: 项目上下文技能，包含技术栈、目录结构、路由规则、权限约束、状态管理、构建配置等。用户询问"项目结构"、"技术栈是什么"、"路由怎么配置"、"权限怎么处理"、"状态管理方案"、"构建规则"等项目相关信息时触发调用。同时适用于流程中需要"获取项目约束"、"了解项目上下文"、"确认项目规则"的场景。
 
 ## 建议结构
 
@@ -261,7 +272,7 @@
 ## 使用要求
 
 - 项目技能产物必须是一个**目录**（符合技能目录结构），目录名固定为 `fw-project-develop/`，入口文件为 `SKILL.md`
-- **存放位置**：存放于【技能目录】（和【当前技能目录】同级），而非【工作目录】或【代码改动目录】。详见 `SKILL.md` 中的"目录概念映射表"
+- **存放位置**：存放于 `{project_ide_dir}/skills/fw-project-develop/`。配置文件读取方式见上方"目录概念说明"。
 - frontmatter `name` 固定为 `fw-project-develop`，后续阶段默认直接按该固定技能名引用。
 - **前端特有内容必须从实际代码中提取**：
   - 配色方案：从 CSS 变量、tailwind.config.js、设计稿提取

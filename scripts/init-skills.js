@@ -101,21 +101,6 @@ function parseArgs(argv) {
 }
 
 /**
- * 检测 IDE 目录名
- * 在项目目录下查找已存在的 IDE 目录名
- */
-function detectIdeDirName(projectWorkDir) {
-  for (const ideName of IDE_DIR_NAMES) {
-    const idePath = path.resolve(projectWorkDir, ideName);
-    if (fs.existsSync(idePath)) {
-      return ideName;
-    }
-  }
-  // 默认使用 .opencode
-  return ".opencode";
-}
-
-/**
  * 检测三个核心目录
  * 配置文件只存储这3个，其他路径通过拼接
  */
@@ -126,12 +111,56 @@ function detectPaths(options) {
   const skillsDir = path.resolve(skillPackageDir, "..");                     // skills 目录
   const staticConfigDir = path.resolve(skillsDir, "..");                     // IDE配置根目录（如 ~/.qoder）
 
-  // 2. 用户项目根目录：通过参数或 process.cwd() 确定
-  const projectWorkDir = options.workdir || process.cwd();
+// 2. 用户项目根目录：优先从 staticConfigDir 推导，其次使用参数或 process.cwd()
+  let projectWorkDir;
+  let projectIdeDir;
+  let ideDirName;
 
-  // 3. 项目IDE配置根目录：基于项目工作目录推导
-  const ideDirName = options.ide || detectIdeDirName(projectWorkDir);
-  const projectIdeDir = path.resolve(projectWorkDir, ideDirName);
+  // 从 staticConfigDir 提取 IDE 目录名
+  ideDirName = path.basename(staticConfigDir);
+
+  // 优先级：
+  // 1. 自动识别：staticConfigDir 的父目录就是项目根目录
+  // 2. 用户传入 --workdir 时，验证是否与自动识别一致
+  const autoDetectedWorkDir = path.resolve(staticConfigDir, "..");
+  
+  if (options.workdir) {
+    // 用户指定了目录，验证是否正确
+    const normalizedWorkDir = path.normalize(options.workdir);
+    const normalizedAutoDir = path.normalize(autoDetectedWorkDir);
+    
+    if (normalizedWorkDir !== normalizedAutoDir) {
+      console.error("");
+      console.error("[error] --workdir 参数值不正确！");
+      console.error("");
+      console.error(`传入值:       ${options.workdir}`);
+      console.error(`正确值:       ${autoDetectedWorkDir} (用户工作目录)`);
+      console.error(`staticConfigDir: ${staticConfigDir}`);
+      console.error("");
+      console.error("说明：");
+      console.error("  - project_work_dir 应为用户工作目录，不是前端项目目录");
+      console.error("  - 前端项目可能在子目录中，但配置基于工作目录");
+      console.error("  - 建议：不传 --workdir，让脚本自动识别");
+      console.error("");
+      console.error("正确调用方式：");
+      console.error(`  node scripts/init-skills.js`);
+      console.error("");
+      process.exit(1);
+    }
+    
+    // 验证通过，使用自动识别值
+    projectWorkDir = autoDetectedWorkDir;
+    projectIdeDir = staticConfigDir;
+    console.log("[detect] User-specified workdir matches auto-detected directory:");
+  } else {
+    // 自动识别：staticConfigDir 的父目录就是项目根目录
+    console.log("[detect] Auto-detected project root directory:");
+  }
+  
+  projectWorkDir = autoDetectedWorkDir;
+  projectIdeDir = staticConfigDir;
+  console.log(`  project_work_dir: ${projectWorkDir} (derived from staticConfigDir parent)`);
+  console.log(`  project_ide_dir: ${projectIdeDir} (equals staticConfigDir)`);
 
   // 用于内部处理（不存入配置文件）
   const staticSkillsSourceDir = path.resolve(skillPackageDir, "skills");     // 源技能目录
@@ -502,23 +531,70 @@ function createOrUpdateProjectRules(paths, dryRun) {
 }
 
 /**
- * 创建项目技能目录（fw-project-develop）
+ * 创建项目技能目录和初始 SKILL.md（fw-project-develop）
  */
 function createProjectSkillsDir(paths, dryRun) {
   const projectSkillDir = path.resolve(paths.projectIdeDir, "skills", "fw-project-develop");
+  const skillMdPath = path.resolve(projectSkillDir, "SKILL.md");
+
+  // 初始 SKILL.md 内容（占位符，等待 Stage 1 项目扫描填充）
+  const initialSkillMd = `---
+name: fw-project-develop
+description: 项目上下文技能，包含技术栈、目录结构、路由规则、权限约束、状态管理、构建配置等。用户询问"项目结构"、"技术栈是什么"、"路由怎么配置"、"权限怎么处理"、"状态管理方案"、"构建规则"等项目相关信息时触发调用。同时适用于流程中需要"获取项目约束"、"了解项目上下文"、"确认项目规则"的场景。
+---
+
+# 项目上下文技能（待生成）
+
+## 状态
+
+**当前状态**：待生成（initial）
+
+此技能目录已创建，但内容需要在 Stage 1 项目扫描阶段填充。
+
+## 触发条件
+
+用户询问以下项目相关信息时触发调用：
+- "项目结构"、"目录结构"、"技术栈是什么"
+- "路由怎么配置"、"路由规则"、"权限怎么处理"
+- "状态管理方案"、"构建规则"、"构建配置"
+
+## 调用场景
+
+- 用户主动询问项目信息
+- frontend-workmate 流程中的 Stage 2（范围分析）、Stage 5（实施研发）、Stage 6（内部验证）
+- 需要了解项目约束时（如修改代码前确认技术栈、路由规则等）
+
+## 下一步
+
+执行 Stage 1 项目扫描，分析项目并生成完整的项目技能内容。
+
+---
+
+> 此文件由 init-skills.js 自动生成，请勿手动编辑。
+`;
 
   if (!dryRun) {
+    // 创建目录
     if (!fs.existsSync(projectSkillDir)) {
       fs.mkdirSync(projectSkillDir, { recursive: true });
       console.log(`[create] Project skill directory: ${projectSkillDir}`);
     } else {
       console.log(`[skip] Project skill directory already exists: ${projectSkillDir}`);
     }
+
+    // 创建初始 SKILL.md
+    if (!fs.existsSync(skillMdPath)) {
+      fs.writeFileSync(skillMdPath, initialSkillMd, "utf-8");
+      console.log(`[create] Initial SKILL.md: ${skillMdPath}`);
+    } else {
+      console.log(`[skip] SKILL.md already exists: ${skillMdPath}`);
+    }
   } else {
     console.log(`[dry-run] Would create: ${projectSkillDir}`);
+    console.log(`[dry-run] Would create: ${skillMdPath}`);
   }
 
-  return { projectSkillDir };
+  return { projectSkillDir, skillMdPath };
 }
 
 function main() {

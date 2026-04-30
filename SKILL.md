@@ -233,15 +233,15 @@ layer: 1
 
 | 阶段 | 触发条件 | 建议调用的技能 | 说明 |
 | --- | --- | --- | --- |
-| **Stage 2（范围分析）** | 项目技能存在 | `fw-project-develop` | 建议调用项目技能，获取项目结构、技术栈、路由、权限等约束 |
-| **Stage 5（实施研发）** | 项目技能存在 | `fw-project-develop` | 建议先调用项目技能，理解项目约束后再开始实现 |
-| **Stage 5（实施研发）** | 任务类型为 `bug` | `fw-systematic-debugging` | bug 任务建议先找到根因 |
-| **Stage 5（实施研发）** | 技术栈为 React（项目技能中标记） | `fw-react-best-practices` | **仅适用于 React 技术栈** |
-| **Stage 5（实施研发）** | 技术栈为 React 且涉及组件开发 | `fw-react-components` | **仅适用于 React 技术栈** |
-| **Stage 5（实施研发）** | 涉及复杂类型约束 | `fw-typescript-advanced-types` | TypeScript 复杂类型场景 |
-| **Stage 6（内部验证）** | 项目技能存在 | `fw-project-develop` | 建议调用项目技能，获取验证约束（路由、权限、构建规则等） |
-| **Stage 6（内部验证）** | 改动涉及页面/组件/表单/键盘交互/焦点流 | `fw-accessibility` | WCAG 2.2 可访问性检查 |
-| **Stage 6（内部验证）** | 改动涉及布局/样式/间距/UI 一致性 | `fw-web-design-guidelines` | Web 界面规范检查 |
+| **Stage 2（范围分析）** | 项目技能存在 | `fw-project-develop` | 调用项目技能，了解项目结构和技术栈 |
+| **Stage 5（实施研发）** | 项目技能存在 | `fw-project-develop` | 调用项目技能，了解项目结构和技术栈 |
+| **Stage 5（实施研发）** | 任务类型为 `bug` | `fw-systematic-debugging` | 调用调试技能，调试 bug、找到根因 |
+| **Stage 5（实施研发）** | 技术栈为 React | `fw-react-best-practices` | 调用 React 最佳实践技能 |
+| **Stage 5（实施研发）** | 技术栈为 React 且涉及组件开发 | `fw-react-components` | 调用 React 组件规范技能 |
+| **Stage 5（实施研发）** | 涉及复杂类型 | `fw-typescript-advanced-types` | 调用 TypeScript 高级类型技能 |
+| **Stage 6（内部验证）** | 项目技能存在 | `fw-project-develop` | 调用项目技能，了解项目验证约束 |
+| **Stage 6（内部验证）** | 改动涉及页面/组件/表单/键盘交互 | `fw-accessibility` | 调用 WCAG 无障碍检查技能 |
+| **Stage 6（内部验证）** | 改动涉及布局/样式/UI | `fw-web-design-guidelines` | 调用 UI 设计审计技能 |
 
 **项目技能说明**：
 - `fw-project-develop` 是项目技能，包含项目结构、技术栈、路由、权限、状态管理、构建规则等关键信息

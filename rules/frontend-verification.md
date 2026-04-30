@@ -17,8 +17,8 @@
 5. **技能建议调用（满足条件时建议执行，动态读取）**：
    - **先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，获取三核心目录
    - **项目技能引用**：`{project_ide_dir}/skills/fw-project-develop/SKILL.md` 获取验证约束
-- **改动涉及页面、组件、表单、键盘交互、焦点流、用户交互体验** → 建议动态拼接 `{static_config_dir}/skills/fw-accessibility/SKILL.md`
-- **改动涉及布局、样式、间距、交互呈现、UI 一致性** → 建议动态拼接 `{static_config_dir}/skills/fw-web-design-guidelines/SKILL.md`
+- **改动涉及页面、组件、表单、键盘交互、焦点流、用户交互体验** → 调用技能 `fw-accessibility`（优先查找 `{static_config_dir}/skills/`，若未找到则调用 `find-skills` 查找）
+- **改动涉及布局、样式、间距、交互呈现、UI 一致性** → 调用技能 `fw-web-design-guidelines`（优先查找 `{static_config_dir}/skills/`）
    - 禁止在不满足触发条件时强行调用
 6. Mark unrelated verification domains as `not_applicable`
 7. **验证执行完成后，向用户输出验证结果**：modified files, validation results, and remaining risks

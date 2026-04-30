@@ -12,7 +12,7 @@
 4. Read existing documentation first if present
 5. If a target directory lacks clear docs or reference relationships are complex:
    - **先读取配置文件** `{project_ide_dir}/.fw-session-config.json`，获取三核心目录
-   - 动态拼接 `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md`
+   - 调用技能 `fw-code-analysis-doc`（优先查找 `{static_config_dir}/skills/`，若未找到则调用 `find-skills` 查找）
 6. Summarize stable purpose, scenarios, contracts, usage rules, and examples for each changed directory
 7. Create or update one directory-level document per changed directory
 8. Keep only information that matches current implementation
