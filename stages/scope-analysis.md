@@ -166,12 +166,40 @@ Short task:
 1. **Must First Invoke Skills**:
    - **First read config file** `{project_ide_dir}/.fw-session-config.json`
    - **Project skill reference**: `{project_ide_dir}/skills/fw-project-develop/SKILL.md` (if exists)
-   - If code change directory lacks documentation, **must first read config file**, dynamically concatenate `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` supplement understanding
    - Constraints obtained after invocation as scope analysis reference
+
 2. First read "user original description", "original requirement anchor" and screenshot/attachment summary in `request-brief`; as long as these fields are non-empty, must treat them as current task main goal input.
-3. Combine project skill with existing documentation in code change directory for scope analysis.
+
 3. Only when "user original description", "original requirement anchor", "screenshot/attachment summary" are all empty, and current task goal truly cannot be determined, allow asking user "what to do this time"; otherwise cannot re-ask main requirement in Stage 2.
-4. If code change directory lacks documentation, or implementation relationships unclear, **first read config file** `{project_ide_dir}/.fw-session-config.json`, dynamically concatenate `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` supplement understanding.
+
+#### Check Code Change Directory Documentation ⚠️ Skill Loading Node
+
+**⚠️ Important: This step needs to judge whether to load fw-code-analysis-doc skill**
+
+**Execute Actions**:
+
+1. Determine [Code Change Directory] based on user input (directory where new/modified files are located)
+
+2. Check if the directory already has documentation (README.md / AGENTS.md)
+
+3. **Judge whether need to load fw-code-analysis-doc**:
+   **Conditions for loading (satisfy any one)**:
+   | Condition | Specific Judgment |
+   | --- | --- |
+   | Lacks documentation | No README.md or AGENTS.md under directory |
+   | Documentation content outdated | Document last update time > 3 months, or content inconsistent with current code |
+   | Implementation relationship complex | File count under directory > 5, or exists multi-level nested structure |
+   | AI cannot self-analyze | Code logic complex, dependency relationships unclear |
+   | Involves core module | Directory is project's core business module (e.g. pages/, components/) |
+
+4. If satisfies above conditions:
+   - Load skill `fw-code-analysis-doc` to analyze code structure and get analysis guidance
+   - Analyze directory structure based on skill guidance
+
+5. If doesn't satisfy conditions:
+   - Directly read existing documentation to understand directory structure
+
+4. Combine project skill with existing documentation in code change directory for scope analysis.
 5. Focus on analyzing current UI framework used by project, distinguish common framework vs self-developed framework.
 6. If common UI framework, clearly record framework name, version, main component entry and replacement boundary.
 7. If self-developed UI framework, first confirm if Stage 1 already hit corresponding framework skill; if not, must return to Stage 1 first to ask user if provide framework documentation or framework skills.

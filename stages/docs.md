@@ -102,23 +102,60 @@ Use edit tool again to update that Task ID's status block to:
 
 **Must execute this task first, then execute Task 2**:
 
-1. **Read Existing Project Skill**: **First read config file** `{project_ide_dir}/.fw-session-config.json`, read `{project_ide_dir}/skills/fw-project-develop/SKILL.md`
-2. **Analyze This Code Modification**:
-   - Extract code content actually modified in Stage 5
-   - **Must first read config file** `{project_ide_dir}/.fw-session-config.json`, dynamically concatenate `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` analyze modification impact
-3. **Judge if Need to Update Project Skill**:
-   - **Need update** conditions:
-     - Added long-term stable project knowledge (like new directory structure, new tech stack, new routing rules etc.)
-     - Info recorded in project skill is outdated (like directory structure changed but skill not synced)
-     - Discovered new stable project constraints (like new build rules, new state management solution etc.)
-   - **No need update** conditions:
-     - Modifications only involve current task's temporary implementation, not project long-term knowledge
-     - Modifications don't affect stable info recorded in project skill
-4. **Execute Update (If Needed)**:
-   - Merge new stable knowledge into `fw-project-develop`
-   - Output: `Updated project skill fw-project-develop, added content: [specific added items]`
-5. **Skip Update (If Not Needed)**:
-   - Output: `After analysis, this modification doesn't affect project skill long-term knowledge, no need to update fw-project-develop`
+### Step 2.1: Load Existing Project Skill ⚠️ Skill Loading Node
+
+**⚠️ Important: Must load skill to get project knowledge**
+
+**Execute Actions**:
+
+1. Load skill `fw-project-develop` to understand project structure and tech stack
+2. Get project's directory structure, tech stack, build rules etc. from skill
+
+**⚠️ Prohibited Actions**:
+- ❌ Prohibited from skipping skill loading directly judge whether to update
+
+---
+
+### Step 2.2: Analyze This Code Modification ⚠️ Skill Loading Node
+
+**⚠️ Important: Need to judge whether to load fw-code-analysis-doc skill**
+
+**Execute Actions**:
+
+1. Extract code content actually modified in Stage 5
+
+2. **Judge whether need to load fw-code-analysis-doc**:
+   **Conditions for loading (satisfy any one)**:
+   | Condition | Specific Judgment |
+   | --- | --- |
+   | Modification involves new module | Added directory or file, existing project skill not recorded |
+   | Modification involves complex dependency | Module added new dependency relationship, need to update project skill |
+   | AI cannot self-analyze | Code modification complex, need skill guidance |
+   | Modification involves core architecture | Modified project's core structure or configuration |
+
+3. If satisfies above conditions:
+   - Load skill `fw-code-analysis-doc` to get analysis guidance
+   - Analyze module structure based on skill guidance
+
+4. If doesn't satisfy conditions:
+   - Directly analyze code modification content
+
+---
+
+### Step 2.3: Judge if Need to Update
+
+**Conditions for needing update**:
+- Added long-term stable project knowledge (like new directory structure, new tech stack, new routing rules etc.)
+- Info recorded in project skill is outdated
+- Discovered new stable project constraints
+
+**Conditions for not needing update**:
+- Modifications only involve current task's temporary implementation, not project long-term knowledge
+
+### Step 2.4: Execute Update or Skip
+
+- **Need update**: Merge new stable knowledge into `fw-project-develop`, output: `Updated project skill fw-project-develop`
+- **No need update**: Output: `After analysis, this modification doesn't affect project skill long-term knowledge, no need to update`
 
 ## Task 2: Generate/Update Directory Documentation (Mandatory Execution)
 
@@ -128,16 +165,40 @@ Use edit tool again to update that Task ID's status block to:
 
 **Prohibited from generating single total document, must process each directory following this flow**:
 
-1. **Extract Modification Directory Set**:
-   - Extract all involved directories from Stage 5's actual modified files
-   - Example: Modified `src/pages/Home.tsx`, `src/components/Header.tsx` → Directory set is `src/pages/`, `src/components/`
+### Step 3.1: Extract Modification Directory Set
 
-2. **For Each Modification Directory Execute the Following Steps**:
-   - **First read config file** `{project_ide_dir}/.fw-session-config.json`, get three core directories
-   - If directory implementation relationships complex, **dynamically concatenate path** `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` analyze that directory
-   - Check if directory already has documentation (README.md or similar)
-   - If yes → Update that document content
-   - If no → Use `templates/docs/directory-readme-template.md` create new document
+- Extract all involved directories from Stage 5's actual modified files
+- Example: Modified `src/pages/Home.tsx`, `src/components/Header.tsx` → Directory set is `src/pages/`, `src/components/`
+
+### Step 3.2: Process Per Directory ⚠️ Skill Loading Node
+
+**⚠️ Important: For each modification directory need to judge whether to load skill**
+
+**For each modification directory execute the following actions**:
+
+1. **Judge whether need to load fw-code-analysis-doc**:
+
+   **Conditions for loading (satisfy any one)**:
+   | Condition | Specific Judgment |
+   | --- | --- |
+   | Directory implementation relationship complex | File count under directory > 5, or exists multi-level nested structure |
+   | Lacks documentation | No README.md or AGENTS.md under directory |
+   | AI cannot self-analyze | Directory logic complex, dependency relationships unclear |
+   | Involves core module | Directory is project's core business module |
+
+2. If satisfies above conditions:
+   - Load skill `fw-code-analysis-doc` to get analysis guidance
+   - Analyze directory structure based on skill guidance
+
+3. If doesn't satisfy conditions:
+   - Directly read directory content to analyze
+
+4. Check if directory already has documentation (README.md or similar)
+5. If yes → Update that document content
+6. If no → Use `templates/docs/directory-readme-template.md` create new document
+
+**⚠️ Prohibited Actions**:
+- ❌ Prohibited from skipping skill loading directly create document
 
 3. **Directory Documentation Content Requirements**:
    - Function purpose: What this directory is for

@@ -107,10 +107,47 @@ User proposes verification issues in stage8, will return to stage5 → stage6 to
    - Functional correctness
    - lint / type / build basic validation
    - Key interactions and regression paths
-5. **Based on modification type, must invoke corresponding skills** (dynamic read):
-- **Project skill exists** → **First read config file**, dynamically concatenate `{project_ide_dir}/skills/fw-project-develop/SKILL.md`
-- **Modifications involve pages, components, forms, keyboard interactions** → **First read config file**, dynamically concatenate `{static_config_dir}/skills/fw-accessibility/SKILL.md`
-- **Modifications involve layout, styles, UI consistency** → **First read config file**, dynamically concatenate `{static_config_dir}/skills/fw-web-design-guidelines/SKILL.md`
+#### 3.3 Special Verification ⚠️ Skill Loading Node
+
+**⚠️ Important: Must judge whether need to load verification skills based on modification type**
+
+**Judge Modification Type**:
+
+| Modification Type | Specific Judgment Conditions |
+| --- | --- |
+| **Page/Component Modification** | Involves user interface rendering; involves visual elements; involves user interaction components; involves page structure |
+| **Style/UI Modification** | Involves style definition; involves layout adjustment; involves visual design; involves theme/color/font configuration |
+
+**⚠️ Note**:
+- Above judgment conditions apply to all frontend tech stacks (React/Vue/Angular/Svelte etc.)
+- Specific file format not limited (can be .tsx/.vue/.jsx/.svelte etc.)
+- Specific style format not limited (can be .css/.less/.scss/.stylus etc.)
+
+**Execute Skill Invocation Based on Judgment Result**:
+
+| Modification Type | Skill to Load | Loading Action |
+| --- | --- | --- |
+| Page/Component Modification | `fw-accessibility` | Load skill `fw-accessibility` to check WCAG accessibility |
+| Style/UI Modification | `fw-web-design-guidelines` | Load skill `fw-web-design-guidelines` to audit UI design guidelines |
+
+**Execute Actions**:
+
+1. Judge current modification type based on above table
+
+2. If involves **Page/Component Modification**:
+   - Load skill `fw-accessibility` to check WCAG accessibility
+   - Verify modifications meet accessibility standards based on skill guidance
+
+3. If involves **Style/UI Modification**:
+   - Load skill `fw-web-design-guidelines` to audit UI design guidelines
+   - Verify modifications meet UI design guidelines based on skill guidance
+
+4. If no special verification needs:
+   - Skip skill loading, continue output verification results
+
+**⚠️ Prohibited Actions**:
+- ❌ Prohibited from skipping skill loading directly output verification results
+- ❌ Prohibited from loading skills without judging modification type
 6. Only fill `templates/verification/verification-report.md` when need to leave trace, enter long task record or verification process complex.
 7. Only when functional verification, key regression and executable lint/type/build/test validation all reach "pass" or "have clear reasonable not_applicable conclusion", can treat as internal verification pass.
 8. If validation failure root cause is code issue, return to Stage 5 to fix → **automatically enter Stage 6 → Stage 7 → Stage 8**.
