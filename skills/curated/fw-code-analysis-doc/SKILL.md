@@ -1,49 +1,49 @@
 ---
 name: fw-code-analysis-doc
-description: General code analysis and documentation skill. Triggered when users request "analyze function/file/component/module/feature and generate documentation", also used in the documentation sync phase after code development or modification is complete. Applicable to frontend, backend, and general code directories. Executes "implementation interpretation + repository-wide reference retrieval + special usage extraction + case-based explanation", outputs or updates maintainable Markdown usage documentation in target directory for subsequent AI reuse.
+description: General-purpose code analysis and documentation skill. Triggered when users request "analyze a function/file/component/module/feature and generate documentation", and also used in workflow stages that require "analyzing directory structure", "understanding module relationships", "generating directory documentation", or "documentation sync". Executes "implementation analysis + full-repo reference search + special usage extraction + example-driven documentation", then outputs or updates a maintainable Markdown reference guide in the target directory for subsequent AI reuse.
 ---
 
 # Code Analysis Doc
 
-Execute the following workflow and produce documentation directly.
+Follow the process below and deliver the documentation directly.
 
-## 0) Trigger Conditions
+## 0) When to Trigger
 
 - This skill should be triggered in the following scenarios:
-  - User explicitly requests code analysis and documentation generation.
-  - User requests supplementation, revision, or synchronization of module documentation.
-  - AI completes code development or modification and enters the delivery/closing phase.
-- In "post-development/modification closing" scenarios, must execute documentation sync judgment:
-  - If target directory already has corresponding documentation, perform incremental update.
-  - If target directory lacks corresponding documentation, create new file with complete explanation.
+  - The user explicitly requests code analysis and documentation generation.
+  - The user requests supplementation, revision, or sync of a module's documentation.
+  - After AI completes code development or code changes, during the delivery wrap-up phase.
+- In "post-development/post-change wrap-up" scenarios, a documentation sync determination must be executed:
+  - If the target directory already has corresponding documentation, perform an incremental update.
+  - If the target directory does not have corresponding documentation, create a new document and write the full description.
 
-## 1) Identify Analysis Target and Output Path
+## 1) Identify the Analysis Target and Output Path
 
-- Identify analysis target: function, file, component, page, service, module, directory.
-- If user provides specific path, prioritize outputting documentation under that path.
-- Default document name: `README.md`; if directory already has similar documentation, update existing file rather than create multiple versions.
-- If triggered by "post-development/modification closing", first determine target document path based on change scope:
-  - Component/module-level changes: prioritize corresponding directory `README.md`
-  - Cross-directory changes: update respective documentation by main modified modules
+- Identify the analysis target: function, file, component, page, service, module, or directory.
+- If the user has provided a specific path, prioritize outputting the document to that path.
+- Default document name: `README.md`; if the directory already has a document of the same type, update the existing document rather than creating multiple versions.
+- If triggered by "post-development/post-change wrap-up", first determine the target document path based on the scope of changes:
+  - Component/module-level changes: prioritize the corresponding directory `README.md`
+  - Cross-directory changes: update the corresponding document for each main changed module separately
 
-## 2) Code Research (Implementation + References)
+## 2) Code Investigation (Implementation + References)
 
-- First read target implementation, extract:
+- First read the target implementation and extract:
   - Core purpose
-  - Input/output (parameters/returns/props/return structure)
-  - Internal dependencies (hooks, services, stores, configurations)
+  - Inputs and outputs (parameters/return values/props/return structure)
+  - Internal dependencies (hooks, service, store, configuration)
   - Key flows (data flow, render flow, interaction flow)
-- Then query repository-wide reference patterns, must cover:
+- Then search the full repository for usage patterns, and must cover:
   - Typical integration patterns (most common usage)
   - Variant patterns (parameter differences, context differences, lifecycle differences)
-  - Special/boundary usage (fallback logic, conditional branches, compatibility handling)
+  - Special/boundary usage (fallback logic, conditional branches, compatibility approaches)
   - Common constraints and implicit contracts
-- Reference research output requirements:
-  - Provide 2-4 "representative reference points" (don't list all files exhaustively)
+- Reference investigation output requirements:
+  - Provide 2~4 "representative reference points" (do not enumerate all files)
   - For each reference point, explain "why it represents a pattern"
-  - Must include at least 1 special or boundary usage reference
-  - Each reference point must include "key code snippet" (10-40 lines, preserving core parameters and call context)
-  - Below code snippet, only annotate "source scenario name/pattern name", not filenames, paths, or line numbers
+  - Include at least 1 special or boundary usage reference
+  - Each reference point must include a "key code snippet" (10~40 lines, retaining core parameters and invocation context)
+  - Below each code snippet, only annotate "source scenario name / pattern name" — do not write filenames, paths, or line numbers
 
 ## 3) Extract Stable Rules and Reference Conclusions
 
@@ -52,44 +52,44 @@ Execute the following workflow and produce documentation directly.
   - Applicable/non-applicable scenarios
   - Interface contracts and required fields
   - Notes and common errors
-- Merge "implementation logic" with "reference behavior" into rules:
-  - Which parameters/preconditions are universally relied upon by callers
-  - Which patterns only work in specific scenarios
-  - Which special usages are reusable, which should only be cautiously referenced
-- Avoid accumulating high-volatility information:
-  - Don't write exhaustive call file lists
-  - Don't write easily-expiring statistics
-  - Don't write temporary branch information
+- Merge "implementation logic" and "reference behavior" into rules:
+  - Which parameters/preconditions are universally depended upon by callers
+  - Which approaches only apply in specific scenarios
+  - Which special usages are reusable, and which should only be referenced with caution
+- Avoid consolidating highly volatile information:
+  - Do not write a full list of all calling files
+  - Do not write easily outdated statistics
+  - Do not write temporary branch information
 
 ## 4) Document Structure Template
 
 Organize document content in the following order:
 
-1. Purpose and Function
-2. Applicable Scenarios
-3. External Contracts (parameters, returns, dependencies)
-4. In-Project Reference Analysis (representative references + pattern explanation)
-5. Usage Rules (summarized by pattern)
-6. Usage Examples (2-3, at least 1 special usage example)
-7. Notes (stable, actionable)
+1. Purpose and function
+2. Applicable scenarios
+3. External contracts (parameters, return values, dependencies)
+4. In-project reference analysis (representative references + pattern descriptions)
+5. Usage rules (organized by pattern)
+6. Usage examples (2~3, at least 1 special usage example)
+7. Notes (stable and actionable)
 
 ## 5) Writing Standards
 
-- Use concise English, preserve technical terms as original code names.
-- Present examples as copyable code blocks, prioritize minimal working examples.
-- Examples must "derive from real reference patterns", prohibit purely fabricated examples.
-- Reference analysis must include real code snippets, prohibit paths, filenames, or line number links.
-- If positioning info needed, only use "scenario tag + key parameters/key calls" description.
-- Conclusions should be actionable, avoid vague descriptions.
-- If uncertain behavior exists, annotate "depends on caller constraints" and explain impact.
+- Use concise English; keep technical terms as their original code names.
+- Present examples as copyable code blocks, prioritizing minimal working examples.
+- Examples must "originate from real reference patterns" — purely invented examples are prohibited.
+- Reference analysis must include real code snippets — path, filename, and line number links are prohibited.
+- If positioning information needs to be supplemented, only use "scenario label + key parameter/key call" descriptions.
+- Conclusions must be actionable — avoid vague descriptions.
+- If uncertain behavior exists, annotate "depends on caller constraints" and explain the impact.
 
 ## 6) Delivery Checklist
 
-- Documentation written to user-specified directory.
+- Document has been written to the user-specified directory.
 - Content covers "purpose, scenarios, reference analysis, examples, notes".
-- Includes at least 1 special/boundary usage explanation and example.
-- Each representative reference in "in-project reference analysis" includes code snippet and scenario explanation.
-- Documentation does not contain paths, filenames, line number links or other volatile positioning info.
-- No high-volatility list information.
-- Consistent with current code implementation.
-- If this task includes code development or modification, completed "update if exists, create if absent" documentation sync action.
+- At least 1 special/boundary usage description and example is included.
+- Each representative reference in "in-project reference analysis" includes a code snippet and scenario description.
+- Document does not contain easily-changed positioning information like paths, filenames, or line number links.
+- No highly volatile list information.
+- Consistent with the current code implementation.
+- If the current task includes code development or code changes, the "update if exists, create if not" documentation sync action has been completed.

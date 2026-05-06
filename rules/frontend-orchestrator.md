@@ -9,10 +9,10 @@
 
 ## Core Chain
 
-1. When Stage 0 starts, if Current Skill Directory contains `scripts/init-skills.js`, must first actively execute that script, before continuing any subsequent initialization actions; if not actually executed this round, Stage 0 cannot be treated as complete. Script executes improved logic: check skill version changes and update, validate config path correctness, check rules template changes, preserve state file task data; ensure users always use latest version skills and rules
+1. When Stage 0 starts, if the current skill directory contains `../scripts/init-skills.js` (relative to skill pack root), must first actively execute that script, then continue any subsequent initialization actions; if not actually executed this round, Stage 0 cannot be treated as complete. Script executes improved logic: check skill version changes and update, validate config path correctness, check rules template changes, preserve state file task data; ensure users always use latest version skills and rules
 2. Before each phase formally executes, first scan current available skill sources: user-provided skills/docs, project skill `fw-project-develop`, archived skills in project, other reusable public skill packs
 3. If already matched suitable skill, prioritize invoking and execute according to its constraints; don't first run phase nakedly then go back to supplement skills
-4. Align with `templates/intake/request-brief.md`
+4. Align with `../templates/intake/request-brief.md`
 5. Stage 0 only handles environment initialization, file reception, state initialization and Stage 1 entry decision, doesn't generate implementation question list; before entering Stage 1, cannot proactively ask implementation scope, interface fields, validation rules, interaction details or restoration standards
 6. When Stage 0 completes, user-side default only outputs brief text, like "Initializing..." or "Initialization complete, continuing to next step."; cannot directly expose internal fields like `current_stage`, `entry_conditions`, `completion_conditions` to user
 7. New session first round default only allows one blocking question; but if already identified unique existing frontend project, directly enter Stage 1 scan, no extra inquiry "whether to continue existing project"
@@ -38,18 +38,18 @@
 19. Stage 3 only stops when execution plan itself needs user to verify breakdown, priority or risk; otherwise can directly enter Stage 4 (confirm materials before execution)
 20. Stage 4 confirms interface, permission, design, integration etc. prerequisite materials by task type: `feature` default confirm, `bug` only confirm when involves external dependency, `refactor` default can skip
 21. If Stage 2 already confirmed task type and skill route, Stage 5 must invoke corresponding skills based on actual conditions:
-- `bug` task → **First read config file**, dynamically concatenate `{static_config_dir}/skills/fw-systematic-debugging/SKILL.md`
-- React tech stack (marked in project skill) → **First read config file**, dynamically concatenate `{static_config_dir}/skills/fw-react-best-practices/SKILL.md` (only applicable to React)
-- React tech stack and involves component development → **First read config file**, dynamically concatenate `{static_config_dir}/skills/fw-react-components/SKILL.md` (only applicable to React)
-- Complex type issues → **First read config file**, dynamically concatenate `{static_config_dir}/skills/fw-typescript-advanced-types/SKILL.md`
+- `bug` task → Invoke skill `fw-systematic-debugging` (search `{static_config_dir}/skills/` first, call `find-skills` if not found)
+- React tech stack (marked in project skill) → Invoke skill `fw-react-best-practices` (only applicable to React, search `{static_config_dir}/skills/` first)
+- React tech stack and involves component development → Invoke skill `fw-react-components` (only applicable to React, search `{static_config_dir}/skills/` first)
+- Complex type issues → Invoke skill `fw-typescript-advanced-types` (search `{static_config_dir}/skills/` first)
     - Prohibited from skipping skill invocation using "Stage 2 didn't specify" as reason
     - Prohibited from invoking React skills under non-React tech stack
 22. After Stage 4 user has clearly "provided / not provided / skipped" materials, directly enter Stage 5 formal implementation; no extra inquiry whether to continue
 23. Refer to `rules/frontend-implementation.md`
 24. Stage 5 only when code implementation complete and no unresolved runtime/lint/type/build/test blocking, allows automatic entry to Stage 6; if environment issues exist, must first stay in Stage 5 and output fix suggestions to user
-25. Refer to `rules/frontend-verification.md`, and invoke verification skills based on code changes:
-- Changes involve pages/components/forms/keyboard interactions/focus flow → **First read config file**, dynamically concatenate `{static_config_dir}/skills/fw-accessibility/SKILL.md`
-- Changes involve layout/styles/spacing/UI consistency → **First read config file**, dynamically concatenate `{static_config_dir}/skills/fw-web-design-guidelines/SKILL.md`
+25. Refer to `./frontend-verification.md`, and invoke verification skills based on code changes:
+- Changes involve pages/components/forms/keyboard interactions/focus flow → Invoke skill `fw-accessibility` (search `{static_config_dir}/skills/` first, call `find-skills` if not found)
+- Changes involve layout/styles/spacing/UI consistency → Invoke skill `fw-web-design-guidelines` (search `{static_config_dir}/skills/` first)
     - Prohibited from skipping skill invocation using "time urgent" as reason
 26. After Stage 6 outputs verification results, must wait for user confirmation whether to continue; if verification fails, environment blocks or user requests adjustment, return to Stage 5; only after user confirmation enter Stage 7
 27. Refer to `rules/directory-doc-sync.md`, and generate or update directory documentation per actual changed directories
@@ -99,63 +99,97 @@
 - Only when current phase status is `completed`, can switch to next phase.
 - If current phase status is `waiting_user` or `blocked`, must stop in current phase, cannot because project already created, dependencies already installed or code editable then automatically proceed.
 
-## Task ID Carriage Mechanism
+## Task ID Retrieval Mechanism (Core)
 
-**User only inputs requirements, Task ID auto-carried via AI output**
+**⚠️ Task ID is passed via AI output; state file only stores data and does not govern execution**
 
-### Task ID Carriage Methods
+### Step 1: Extract Task ID from Context (Mandatory, Must Not Skip)
 
-| Carriage Source | Description |
+**Check method**:
+| Check Item | Description |
 | --- | --- |
-| Context reference | User referenced previous AI output (first line contains `Task ID: task_xxxxxxxx`) |
-| IDE auto-carriage | IDE session management auto-carries previous output's Task ID |
-| No carriage | First input in new session, no Task ID context |
+| Previous AI output | Check if previous output first line contains `Task ID: task_xxxxxxxx` |
+| IDE session context | IDE auto-carries Task ID from previous output |
+| User input reference | Whether user referenced history output containing Task ID |
 
-### Judgment Logic (Step 1)
+### Step 2: Handle Based on Extraction Result
 
-**After receiving user input, first check Task ID carriage status**:
-| Carriage Status | Next Action |
+| Extraction Result | Handling Method |
 | --- | --- |
-| Task ID carried | → Read state file → Find corresponding task → Continue |
-| **No Task ID carriage** | → **Create new task** (first input in new session) |
+| **No Task ID** (new session, or no Task ID in context) | → **Create new task**, generate new Task ID |
+| Task ID found → State file has corresponding task | → **Continue existing task** |
+| Task ID found → State file has no corresponding task | → **Create new task** (Task ID expired) |
 
-**Important**:
-- User will not manually input Task ID, only inputs requirement content
-- Task ID carried via AI output first line, subsequent dialogue auto-transmits via reference/context
-- "No Task ID carriage" detected = first input in new session = create new task
+### Step 3: Carry Task ID During Execution
 
-### Step 2 Branches
+**Create new task**:
+- First line output: `[Initialization] Task ID: task_{new_ID}`
+- Add new task block in state file
+- Start executing from Stage 0
 
-**Branch A (Task ID carried)**:
-- Read state file → Find `<!-- TASK_{TASK_ID}_START -->`
-- Continue that task
-
-**Branch B (No Task ID carriage)**:
-- Generate new Task ID
-- Read state file → Add new task block
-- Start from Stage 0
-- **First line output carries Task ID** `[Phase Name] Task ID: task_xxx`
+**Continue existing task**:
+- First line output: `[Phase Name] Task ID: task_{existing_ID}`
+- Read task details from state file
+- Continue execution based on phase status
 
 ### Example Flow
 
-**First input in new session**:
+**New session**:
 ```
-User: "add user management module" (no Task ID carriage)
-AI: Step 1 check → No carriage → Create new task task_abc123 → Stage 0
+User: "add user management module" (no Task ID in context)
+AI: Extract → No Task ID → Create new task task_abc123
 AI output first line: "[Initialization] Task ID: task_abc123"
 ```
 
-**Continue existing session**:
+**Continue in same session**:
 ```
-User: "continue, need to modify this" (Task ID carried from previous round)
-AI: Step 1 check → Carriage task_abc123 → Continue task_abc123
+Previous output first line: "[Implementation] Task ID: task_abc123"
+IDE auto-carries task_abc123
+User: "continue, need to modify this here"
+AI: Extract → Has Task ID task_abc123 → State file exists → Continue
+AI output first line: "[Implementation] Task ID: task_abc123"
+```
+
+**New requirement in same session**:
+```
+Previous output first line: "[Delivery] Task ID: task_abc123"
+IDE auto-carries task_abc123
+User: "the bell color has issues" (new requirement)
+AI: Extract → Has Task ID → But content is new requirement → Judge handling method
 ```
 
 ### Prohibited Behavior
 
-- **Prohibited**: Read state file active tasks before checking Task ID carriage
-- **Prohibited**: Assume user wants to continue existing task (must first check Task ID carriage)
-- **Prohibited**: Associate unrelated new request with active task in state file
+- **Prohibited**: Reading state file then directly using a task details block (must first extract Task ID from context)
+- **Prohibited**: Assuming user wants to continue existing task (must first extract Task ID from context)
+- **Prohibited**: Output without carrying Task ID (every output first line must have Task ID)
+
+## Auto-Transition Phases (Mandatory)
+
+**⚠️ Stage 5→6→7→8 must auto-transition, prohibited from waiting for user confirmation**
+
+| Transition Point | Execution Method |
+| --- | --- |
+| stage5 → stage6 | After completion immediately output conclusion and execute stage6 |
+| stage6 → stage7 | After completion immediately output conclusion and execute stage7 |
+| stage7 → stage8 | After completion immediately output conclusion and execute stage8 |
+
+**Auto-transition output format**:
+```
+[Implementation] Completed. Proceeding to next phase: [Verification].
+(Immediately execute stage6, do not wait for user)
+[Verification] Completed. Proceeding to next phase: [Documentation Sync].
+(Immediately execute stage7, do not wait for user)
+[Documentation Sync] Completed. Proceeding to next phase: [Delivery].
+(Execute stage8, wait for user to confirm delivery)
+```
+
+**Prohibited behavior**:
+- **Prohibited**: Waiting for user confirmation after stage5 completes before entering stage6
+- **Prohibited**: Waiting for user confirmation after stage6 completes before entering stage7
+- **Prohibited**: Waiting for user confirmation after stage7 completes before entering stage8
+
+**Only confirmation point**: Wait for user to confirm delivery results after stage8 completes
 
 ## Failure Fallback
 

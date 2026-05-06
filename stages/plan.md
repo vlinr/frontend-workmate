@@ -1,106 +1,121 @@
-# Stage 3: Build Execution Plan
+# Stage 3: Establish Execution Plan
 
 ## ⚠️ Mandatory Rules (Must Follow)
 
-### 1. Single Phase Output Principle
+### 1. Single-Stage Output Principle
 
-**This phase output must only contain execution plan content, prohibited from imagining future phases**:
+**This stage output must only contain execution plan content — do not anticipate future stages**:
 
-| Prohibited Content | Description |
+| Prohibited Content | Explanation |
 | --- | --- |
-| "Specific implementation steps" | Prohibited from outputting specific implementation details |
-| "Code modification plan" | Prohibited from outputting implementation phase content |
+| "Specific implementation steps" | Prohibited: specific implementation details |
 
 ### 2. Task ID Carrying Principle
 
-**This phase must carry Task ID**:
-- First line output: `[Execution Plan] Task ID: task_xxxxxxxx`
-- State file update must carry Task ID
+**This stage must carry the Task ID**:
+- First line of output: `[Execution Plan] Task ID: task_xxxxxxxx`
+- State file updates must carry the Task ID
 
-### 3. After Completion, Automatically Proceed to Next Phase
+### 3. Auto-Transition to the Next Stage After Completion
 
-**After execution plan is built**:
-- Don't output confirmation prompt
-- Automatically proceed to stage4 (Material Supply)
+**After the execution plan is established**:
+- Do not output a confirmation prompt
+- Auto-transition to stage4 (Material Supply)
 
 ---
 
-## Goal
+## Objective
 
-- Enable complex tasks with step-by-step execution and checkpoint resume capability.
+- Enable complex tasks to have step-by-step execution and checkpoint resume capabilities
 
-## Content Handling Rules (Important)
-
-**This Phase Responsibility Boundary**:
-
-| Belongs to This Phase | Does Not Belong to This Phase (Record to Context) |
-| --- | --- | --- |
-| Task breakdown, step planning | Specific code modification, implementation details |
-| Checkpoint resume mechanism establishment | Verification execution |
-| Step ID allocation | Documentation update |
-
-**User can provide any content, this phase only processes content belonging to execution plan**:
-
-```
-Example content user may provide:
-- "First change login page, then user management, finally permission"
-- "Step 1: Fix form validation, Step 2: Add API call"
-
-Handling method:
-- Info belonging to execution plan → This phase processes (break down steps)
-- Info belonging to implementation details → Record to task context, wait for stage5 to process
-- Don't reject user content, only process by phase
-```
+---
 
 ## Entry Conditions
 
-- Task is multi-step, cross-directory, cross-sub-project, cross-multi-round verification, or estimated single round cannot complete.
+Enter this stage when any of the following conditions are met:
+- Task has multiple steps (estimated steps ≥ 3)
+- Task spans multiple directories
+- Task spans multiple sub-projects
+- Task requires multiple rounds of validation
+- Estimated to be unable to complete in a single round
 
-## Step 1: Update State File
+---
 
-**After entering this phase, must immediately execute the following edit operations**:
+## Execution Flow
 
-### Edit Instructions
+**After entering this stage, execute in the following order**:
 
-1. **First Read Config File**: Use read tool to read `{project_ide_dir}/.fw-session-config.json`
-2. **Get Rules File Path**: Read `rules_file_path` field from config
-3. **Read Rules File**: Use read tool to read file at that path
-4. **Edit Rules File**: **Find corresponding status block based on current Task ID (get `current_task_id` from context)**:
-   - Find content between `<!-- TASK_{TASK_ID_UPPERCASE}_START -->` and `<!-- TASK_{TASK_ID_UPPERCASE}_END -->`
-   - Use edit tool to replace that status block content with:
+---
+
+### Step 1: Update the State File
+
+**First, update the state file**:
+
+Find the state block corresponding to the current Task ID:
+- Search for content between `<!-- TASK_{TASK_ID_UPPERCASE}_START -->` and `<!-- TASK_{TASK_ID_UPPERCASE}_END -->`
+- Use the edit tool to replace the state block content with:
 
 ```
-**Task ID**: {Current Task ID}
+**Task ID**: {current task ID}
 **Currently Executing**: Execution Plan
-**Phase**: stage3
+**Stage**: stage3
 **Status**: in_progress
-**Next Step**: Build execution plan
+**Next Step**: Establish execution plan
 ```
 
-### Edit Again After Phase Completion
+---
 
-Before proceeding to next phase, use edit tool again to replace status content with:
+### Step 2: Load the Long-Task Skill
+
+**⚠️ Important: To establish a checkpoint resume mechanism for long tasks, the corresponding skill needs to be loaded**
+
+Execute the following actions:
+
+1. Load skill `fw-task-plan-checkpoint` to establish a checkpoint resume mechanism
+2. Establish step-by-step execution capability for the long task according to skill guidance
+
+---
+
+### Step 3: Create Task Run Directory and Task File
+
+**Execute the following steps**:
+
+1. Create task run directory: `temp/task-runs/<task-id>/`
+2. Assign stable IDs, status, version, and rerun templates to steps
+3. Sync back to the task file after each step is advanced
+
+---
+
+### Step 4: Output Auto-Transition Prompt and Auto-Transition to the Next Stage
+
+**After the execution plan is established, output the auto-transition prompt**:
+
+```
+[Execution Plan] Task ID: {current task ID}
+Execution plan established.
+
+Plan details:
+- Total steps: {number of steps}
+- Checkpoint resume: enabled
+
+Proceeding to the next stage: [Material Supply].
+```
+
+---
+
+### Step 5: Update the State File to the Next Stage
+
+**Before entering stage4, update the state file**:
 
 ```
 **Currently Executing**: Material Supply
-**Phase**: stage4
+**Stage**: stage4
 **Status**: in_progress
-**Next Step**: Execute stages/supply.md
+**Next Step**: Execute supply.md
 ```
 
-### Prohibited Actions
+---
 
-- Prohibited from guessing paths without reading config file
+## Rollback Conditions
 
-1. **First read config file** `{project_ide_dir}/.fw-session-config.json`, dynamically concatenate `{static_config_dir}/skills/fw-task-plan-checkpoint/SKILL.md` and invoke.
-2. Build task run directory and task files.
-3. Allocate stable IDs, status, versions and re-run templates for steps.
-4. After each advancement, synchronously write back to task files.
-
-## Output
-
-- `execution-plan` or `temp/task-runs/<task-id>/`
-
-## Fallback Conditions
-
-- If initially misjudged as short task, but execution significantly lengthens, immediately supplement this phase.
+- If the task was initially misjudged as a short task but significantly grows during execution, immediately supplement this stage

@@ -2,7 +2,7 @@
 
 ## Outputs
 
-- `templates/docs/directory-readme-template.md` under Current Skill Directory
+- `templates/docs/directory-readme-template.md` under the [Current Skills Directory]
 
 ## Workflow
 
@@ -11,8 +11,8 @@
 3. For each changed directory, determine the owning directory that should hold the local document; if the file itself already sits in the stable owning directory, use that directory directly
 4. Read existing documentation first if present
 5. If a target directory lacks clear docs or reference relationships are complex:
-   - **First read config file** `{project_ide_dir}/.fw-session-config.json`, get three core directories
-   - Dynamically concatenate `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md`
+   - **First read the config file** `{project_ide_dir}/.fw-session-config.json` to obtain the three core directories
+   - Invoke skill `fw-code-analysis-doc` (prioritize `{static_config_dir}/skills/`; if not found, invoke `find-skills` to locate)
 6. Summarize stable purpose, scenarios, contracts, usage rules, and examples for each changed directory
 7. Create or update one directory-level document per changed directory
 8. Keep only information that matches current implementation

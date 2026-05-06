@@ -6,22 +6,22 @@
 - Delivery target:
 - Current status:
 
-## 2. Modification Summary
+## 2. Change Summary
 
-- Main modifications:
+- Main changes:
 - Impact scope:
 - Content not included in this delivery:
 
-## 3. Verification Summary
+## 3. Validation Summary
 
-- Verification conclusion:
-- Key passed items:
-- Remaining issues:
+- Validation conclusion:
+- Key passing items:
+- Outstanding issues:
 
 ## 4. User Review Summary
 
 - User review status: `approved | revise_needed | pending | not_applicable`
-- User focus points:
+- User concerns:
 - Stages rolled back due to user feedback:
 
 ## 5. Risks and Recommendations
@@ -32,21 +32,21 @@
 
 ## 6. Resume Information
 
-- Resume entry:
-- If need to continue, jump to: [Stage name or Step ID, e.g., Stage 5 or Step 6]
+- Resume entry point:
+- If continuation is needed, jump to: [Stage name or Step ID, e.g., Stage 5 or Step 6]
 - Jump type: `stage_jump | step_jump`
 - Files to read before resuming:
 
-## 7. Switchable Steps List
+## 7. Switchable Step List
 
-User can switch to any step to continue execution via the following commands:
+Users can switch to any step to continue execution using the following commands:
 
 | User Command | Target Stage | Description |
 | --- | --- | --- |
-| "enter project scan" / "step 2" | Stage 1 | Re-scan project, update project skill |
-| "enter scope analysis" / "step 3" | Stage 2 | Re-analyze requirement scope |
-| "enter execution plan" / "step 4" | Stage 3 | Re-plan long task (long task only) |
-| "enter material supply" / "step 5" | Stage 4 | Re-supply materials |
-| "enter implementation" / "step 6" | Stage 5 | Start code modification directly |
-| "enter internal verification" / "step 7" | Stage 6 | Re-run verification |
-| "enter documentation sync" / "step 8" | Stage 7 | Re-sync documentation |
+| "Go to Project Scan" / "Step 2" | Stage 1 | Re-scan the project, update project skill |
+| "Go to Scope Analysis" / "Step 3" | Stage 2 | Re-analyze the requirement scope |
+| "Go to Execution Plan" / "Step 4" | Stage 3 | Re-plan long tasks (only applicable for long tasks) |
+| "Go to Material Supply" / "Step 5" | Stage 4 | Re-supplement materials |
+| "Go to Implementation" / "Step 6" | Stage 5 | Start code changes directly |
+| "Go to Verification" / "Step 7" | Stage 6 | Re-execute validation |
+| "Go to Documentation Sync" / "Step 8" | Stage 7 | Re-sync documentation |

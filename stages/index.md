@@ -26,32 +26,32 @@ This directory contains independent definition files for each phase of the front
 | Phase/Node | Description | Decision/Condition | Next Step/Branch Direction |
 | :--- | :--- | :--- | :--- |
 | **Initialization** | Complete environment initialization | - | Proceed to Project Scan |
-| **Project Scan** | Check or generate project skill | - | Output summary + **append prompt**, proceed to node C |
-| **Node C** | Verify project scan artifact correctness | **Yes: reply "continue"** | Proceed to Scope Analysis |
+| **Project Scan** | Check or generate project skill | - | Output summary + **append prompt**, proceed to Node C |
+| **Node C** | Validate project scan output is correct | **Yes: reply "continue"** | Proceed to Scope Analysis |
 | | | **No: supplement/correct** | Return to Project Scan |
-| **Scope Analysis** | Analyze requirements and scope | - | Output conclusion + **append prompt**, proceed to node E |
-| **Node E** | Verify scope analysis correctness | **Yes: reply "continue"** | Proceed to node F |
+| **Scope Analysis** | Analyze requirements and scope | - | Output conclusion + **append prompt**, proceed to Node E |
+| **Node E** | Validate scope analysis is correct | **Yes: reply "continue"** | Proceed to Node F |
 | | | **No: supplement/correct** | Return to Scope Analysis |
-| **Node F** | Need execution plan? | **Yes** | Proceed to Execution Plan |
-| | | **No** | Skip Execution Plan, proceed to Material Supply |
-| **Execution Plan** | Build execution plan | - | After execution, proceed to Material Supply |
-| **Material Supply** | Supply materials before execution | - | Proceed to node I |
+| **Node F** | Is Execution Plan needed? | **Yes** | Proceed to Execution Plan |
+| | | **No** | Skip Execution Plan, directly proceed to Material Supply |
+| **Execution Plan** | Establish execution plan | - | After completion proceed to Material Supply |
+| **Material Supply** | Supplement materials before execution | - | Proceed to Node I |
 | **Node I** | Material status judgment | **Awaiting user response** | Stay in Material Supply (waiting) |
-| | | **Provided / Skipped / Not Provided / None** | Proceed to Implementation |
-| **Implementation** | Execute code modifications | - | **Automatically proceed to Verification** (no user confirmation wait) |
-| **Verification** | Verify modification validity (execute lint/type/build/functional verification) | - | **Automatically proceed to Documentation Sync** (no user confirmation wait) |
-| **Documentation Sync** | Update directory-level documentation | - | **Automatically proceed to Delivery** (no user confirmation wait) |
-| **Delivery** | Output delivery results | - | Output results + **append confirmation prompt**, proceed to node O (await user confirmation) |
-| **Node O** | User feedback judgment | **"Confirm" / "No problem"** | Task complete, task closed |
-| | | **bug / implementation issue** | Return to Implementation → auto execute 6→7→8 → await confirmation again |
-| | | **requirement issue** | Return to Scope Analysis |
+| | | **Provided / Skipped / Not provided / N/A** | Proceed to Implementation |
+| **Implementation** | Execute code modifications | - | **Auto-proceed to Verification** (no user confirmation wait) |
+| **Verification** | Verify modification validity (lint/type/build/functional) | - | **Auto-proceed to Documentation Sync** (no user confirmation wait) |
+| **Documentation Sync** | Update directory-level documentation | - | **Auto-proceed to Delivery** (no user confirmation wait) |
+| **Delivery** | Output delivery results | - | Output results + **append confirmation prompt**, proceed to Node O (wait for user confirmation) |
+| **Node O** | User feedback judgment | **"Confirm" / "OK"** | Task complete, wrap up |
+| | | **Bug / implementation issue** | Return to Implementation → auto execute 6→7→8 → wait again |
+| | | **Requirements issue** | Return to Scope Analysis |
 | | | **User explicitly specifies step** | Switch to specified step |
 
-## Standard Prompt for Explicit Confirmation Points
+## Explicit Confirmation Point Standard Prompt
 
 After outputting conclusion at each explicit confirmation point, **must append the following prompt**:
 
-> "If you have other modifications needed, please let me know; if everything looks correct, you can simply reply 'continue' and I'll proceed to the next step."
+> "If you have other modifications needed, please tell me; of course if no other modifications, you can directly reply 'continue', I will enter next step."
 
 **Usage Scenarios**:
 - Project Scan confirmation: After outputting project skill summary → append prompt
@@ -60,30 +60,30 @@ After outputting conclusion at each explicit confirmation point, **must append t
 
 **Prohibited Actions**:
 - Prohibited from only outputting "please confirm" or "reply continue"
-- Prohibited from omitting "If you have other modifications needed, please let me know" part
+- Prohibited from omitting "If you have other modifications needed, please tell me" part
 - Prohibited from appending prompt after final step (Delivery completed)
 
 ## Node F Skip Decision
 
-Node F (Need execution plan?) is a key skip point in the master process.
+Node F (whether Execution Plan is needed) is the key skip decision point in the master process.
 
 ### Conditions to Enter Execution Plan
 
-Enter Execution Plan when any of the following conditions are met:
+Enter Execution Plan when any of the following conditions is met:
 - Task is multi-step (estimated steps ≥ 3)
 - Task spans multiple directories
 - Task spans multiple sub-projects
 - Task requires multiple rounds of verification
-- Estimated that single round cannot complete
+- Estimated to not be completable in a single round
 
 ### Conditions to Skip Execution Plan
 
-Skip Execution Plan and proceed directly to Material Supply when all of the following conditions are met:
-- Task is single-step or simple (estimated steps < 3)
-- Task involves single directory
+Skip Execution Plan and directly proceed to Material Supply when all of the following conditions are met:
+- Task is single-step or simple steps (estimated steps < 3)
+- Task involves a single directory
 - Task does not span sub-projects
 - Task does not require multiple rounds of verification
-- Estimated that single round can complete
+- Estimated to be completable in a single round
 
 ## Phase Definition Files
 
@@ -108,8 +108,8 @@ Skip Execution Plan and proceed directly to Material Supply when all of the foll
 | Verification fails | Implementation |
 | User supplements new requirements after delivery | Scope Analysis |
 
-## Usage Instructions
+## Usage Notes
 
-- Prohibited from outputting Stage numbers, must use phase names
+- Prohibited from outputting Stage numbers; must use phase names
 - Detailed definitions for each phase are in corresponding definition files
-- Main protocol `SKILL.md` defines core gate rules
+- Master protocol `SKILL.md` defines core gate rules

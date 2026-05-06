@@ -233,25 +233,25 @@ If project lacks certain capability (e.g., routing, permissions, state managemen
 
 | Phase | Trigger Condition | Recommended Skill | Description |
 | --- | --- | --- | --- |
-| **Stage 2 (Scope Analysis)** | Project skill exists | `fw-project-develop` | Recommend invoking project skill to get project structure, tech stack, routing, permissions constraints |
-| **Stage 5 (Implementation)** | Project skill exists | `fw-project-develop` | Recommend first invoking project skill to understand project constraints before implementation |
-| **Stage 5 (Implementation)** | Task type is `bug` | `fw-systematic-debugging` | Bug tasks recommend first finding root cause |
-| **Stage 5 (Implementation)** | Tech stack is React (marked in project skill) | `fw-react-best-practices` | **Only applicable to React tech stack** |
-| **Stage 5 (Implementation)** | Tech stack is React and involves component development | `fw-react-components` | **Only applicable to React tech stack** |
-| **Stage 5 (Implementation)** | Involves complex type constraints | `fw-typescript-advanced-types` | TypeScript complex type scenarios |
-| **Stage 6 (Verification)** | Project skill exists | `fw-project-develop` | Recommend invoking project skill to get verification constraints (routing, permissions, build rules, etc.) |
-| **Stage 6 (Verification)** | Changes involve pages/components/forms/keyboard interactions/focus flow | `fw-accessibility` | WCAG 2.2 accessibility check |
-| **Stage 6 (Verification)** | Changes involve layout/styles/spacing/UI consistency | `fw-web-design-guidelines` | Web interface guidelines check |
+| **Stage 2 (Scope Analysis)** | Project skill exists | `fw-project-develop` | Invoke project skill to understand project structure and tech stack |
+| **Stage 5 (Implementation)** | Project skill exists | `fw-project-develop` | Invoke project skill to understand project structure and tech stack |
+| **Stage 5 (Implementation)** | Task type is `bug` | `fw-systematic-debugging` | Invoke debugging skill to debug bugs and find root cause |
+| **Stage 5 (Implementation)** | Tech stack is React | `fw-react-best-practices` | Invoke React best practices skill |
+| **Stage 5 (Implementation)** | Tech stack is React and involves component development | `fw-react-components` | Invoke React component standards skill |
+| **Stage 5 (Implementation)** | Involves complex types | `fw-typescript-advanced-types` | Invoke TypeScript advanced types skill |
+| **Stage 6 (Verification)** | Project skill exists | `fw-project-develop` | Invoke project skill to understand verification constraints |
+| **Stage 6 (Verification)** | Changes involve pages/components/forms/keyboard interactions | `fw-accessibility` | Invoke WCAG accessibility check skill |
+| **Stage 6 (Verification)** | Changes involve layout/styles/UI | `fw-web-design-guidelines` | Invoke UI design audit skill |
 
 **Project Skill Description**:
 - `fw-project-develop` is the project skill, containing project structure, tech stack, routing, permissions, state management, build rules, etc.
-- Recommended invocation: Stage 2 (Scope Analysis), Stage 5 (Implementation), Stage 6 (Verification) beginning
+- Recommended invocation: at the beginning of Stage 2 (Scope Analysis), Stage 5 (Implementation), Stage 6 (Verification)
 - Invocation purpose: Let AI understand project constraints, avoid violating existing project rules
 
 **Tech Stack Description**:
 - `fw-react-best-practices`, `fw-react-components` **only applicable to React tech stack** (marked in project skill)
 - Other tech stacks (Vue, Angular, Svelte, etc.) currently have no corresponding skills; can be extended later
-- Tech stack determination basis: Tech stack field obtained after invoking `fw-project-develop`
+- Tech stack determination basis: tech stack field obtained after invoking `fw-project-develop`
 
 **Prohibited Actions**:
 - Prohibited from forcibly invoking when trigger conditions not met (avoid over-invocation)

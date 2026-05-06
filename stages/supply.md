@@ -2,380 +2,256 @@
 
 ## ⚠️ Mandatory Rules (Must Follow)
 
-### 1. Single Phase Output Principle
+### 1. Single-Stage Output Principle
 
-**This phase output must only contain material supply content, prohibited from imagining future phases**:
+**This stage output must only contain material supply content — do not anticipate future stages**:
 
-| Prohibited Content | Description |
+| Prohibited Content | Explanation |
 | --- | --- |
-| "Implementation plan" | Prohibited from outputting implementation phase content |
-| "Fix plan" | Prohibited from outputting fix plan |
+| "Implementation plan" | Prohibited: implementation-stage content |
 
 ### 2. Task ID Carrying Principle
 
-**This phase must carry Task ID**:
-- First line output: `[Material Supply] Task ID: task_xxxxxxxx`
-- State file update must carry Task ID
+**This stage must carry the Task ID**:
+- First line of output: `[Material Supply] Task ID: task_xxxxxxxx`
+- State file updates must carry the Task ID
 
-### 3. Based on Material Status, Decide if Wait for User Response
+### 3. Decide Whether to Wait for User Reply Based on Material Status ⚠️ Mandatory Rule
 
-**Two Execution Paths**:
+**⚠️ Important: If core materials are missing, must wait for user reply**
 
-#### Path A: Core Materials Complete → Automatically Skip (No User Confirmation Wait)
+Two execution paths:
 
-**If core materials complete**:
-- Output: `[Material Supply] Core materials complete, no supplement needed. Proceeding to next phase: [Implementation].`
-- Update status to stage5
-- **Automatically proceed to stage5**, no user confirmation wait
+| Material Status | Execution Path |
+| --- | --- |
+| Core materials complete | Auto-skip, enter stage5 |
+| Core materials missing | **Must wait for user reply** |
 
-#### Path B: Core Materials Missing → Must Wait for User Response
-
-**If core materials missing**:
-- Output inquiry prompt
-- End current reply
-- Wait for user response
+**Prohibited**:
+- ❌ Prohibited: skipping the user inquiry when core materials are missing
+- ❌ Prohibited: continuing execution without outputting a prompt
 
 ---
 
-## Goal
+## Objective
 
-- Before formal development implementation, **smart judgment** if need to supplement necessary prerequisite materials.
-- **Core Logic**: First check existing materials, only inquire about missing core materials; if core materials complete then skip this phase.
-
-## Content Handling Rules (Important)
-
-**This Phase Responsibility Boundary**:
-
-| Belongs to This Phase | Does Not Belong to This Phase (Record to Context) |
-| --- | --- | --- |
-| Material missing judgment | Code modification, implementation plan |
-| Material supplement inquiry | Verification execution |
-| Material status recording | Documentation update |
-
-**User can provide any content, this phase only processes content belonging to material supply**:
-
-```
-Example content user may provide:
-- "API doc: POST /api/login, params: username, password"
-- "Design spec link: https://figma.com/xxx"
-- "Bug screenshot and reproduction steps: Click login button then error"
-
-Handling method:
-- Info belonging to material supply → This phase processes (record material status)
-- Info belonging to implementation details → Record to task context, wait for stage5 to process
-- Don't reject user content, only process by phase
-```
-
-**Note**:
-- This phase is optional phase, if materials complete then automatically skip
-- User-provided materials may contain implementation details, only record material content, don't execute implementation
-
-## Step 1: Update State File
-
-**After entering this phase, must immediately execute the following edit operations**:
-
-### Edit Instructions
-
-1. **First Read Config File**: Use read tool to read `{project_ide_dir}/.fw-session-config.json`
-2. **Get Rules File Path**: Read `rules_file_path` field from config
-3. **Read Rules File**: Use read tool to read file at that path
-4. **Edit Rules File**: **Find corresponding status block based on current Task ID (get `current_task_id` from context)**:
-   - Find content between `<!-- TASK_{TASK_ID_UPPERCASE}_START -->` and `<!-- TASK_{TASK_ID_UPPERCASE}_END -->`
-   - Use edit tool to replace that status block content with:
-
-```
-**Currently Executing**: Material Supply
-**Phase**: stage4
-**Status**: in_progress
-**Next Step**: Check existing materials, judge if need supplement
-```
-
-### Edit Again When Need User to Supply Materials
-
-After outputting material list, use edit tool again to replace status content with:
-
-```
-**Currently Executing**: Material Supply
-**Phase**: stage4
-**Status**: waiting_user
-**Next Step**: Wait for user response (provide materials/not provide/skip/none)
-```
-
-### Edit Again When No Supplement Needed or After User Response
-
-Before proceeding to next phase, use edit tool again to update that Task ID's status block to:
-
-```
-**Task ID**: {Current Task ID}
-**Currently Executing**: Implementation
-**Phase**: stage5
-**Status**: in_progress
-**Next Step**: Execute stages/implementation.md
-```
-
-### Prohibited Actions
-
-- Prohibited from guessing paths without reading config file
-- Prohibited from not updating status to waiting_user when waiting for user
-- Prohibited from entering stage5 before user responds
-
-## Input
-
-- Task type (`feature` / `bug` / `refactor` / `optimize`)
-- Stage 0 user original input (screenshots, attachments, descriptions etc.)
-- Stage 2 scope analysis conclusion (existing material list)
-
-## Material List Definition (By Task Type)
-
-### Bug Type Material List
-
-**Core Materials (Required)**:
-
-| Material Item | Description | Judgment Condition |
-| --- | --- | --- |
-| Bug screenshot | Screenshot or recording of problem phenomenon | Check if Stage 0 has screenshot attachment |
-| Reproduction steps | Specific steps to reproduce problem | Check if user description contains reproduction steps |
-| Error info | Error logs, error messages, stack trace etc. | Check if user description contains error info |
-
-**Non-Core Materials (As Needed)**:
-
-| Material Item | Description | Judgment Condition |
-| --- | --- | --- |
-| API documentation | Only needed when problem involves API calls | Scope analysis determines if involves API |
-| Environment info | Only needed when problem involves environment difference | Scope analysis determines if involves environment |
-
-**Skip Conditions**:
-- ✅ All core materials available → Directly skip
-- ✅ 2+ core materials available → Can skip, only prompt to supplement missing items (optional)
-- ❌ 2+ core materials missing → Must inquire
-
-### Feature Type Material List
-
-**Core Materials (Required)**:
-
-| Material Item | Description | Judgment Condition |
-| --- | --- | --- |
-| Design spec | UI design spec, prototype, interaction description | Check if Stage 0 has design spec attachment |
-| API documentation | Only required when involves API calls | **Must ask user if involves API, cannot infer by self** |
-
-**Non-Core Materials (As Needed)**:
-
-| Material Item | Description | Judgment Condition |
-| --- | --- | --- |
-| Permission description | Only needed when involves permission control | **Must ask user if involves permission, cannot infer by self** |
-| Integration address | Only needed when need integration | **Must ask user if need integration, cannot infer by self** |
-| Third-party library doc | Only needed when using new third-party library | Scope analysis determines if involves new library |
-
-**Skip Conditions**:
-- ✅ Design spec available + User explicitly confirms "no API involved" → Directly skip
-- ✅ Design spec available + User explicitly confirms "API involved" and API doc available → Directly skip
-- ✅ No UI involved (pure logic feature) + User explicitly confirms "no API involved" → Directly skip
-- ❌ UI involved but no design spec → Must inquire design spec
-- ❌ UI involved + User hasn't confirmed if API involved → **Must ask if API involved**
-- ❌ User explicitly confirms "API involved" but no API doc → Must inquire API doc
-
-**⚠️ Frontend Interface Development Default Inquiry Rule**:
-- Frontend interface (page, component) development usually involves data interaction
-- Cannot self-determine "no API involved"
-- Must ask user: "Does this page involve API calls (data fetch, form submit etc.)?"
-
-### Refactor Type Material List
-
-**Core Materials (Required)**: None
-
-**Non-Core Materials (As Needed)**:
-
-| Material Item | Description | Judgment Condition |
-| --- | --- | --- |
-| Third-party library doc | Only needed when introducing new external dependency | Scope analysis determines if introducing new dependency |
-
-**Skip Conditions**:
-- ✅ Default skip (refactor usually based on existing code, no extra materials needed)
-- ❌ Only inquire when introducing new external dependency
-
-### Optimize Type Material List
-
-**Core Materials (Required)**: None
-
-**Skip Conditions**:
-- ✅ **Always skip** (optimize type doesn't do material supply, directly enter Stage 5)
+- **Intelligently determine** whether necessary prerequisite materials need to be supplemented before formal development
+- **Core logic**: check existing materials first, and only prompt the user for missing core materials
 
 ---
 
 ## Execution Flow
 
-### Step 1: Check Existing Materials (Must Execute)
+**After entering this stage, execute in the following order**:
 
-**After entering this phase, must first execute the following check**:
+---
 
-1. **Extract Existing Material List**:
-   - Extract from Stage 0 user original input: screenshots, attachments, description content
-   - Extract from Stage 2 scope analysis conclusion: identified material items
+### Step 1: Update the State File
 
-2. **Based on Task Type, Match Material List Definition**:
-   - Bug: Check screenshot, reproduction steps, error info
-   - Feature: Check design spec, API doc (if involves API)
-   - Refactor: Check if new external dependency
-   - Optimize: Directly skip
+**First, update the state file**:
 
-3. **Generate Material Status Table**:
-   - Mark status for each material: `provided` (available) / `missing` (missing) / `pending` (to confirm)
-   - **Prohibited from self-marking `not_applicable`**: Only mark after user explicitly confirms
+Find the state block corresponding to the current Task ID:
+- Search for content between `<!-- TASK_{TASK_ID_UPPERCASE}_START -->` and `<!-- TASK_{TASK_ID_UPPERCASE}_END -->`
+- Use the edit tool to replace the state block content with:
 
-### ⚠️ Key Rule: Cannot Self-Infer Material Requirements
+```
+**Task ID**: {current task ID}
+**Currently Executing**: Material Supply
+**Stage**: stage4
+**Status**: in_progress
+**Next Step**: Check existing materials, determine whether supplements are needed
+```
 
-**For the following material items, must ask user, cannot self-mark `not_applicable`**:
+---
 
-| Material Item | Why Cannot Self-Infer | Correct Handling Method |
+### Step 2: Check Existing Materials
+
+**Based on the task type, check the material checklist**:
+
+#### 2.1 Bug Type Material Checklist
+
+| Material Item | Determination Condition |
+| --- | --- |
+| Bug screenshot | Check whether Stage 0 has a screenshot attachment |
+| Reproduction steps | Check whether the user description includes reproduction steps |
+| Error message | Check whether the user description includes error information |
+
+#### 2.2 Feature Type Material Checklist
+
+| Material Item | Determination Condition |
+| --- | --- |
+| Design mockup | Check whether Stage 0 has a design mockup attachment |
+| Interface documentation | **Output a prompt asking the user whether an interface is involved — cannot self-determine** |
+
+#### 2.3 Refactor Type Material Checklist
+
+| Material Item | Determination Condition |
+| --- | --- |
+| Third-party library documentation | Only needed when introducing new external dependencies |
+
+#### 2.4 Optimize Type Material Checklist
+
+**Always skip** (optimization type does not require material supply)
+
+---
+
+### Step 3: Determine Whether to Prompt User to Supplement Materials
+
+**Based on the task type and material status, determine the next action**:
+
+#### 3.1 Bug Type Determination Logic
+
+| Core Material Status | Next Action |
+| --- | --- |
+| Screenshot + Reproduction steps + Error message ALL provided | Skip directly → Output auto-transition prompt to next stage |
+| 2+ core materials provided | Optional prompt (only prompt for missing items) |
+| 2+ core materials missing | Output prompt for missing core materials |
+
+**Non-core material determination**:
+
+| Non-core Material | Determination Condition | Handling |
 | --- | --- | --- |
-| API documentation | Frontend interface usually involves data interaction | Ask user "Does it involve API calls" |
-| Permission description | Frontend interface may involve permission control | Ask user "Does it involve permission control" |
-| Integration address | Frontend development may need integration | Ask user "Does it need integration" |
+| Interface documentation | User has not explicitly stated whether an interface is involved | Output prompt: "Does this bug involve interface calls?" |
+| Interface documentation | User confirmed "involves interface" + interface documentation missing | Output prompt for interface documentation |
+| Environment information | User confirmed "involves environment issue" + environment information missing | Output prompt for environment information |
 
-**Only after user explicitly replies "not involved", can mark `not_applicable`**.
+#### 3.2 Feature Type Determination Logic
 
-### Step 2: Judge if Need to Ask User
+| Material Status | Next Action |
+| --- | --- |
+| No UI involved (pure logic feature) + user confirms no interface | Skip directly → Output auto-transition prompt to next stage |
+| Design mockup available + user confirms no interface | Skip directly → Output auto-transition prompt to next stage |
+| Design mockup available + user confirms interface involved + interface docs available | Skip directly → Output auto-transition prompt to next stage |
+| UI involved + no design mockup | Output prompt for design mockup |
+| Design mockup available + user has not confirmed whether interface is involved | Output prompt asking whether an interface is involved |
+| User confirms interface involved + interface documentation missing | Output prompt for interface documentation |
 
-**Based on material status table, judge next action**:
+**⚠️ Prompt rules for frontend UI development**:
+- Frontend UI (pages, components) development usually involves data interaction
+- Cannot self-determine "no interface involved"
+- Output prompt: "Does this page involve interface calls (data fetching, form submission, etc.)?"
 
-#### Bug Type Judgment Logic
+#### 3.3 Refactor Type Determination Logic
+
+| Material Status | Next Action |
+| --- | --- |
+| No new external dependencies | Skip directly → Output auto-transition prompt to next stage |
+| New dependencies + no documentation | Output prompt for third-party library documentation |
+
+#### 3.4 Optimize Type Determination Logic
+
+**Always skip** (output auto-transition prompt to next stage directly)
+
+---
+
+### Step 4: Output Prompt (If Needed) ⚠️ Must Wait for User Reply If Prompt is Output
+
+**⚠️ Important: If determined that the user needs to supplement materials, must first output the prompt, then wait for user reply**
+
+If it is determined that the user needs to supplement materials, execute the following actions:
+
+#### 4.1 Output Material Checklist
 
 ```
-Check core material status:
-├─ Screenshot + Reproduction steps + Error info all provided → Directly skip, enter Stage 5
-├─ 2+ core materials provided → Optional inquiry (only prompt missing items, user can choose provide or skip)
-├─ 2+ core materials missing → Must inquire missing core materials
-└─ Check non-core materials (API doc, environment info):
-   ├─ User hasn't confirmed if involves API → Must ask: "Does this Bug involve API calls?"
-   ├─ User explicitly confirms "involves API" + API doc missing → Must inquire API doc
-   └─ User explicitly confirms "involves environment issue" + Environment info missing → Must inquire environment info
+[Material Supply] Upon review, the following materials are missing and recommended to supplement:
+
+1. [Material item name]: [explanation of why it is needed]
+2. [Material item name]: [explanation]
+
+Please reply with any of the following:
+- Provide the material content directly
+- Reply "don't provide", "none", or "skip"
 ```
 
-#### Feature Type Judgment Logic
+**End the current reply after outputting the prompt and wait for user reply**
+
+**⚠️ Prohibited**:
+- ❌ Prohibited: continuing to execute other operations after outputting the prompt
+- ❌ Prohibited: skipping the user inquiry step
+
+#### 4.2 Prompt Template for Frontend UI Development
+
+**If frontend UI development is involved, output the following prompt**:
 
 ```
-Check core material status:
-├─ No UI involved (pure logic feature) → Check API requirement:
-│   ├─ User hasn't confirmed if involves API → Must ask: "Does it involve API calls?"
-│   ├─ User explicitly confirms "no API involved" → Directly skip
-│   ├─ User explicitly confirms "involves API" + API doc provided → Directly skip
-│   └─ User explicitly confirms "involves API" + API doc missing → Must inquire API doc
-├─ UI involved:
-│   ├─ Design spec missing → Must inquire design spec
-│   │   └─ Also ask: "Does this page involve API calls (data fetch, form submit etc.)?"
-│   ├─ Design spec provided → Check API requirement:
-│   │   ├─ User hasn't confirmed if involves API → Must ask: "Does this page involve API calls?"
-│   │   ├─ User explicitly confirms "no API involved" → Directly skip
-│   │   ├─ User explicitly confirms "involves API" + API doc provided → Directly skip
-│   │   └─ User explicitly confirms "involves API" + API doc missing → Must inquire API doc
-│   └─ Also check permission, integration requirements (ask user to confirm)
-```
-
-**⚠️ Frontend Interface Development Default Inquiry Template**:
-```
-[Material Supply] Detected design spec.
+[Material Supply] Design mockup detected.
 Please confirm the following:
-1. Does this page involve API calls? (Like: data fetch, form submit, status query etc.)
-   - Reply "involves API" → I will inquire API doc
-   - Reply "no API involved" → Directly enter development phase
+1. Does this page involve interface calls? (e.g., data fetching, form submission, status queries, etc.)
+   - Reply "involves interface" → I will prompt for interface documentation
+   - Reply "no interface" → proceed directly to development
 2. Does this page involve permission control?
-   - Reply "involves permission" → I will inquire permission description
-   - Reply "no permission involved" → Skip this item
-```
-
-#### Refactor Type Judgment Logic
-
-```
-Check non-core material status:
-├─ No new external dependency → Directly skip
-└─ New external dependency and doc missing → Must inquire third-party library doc
-```
-
-#### Optimize Type Judgment Logic
-
-```
-Always directly skip, enter Stage 5
-```
-
-### Step 3: Execute Inquiry (If Needed)
-
-**If judgment indicates need to ask user to supplement materials**:
-
-1. **Output Material List** (Only list missing material items):
-   ```
-   [Material Supply] After check, the following materials are missing, suggest supplementing:
-   
-   1. [Material item name]: [Explain why needed, like "Bug screenshot for locating problem phenomenon"]
-   2. [Material item name]: [Explanation]
-   
-   Please reply any of the following:
-   - Directly provide material content (like paste screenshot, reproduction steps, API doc etc.)
-   - Reply "not provide", "none" or "skip" (I will continue development based on existing info)
-   
-   After your response, I will enter implementation phase.
-   ```
-
-2. **After asking must end current reply, wait for user response**
-3. **Recommendation: Inquiry prompt should be main content of this round reply**
-4. **Not recommended**: After asking continue analyzing, invoking skills, modifying files, entering next phase
-
-### Step 4: Handle After User Response
-
-**After user response, execute the following actions**:
-
-- User provides materials → Record `provided`, merge material content to task context
-- User replies "not provide"/"none"/"skip" → Record `not_provided` or `skipped`
-- User replies "continue" → Treat as agreeing to skip all material supplements
-
-**Output and Proceed to Next Phase**:
-```
-[Material Supply] Completed.
-- Existing materials: [List existing material items]
-- User supplemented: [List materials user provided this time, empty if none]
-- Material status: [Complete / Partial / No extra materials]
-
-Proceeding to next phase: [Implementation].
+   - Reply "involves permissions" → I will prompt for permission description
+   - Reply "no permissions" → skip this item
 ```
 
 ---
 
-## Quick Judgment Table (For AI Execution)
+### Step 5: Handle User Reply
 
-| Task Type | Existing Material Check | Judgment Result | Execution Action |
-| --- | --- | --- | --- |
-| **Optimize** | No need to check | Always skip | Directly enter Stage 5 |
-| **Refactor** | No new dependency | Skip | Directly enter Stage 5 |
-| **Refactor** | New dependency + No doc | Need inquiry | Inquire third-party library doc |
-| **Bug** | All core materials available + User confirms no API involved | Skip | Directly enter Stage 5 |
-| **Bug** | 2+ core materials missing | Need inquiry | Inquire missing core materials |
-| **Bug** | User hasn't confirmed if involves API | Need inquiry | **Must ask if involves API** |
-| **Bug** | User confirms involves API + No API doc | Need inquiry | Inquire API doc |
-| **Feature** | No UI involved + User confirms no API involved | Skip | Directly enter Stage 5 |
-| **Feature** | Design spec available + User confirms no API involved | Skip | Directly enter Stage 5 |
-| **Feature** | Design spec available + User confirms involves API + API doc available | Skip | Directly enter Stage 5 |
-| **Feature** | UI involved + No design spec | Need inquiry | Inquire design spec + **Also ask if involves API** |
-| **Feature** | Design spec available + User hasn't confirmed if involves API | Need inquiry | **Must ask if involves API** |
-| **Feature** | User confirms involves API + No API doc | Need inquiry | Inquire API doc |
+**After the user replies, execute the following actions**:
 
-**⚠️ Core Rule**: Cannot self-judge "involves API" or "no API involved", must ask user to confirm.
+| User Reply | Handling |
+| --- | --- |
+| Provides materials | Record `provided`, merge material content into task context |
+| "Don't provide" / "none" / "skip" | Record `not_provided` or `skipped` |
+| "Continue" | Treat as agreeing to skip all material supplementation |
 
 ---
 
-## Output
+### Step 6: Output Auto-Transition Prompt and Auto-Transition to the Next Stage
 
-**Must at least form a minimum Stage 4 checkpoint artifact**:
+**After material supply is complete (or skipped), output the auto-transition prompt**:
 
-- `current_stage = stage4`
-- `current_stage_status`: `skipped` (skip) / `completed` (complete) / `waiting_user` (wait for user)
-- `next_stage = stage5`
-- **Material Status Table**: Each material's status (`provided | missing | pending | user_confirmed_not_applicable`)
-  - `provided`: Existing material
-  - `missing`: Missing material, need inquiry
-  - `pending`: Wait for user to confirm if involved
-  - `user_confirmed_not_applicable`: User explicitly confirms not involved (cannot self-mark)
-- **Judgment Conclusion**: Skip reason or inquiry content
+```
+[Material Supply] Task ID: {current task ID}
+Material supply complete.
 
-## Fallback Conditions
+Material status:
+- Existing materials: [list of existing material items]
+- User-supplied: [list of materials provided by the user this time]
+- Material status: [complete / partial / no additional materials]
 
-- If subsequent development phase discovers materials insufficient causing cannot continue, can fallback to this phase to supplement inquiry.
-- If user actively supplements new materials, can re-enter this phase to merge.
+Proceeding to the next stage: [Implementation].
+```
+
+---
+
+### Step 7: Update the State File to the Next Stage
+
+**After outputting the auto-transition prompt, update the state file**:
+
+```
+**Task ID**: {current task ID}
+**Currently Executing**: Implementation
+**Stage**: stage5
+**Status**: in_progress
+**Next Step**: Execute implementation.md
+```
+
+---
+
+### Step 5 - Waiting: When User Reply Is Required ⚠️ Must Wait for User Reply
+
+**⚠️ Important: If user reply is required, must first output the prompt, then end the current reply**
+
+If user reply is required, execute the following actions:
+
+1. Output the missing material prompt (already output in Step 4.1)
+2. Update the state file to waiting_user:
+   ```
+   **Currently Executing**: Material Supply
+   **Stage**: stage4
+   **Status**: waiting_user
+   **Next Step**: Wait for user reply
+   ```
+3. **End the current reply and wait for user reply**
+
+**⚠️ Prohibited**:
+- ❌ Prohibited: continuing to execute other operations after outputting the prompt
+- ❌ Prohibited: skipping the user inquiry step
+
+---
+
+## Rollback Conditions
+
+- If insufficient materials cause the development stage to be unable to continue, roll back to this stage to output a prompt and supplement materials

@@ -147,7 +147,7 @@ frontend-workmate/
 
 ## UNIQUE STYLES
 
-- **Bilingual documentation**: Mixed Chinese-English, protocol rules use Chinese, skill content mixed
+- **English documentation**: Skill files and rules are in English; README.md supports bilingual (Chinese/English) switching
 - **Mermaid flowcharts**: Use Mermaid to define 9-phase transition relationships
 - **Skill invocation matrix**: Explicit skill list required for each phase
 - **Three core directories design**: Config file only stores 3 paths, others via concatenation
@@ -158,8 +158,8 @@ frontend-workmate/
 ## COMMANDS
 
 ```bash
-# Initialization (recommended parameters)
-node scripts/init-skills.js --workdir "project_path" --ide ".trae"
+# Initialization (recommended parameters - workdir auto-detected from script location)
+node scripts/init-skills.js
 
 # Preview mode
 node scripts/init-skills.js --dry-run

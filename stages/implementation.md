@@ -2,216 +2,218 @@
 
 ## ⚠️ Mandatory Rules (Must Follow)
 
-### 1. Single Phase Output Principle
+### 1. Single-Stage Output Principle
 
-**This phase output must only contain implementation content, prohibited from imagining future phases**:
+**This stage output must only contain implementation content — do not anticipate future stages**:
 
-| Prohibited Content | Description |
+| Prohibited Content | Explanation |
 | --- | --- |
-| "After verification passes, xxx" | Prohibited from promising verification results |
-| "Documentation update plan" | Prohibited from outputting documentation phase content |
-| "Proceeding to verification next" | Prohibited from outputting subsequent phase plans |
+| "After verification passes, xxx will happen" | Prohibited: promising verification results |
+| "Documentation update plan" | Prohibited: documentation-stage content |
 
 ### 2. Task ID Carrying Principle
 
-**This phase must carry Task ID**:
-- First line output: `[Implementation] Task ID: task_xxxxxxxx`
-- State file update must carry Task ID
+**This stage must carry the Task ID**:
+- First line of output: `[Implementation] Task ID: task_xxxxxxxx`
+- State file updates must carry the Task ID
 
-### 3. After Completion, Automatically Proceed to Next Phase
+### 3. Auto-Transition to the Next Stage After Completion
 
-**After code modification completes**:
-- Don't output confirmation prompt
-- Don't wait for user confirmation
-- Automatically proceed to stage6 (Verification)
+**After code changes are complete**:
+- Do not output a confirmation prompt
+- Do not wait for user confirmation
+- Auto-transition to stage6 (Verification)
 
 ---
 
-## Goal
+## Objective
 
-- Execute actual code modifications based on task type and project rules.
+- Execute actual code changes based on task type and project rules
 
-## Content Handling Rules (Important)
+---
 
-**This Phase Responsibility Boundary**:
+## Execution Flow
 
-| Belongs to This Phase | Does Not Belong to This Phase (Record to Context) |
-| --- | --- | --- |
-| Code modification, file editing | Verification execution (stage6) |
-| Skill invocation, implementation plan execution | Documentation update (stage7) |
-| Bug fix, feature implementation | User confirmation (stage8) |
+**After entering this stage, execute in the following order**:
 
-**User can provide any content, this phase only processes content belonging to development implementation**:
+---
 
-```
-Example content user may provide:
-- "Login page form validation logic change to: email regex + password 6+ characters"
-- "User management page add delete button, call DELETE /api/user/:id"
-- "Homepage performance optimization: lazy load images, reduce request count"
+### Step 1: Update the State File
 
-Handling method:
-- Info belonging to development implementation → This phase processes (modify code)
-- Don't reject user content, directly execute modifications
-```
+**First, update the state file**:
 
-**Note**:
-- This phase is development execution phase, user-provided implementation details should be immediately executed
-- Don't pause waiting for user confirmation, after completion automatically enter stage6
-- User proposes modifications in stage8, will return to this phase to re-execute
-
-## Step 1: Update State File
-
-**After entering this phase, must immediately execute the following edit operations**:
-
-### Edit When Entering This Phase
-
-**Find corresponding status block based on current Task ID (get `current_task_id` from context)**:
-- Find content between `<!-- TASK_{TASK_ID_UPPERCASE}_START -->` and `<!-- TASK_{TASK_ID_UPPERCASE}_END -->`
-- Use edit tool to replace that status block content with:
+Find the state block corresponding to the current Task ID:
+- Search for content between `<!-- TASK_{TASK_ID_UPPERCASE}_START -->` and `<!-- TASK_{TASK_ID_UPPERCASE}_END -->`
+- Use the edit tool to replace the state block content with:
 
 ```
-**Task ID**: {Current Task ID}
+**Task ID**: {current task ID}
 **Currently Executing**: Implementation
-**Phase**: stage5
+**Stage**: stage5
 **Status**: in_progress
-**Next Step**: Execute code modification, after completion automatically proceed to stage6
-**User Proposed Modifications**: Handle uniformly in stage8 (loop)
-**Loop Path**: stage5 → stage6 → stage7 → stage8 → loop
+**Next Step**: Execute code changes, auto-transition to stage6 after completion
 ```
 
-### Edit Again After Phase Completion
+---
 
-**After completion directly proceed to stage6** (no pause waiting for user confirmation):
+### Step 2: Load Relevant Skills
 
-Use edit tool again to update that Task ID's status block to:
+**At the start of this stage, relevant skills need to be loaded first to obtain project constraints**:
 
-```
-**Task ID**: {Current Task ID}
-**Currently Executing**: Verification
-**Phase**: stage6
-**Status**: in_progress
-**Next Step**: Execute functional verification, lint/type/build/test, after completion automatically proceed to stage7
-**User Proposed Modifications**: Handle uniformly in stage8
-**Loop Path**: stage5 → stage6 → stage7 → stage8 → loop
-```
+---
 
-### Prohibited Actions
+#### 2.1 Load the Project Skill First
 
-- Prohibited from guessing paths without reading config file
-- **Prohibited from pausing in stage5 waiting for user confirmation** (automatically execute to stage8)
+**⚠️ Important: Each of the following steps must be executed in order; skill invocations must use the skill tool**
 
-## Skill Invocation Rules (Mandatory Execution)
+Execute the following actions:
 
-**When this phase starts, must execute skill invocation in the following order**:
+1. Load skill `fw-project-develop` to understand the project structure and technology stack
+2. Obtain the project's build rules and constraints from the skill
 
-### Step 1: Must Scan and Invoke Skills (Execute First)
+---
 
-**After entering this phase, must first execute the following skill scan and invocation flow**:
+#### 2.2 Load Corresponding Skills Based on Task Type ⚠️ Skill Loading Checkpoint
 
-1. **Scan Skill List**: Check if available skills exist in Skill Directory
-2. **Prioritize Invoking Project Skill**: If `fw-project-develop` exists, **must first read config file** `{project_ide_dir}/.fw-session-config.json`, dynamically concatenate `{project_ide_dir}/skills/fw-project-develop/SKILL.md`
-3. **Based on Conditions Invoke Other Skills**: When trigger conditions met, **must first read config file**, dynamically concatenate corresponding skill path
+**⚠️ Important: Based on task type, the corresponding skills must be loaded for guidance**
 
-### Mandatory Invocation List
-
-| Trigger Condition | Must Invoke Skill Path | Invocation Timing | Description |
+| Task Type | Skill to Load | When to Load | Content to Obtain |
 | --- | --- | --- | --- |
-| Project skill exists | `{project_ide_dir}/skills/fw-project-develop/SKILL.md` | **Must invoke first** | Get project structure, tech stack, routing, permission, build rules etc. constraints |
-| Task type is `bug` | `{static_config_dir}/skills/fw-systematic-debugging/SKILL.md` | **Must invoke before fix** | First find root cause, then execute fix |
-| Tech stack is React (marked in project skill) | `{static_config_dir}/skills/fw-react-best-practices/SKILL.md` | **Must invoke when implementing** | React project implementation must follow best practices |
-| Tech stack is React and involves component development or modification | `{static_config_dir}/skills/fw-react-components/SKILL.md` | **Must invoke when developing components** | Create/modify components must follow standards |
-| Involves complex type issues | `{static_config_dir}/skills/fw-typescript-advanced-types/SKILL.md` | Invoke when implementing types | Complex type scenarios |
+| `bug` | `fw-systematic-debugging` | Before fixing | Bug debugging methodology, root cause tracing techniques |
+| `feature` (React stack) | `fw-react-best-practices` | During implementation | React best practices, performance optimization recommendations |
+| `feature` (React component dev) | `fw-react-components` | During component development | Component structure standards, naming conventions |
+| Complex type issues | `fw-typescript-advanced-types` | During type implementation | TypeScript advanced type techniques |
 
-### Invocation Execution Method
-
-**Read skill SKILL.md file (Execute by condition)**:
-
-- Project skill: **First read config file** `{project_ide_dir}/.fw-session-config.json`, dynamically concatenate `{project_ide_dir}/skills/fw-project-develop/SKILL.md`
-- Debugging skill (bug task): **First read config file**, dynamically concatenate `{static_config_dir}/skills/fw-systematic-debugging/SKILL.md`
-- React best practices: **First read config file**, dynamically concatenate `{static_config_dir}/skills/fw-react-best-practices/SKILL.md`
-- Component standards: **First read config file**, dynamically concatenate `{static_config_dir}/skills/fw-react-components/SKILL.md`
-
-### Prohibited Actions
-
-- Prohibited from skipping project skill invocation (if exists)
-- Prohibited from skipping debugging skill invocation in bug tasks
-- Prohibited from skipping React skill invocation in React tech stack
-- Prohibited from invoking React skills in non-React tech stack
-
-## Branching Rules
-
-**Based on task type, must execute the following skill invocation order**:
-
-- `bug` task:
-    - **Must first read config file**, dynamically concatenate `{static_config_dir}/skills/fw-systematic-debugging/SKILL.md` find root cause
-    - After root cause confirmed, execute fix
-    - If involves complex type issues, **must first read config file**, dynamically concatenate `{static_config_dir}/skills/fw-typescript-advanced-types/SKILL.md`
-
-- `feature` task:
-    - **Must first read config file**, dynamically concatenate `{project_ide_dir}/skills/fw-project-develop/SKILL.md` get project constraints
-    - If tech stack is React, **must first read config file**, dynamically concatenate `{static_config_dir}/skills/fw-react-best-practices/SKILL.md`
-    - If involves component development, **must first read config file**, dynamically concatenate `{static_config_dir}/skills/fw-react-components/SKILL.md`
-
-- `refactor` task:
-    - **Must first read config file**, dynamically concatenate `{project_ide_dir}/skills/fw-project-develop/SKILL.md` get project constraints
-    - Default first maintain behavior unchanged
-    - First break down impact scope, then batch implement
-
-- `optimize` task:
-    - **Must first read config file**, dynamically concatenate `{project_ide_dir}/skills/fw-project-develop/SKILL.md` get project constraints
-    - After analyzing performance bottlenecks, optimize
-
-## General Actions
-
-**Execute strictly in the following order**:
-
-1. **Before starting formal implementation, must first invoke skills**:
-    - **Must first read config file** `{project_ide_dir}/.fw-session-config.json`, dynamically concatenate `{project_ide_dir}/skills/fw-project-develop/SKILL.md` get project constraints
-    - Constraints obtained after invocation as implementation reference, avoid violating existing project rules
-2. **Execute skill invocation based on this phase "Skill Invocation Rules"**:
-    - When trigger conditions met, **must invoke** corresponding skill
-    - Don't forcibly invoke when conditions not met
-3. For capabilities marked `not_applicable` in project skill, don't fabricate implementation.
-4. If discover new blockers, environment issues, dependency issues or skill route gaps on-site, write back updates, cannot pretend development complete.
-5. If long task mechanism enabled (Stage 3), during implementation continuously write back step status.
-6. **After code modification completes, must immediately link to Stage 6 for internal verification**:
-    - **Prohibited**: After Stage 5 completion ask "is function correct" or "should enter verification"
-    - **Prohibited**: Output "Please confirm if implementation meets requirements"
-    - Directly enter Stage 6, after executing verification wait for user confirmation
-7. If environment issues cause cannot execute verification (like lint/type/build/test commands not runnable), output clear environment fix suggestions and stay in Stage 5, cannot enter Stage 6.
-
-## Output
-
-**After code modification completes, must output linking prompt**:
-
-```
-[Implementation] Task ID: {Current Task ID}
-Code modification complete.
-
-Modification content:
-- {Modified file list}
-- {Brief modification description}
-
-Proceeding to next phase: [Verification].
-```
-
-**Prohibited Actions**:
-- Prohibited from outputting "Please confirm if function is correct"
-- Prohibited from outputting "Should enter verification"
-- Prohibited from waiting for user confirmation (automatically link stage6)
+**⚠️ Prohibited**:
+- ❌ Prohibited: reading skill files instead of loading the skill
+- ❌ Prohibited: skipping skill loading and starting code changes directly
 
 ---
 
-## Automatic Linking Flow
+### Step 3: Execute Code Changes (Branched by Task Type)
 
-**After Stage 5 completion**:
-1. Update state file: `**Phase**: stage6`, `**Status**: in_progress`
-2. Output linking prompt
-3. Automatically proceed to Stage 6 to execute verification
+**⚠️ Important: Based on task type, execute the corresponding flow**
 
 ---
 
-## Fallback Conditions
+#### 3.1 Bug Task Implementation Flow
 
-- If internal verification fails, fallback to this phase to continue fixing.
-- If runtime, lint, type, build or test cannot pass due to current environment issues, stay in this phase, first explain to user actions needed to fix environment; after environment fix continue Stage 5, instead of entering Stage 6 or Stage 7.
+**Execute the following actions (in order)**:
+
+1. **Load the debugging skill**
+   - Load skill `fw-systematic-debugging` to debug the bug and find the root cause
+   - Perform systematic debugging based on skill guidance
+
+2. **Execute fix after root cause is confirmed**
+   - Modify code based on root cause analysis results
+
+3. **If complex type issues are involved**
+   - Load skill `fw-typescript-advanced-types` to get type handling guidance
+
+---
+
+#### 3.2 Feature Task Implementation Flow
+
+**Execute the following actions (in order)**:
+
+1. **Load the project skill**
+   - Load skill `fw-project-develop` to understand the project structure and technology stack
+
+2. **If the technology stack is React**
+   - Load skill `fw-react-best-practices` to get React best practices guidance
+
+3. **If component development is involved**
+   - Load skill `fw-react-components` to get component standards guidance
+
+4. **Execute code changes**
+   - Implement the feature according to skill guidance
+
+---
+
+#### 3.3 Refactor Task Implementation Flow
+
+**Execute the following actions (in order)**:
+
+1. **Load the project skill**
+   - Load skill `fw-project-develop` to understand the project structure and technology stack
+
+2. **Keep behavior unchanged by default**
+   - During refactoring, keep functional behavior unchanged
+
+3. **Analyze impact scope first, then implement in batches**
+   - Analyze the impact scope, implement changes in batches
+
+---
+
+#### 3.4 Optimize Task Implementation Flow
+
+**Execute the following actions (in order)**:
+
+1. **Load the project skill**
+   - Load skill `fw-project-develop` to understand the project structure and technology stack
+
+2. **Analyze performance bottlenecks before optimizing**
+   - Analyze performance bottleneck locations first, then optimize targeted areas
+
+---
+
+### Step 4: Handle Special Cases
+
+**During code changes, pay attention to the following rules**:
+
+4-1: For capabilities marked as `not_applicable` in the project skill, do not create fictitious implementations
+
+4-2: If new blockers, environment issues, dependency issues, or skill route gaps are found, write back and update
+
+4-3: If the long-task mechanism is enabled (Stage 3), continuously write back step status during implementation
+
+4-4: If environment issues prevent validation, output environment fix recommendations and stay in Stage 5
+
+---
+
+### Step 5: Output Auto-Transition Prompt and Auto-Transition to the Next Stage
+
+**After code changes are complete, output the auto-transition prompt**:
+
+```
+[Implementation] Task ID: {current task ID}
+Code changes complete.
+
+Changes:
+- {list of changed files}
+- {brief description of changes}
+
+Proceeding to the next stage: [Verification].
+```
+
+**Auto-transition to stage6 after completion** (do not pause to wait for user confirmation):
+
+---
+
+### Step 6: Update the State File to the Next Stage
+
+**Before entering stage6, update the state file**:
+
+```
+**Task ID**: {current task ID}
+**Currently Executing**: Verification
+**Stage**: stage6
+**Status**: in_progress
+**Next Step**: Execute functional validation, lint/type/build/test
+```
+
+---
+
+## Prohibited Actions
+
+- Prohibited: outputting "please confirm whether the feature is correct"
+- Prohibited: outputting "whether to enter verification"
+- Prohibited: waiting for user confirmation (auto-transition to stage6)
+- Prohibited: pausing in stage5 to wait for user confirmation
+
+---
+
+## Rollback Conditions
+
+- If internal validation fails, roll back to this stage to continue fixing
+- If running, lint, type, build, or tests cannot pass due to environment issues, stay in this stage and first explain to the user the actions needed to fix the environment

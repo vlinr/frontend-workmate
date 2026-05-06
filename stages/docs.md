@@ -2,234 +2,215 @@
 
 ## ⚠️ Mandatory Rules (Must Follow)
 
-### 1. Single Phase Output Principle
+### 1. Single-Stage Output Principle
 
-**This phase output must only contain documentation sync content, prohibited from imagining future phases**:
+**This stage output must only contain documentation sync content — do not anticipate future stages**:
 
-| Prohibited Content | Description |
+| Prohibited Content | Explanation |
 | --- | --- |
-| "After user confirmation, xxx" | Prohibited from imagining user feedback |
-| "Proceeding to delivery next" | Prohibited from outputting subsequent phase plans |
+| "After user confirmation, xxx will happen" | Prohibited: imagining user feedback |
 
 ### 2. Task ID Carrying Principle
 
-**This phase must carry Task ID**:
-- First line output: `[Documentation Sync] Task ID: task_xxxxxxxx`
-- State file update must carry Task ID
+**This stage must carry the Task ID**:
+- First line of output: `[Documentation Sync] Task ID: task_xxxxxxxx`
+- State file updates must carry the Task ID
 
-### 3. After Completion, Automatically Proceed to Next Phase
+### 3. Auto-Transition to the Next Stage After Completion
 
-**After documentation sync completes**:
-- Don't output confirmation prompt
-- Don't wait for user confirmation
-- Automatically proceed to stage8 (Delivery)
+**After documentation sync is complete**:
+- Do not output a confirmation prompt
+- Do not wait for user confirmation
+- Auto-transition to stage8 (Delivery)
 
 ---
 
-## Goal
+## Objective
 
-This phase mainly implements **two tasks**:
+This stage primarily accomplishes **two tasks**:
 
-1. **Judge if need to update project skill**: Analyze updated code through code analysis skill, judge if there's content that can be updated to project skill `fw-project-develop`, if yes then update
-2. **Generate/Update directory documentation**: Through code analysis, generate or update documentation under code modification directories (per directory)
+1. **Determine whether the project skill needs to be updated**
+2. **Generate/update directory documentation**
 
-## Content Handling Rules (Important)
+---
 
-**This Phase Responsibility Boundary**:
+## Execution Flow
 
-| Belongs to This Phase | Does Not Belong to This Phase (Record to Context) |
-| --- | --- | --- |
-| Project skill update judgment | Code modification (return to stage5) |
-| Directory documentation generation/update | Verification execution |
-| Documentation content extraction | User confirmation (stage8) |
+**After entering this stage, execute in the following order**:
 
-**This phase is automatic execution phase, doesn't receive user input**:
+---
 
-```
-User cannot provide content in this phase, because:
-- This phase doesn't pause waiting for user
-- Automatically executes documentation sync flow
-- After completion automatically proceeds to stage8
+### Step 1: Update the State File
 
-User proposes documentation issues in stage8, will return to stage5 → stage6 → stage7 to re-sync
-```
+**First, update the state file**:
 
-**Note**:
-- This phase doesn't receive user content, automatically executes documentation sync
-- Documentation content extracted from code, doesn't depend on user input
-
-## Step 1: Update State File
-
-**After entering this phase, must immediately execute the following edit operations**:
-
-### Edit When Entering This Phase
-
-**Find corresponding status block based on current Task ID (get `current_task_id` from context)**:
-- Find content between `<!-- TASK_{TASK_ID_UPPERCASE}_START -->` and `<!-- TASK_{TASK_ID_UPPERCASE}_END -->`
-- Use edit tool to replace that status block content with:
+Find the state block corresponding to the current Task ID:
+- Search for content between `<!-- TASK_{TASK_ID_UPPERCASE}_START -->` and `<!-- TASK_{TASK_ID_UPPERCASE}_END -->`
+- Use the edit tool to replace the state block content with:
 
 ```
+**Task ID**: {current task ID}
 **Currently Executing**: Documentation Sync
-**Phase**: stage7
+**Stage**: stage7
 **Status**: in_progress
-**Next Step**: Judge if update project skill + Generate directory documentation, after completion automatically proceed to stage8
-**User Proposed Modifications**: Handle uniformly in stage8
-**Loop Path**: stage5 → stage6 → stage7 → stage8 → loop
+**Next Step**: Determine whether to update project skill + generate directory documentation
 ```
 
-### Edit Again After Phase Completion
+---
 
-**After completion directly proceed to stage8** (no pause waiting for user confirmation):
+### Step 2: Task 1 - Determine Whether to Update the Project Skill
 
-Use edit tool again to update that Task ID's status block to:
+**⚠️ Important: This step involves skill invocations and requires using the skill tool**
+
+---
+
+#### 2.1 Load the Existing Project Skill ⚠️ Skill Loading Checkpoint
+
+**⚠️ Important: Must load the skill to obtain project knowledge**
+
+Execute the following actions:
+
+1. Load skill `fw-project-develop` to understand the project structure and technology stack
+2. Obtain information about the project's directory structure, technology stack, build rules, etc. from the skill
+
+**⚠️ Prohibited**:
+- ❌ Prohibited: skipping skill loading and directly determining whether to update
+
+---
+
+#### 2.2 Analyze the Current Code Changes ⚠️ Skill Loading Checkpoint
+
+**⚠️ Important: Needs to determine whether to load the fw-code-analysis-doc skill**
+
+Execute the following actions:
+
+1. Extract the actual modified code content from Stage 5
+
+2. **Determine whether to load fw-code-analysis-doc**:
+
+   **Conditions requiring loading (any one is sufficient)**:
+
+   | Condition | Specific Check |
+   | --- | --- |
+   | Changes involve new modules | New directories or files added, not yet recorded in the existing project skill |
+   | Changes involve complex dependencies | New dependency relationships between modules, need to update project skill |
+   | AI cannot analyze on its own | Code changes are complex, requiring skill guidance |
+   | Changes involve core architecture | Modified the project's core structure or configuration |
+
+3. If the above conditions are met:
+   - Load skill `fw-code-analysis-doc` to get analysis guidance
+   - Analyze the module structure according to skill guidance
+
+4. If conditions are not met:
+   - Analyze the code changes directly
+
+---
+
+#### 2.3 Determine Whether an Update Is Needed
+
+**Conditions requiring an update**:
+- New long-term stable project knowledge has been added (e.g., new directory structure, new technology stack, new routing rules, etc.)
+- Information recorded in the project skill is outdated
+- New stable project constraints have been discovered
+
+**Conditions that do not require an update**:
+- The change only involves temporary implementations for the current task, which do not belong to long-term project knowledge
+
+#### 2.4 Execute Update or Skip
+
+- **Update needed**: Merge the new stable knowledge into `fw-project-develop`, output: `Project skill fw-project-develop has been updated`
+- **No update needed**: Output: `Based on analysis, this change does not affect long-term project knowledge — no update required`
+
+---
+
+### Step 3: Task 2 - Generate/Update Directory Documentation
+
+**Execute the following steps**:
+
+#### 3.1 Extract the Set of Changed Directories
+
+- Extract all directories involved from the actual files changed in Stage 5
+
+#### 3.2 Process Each Directory ⚠️ Skill Loading Checkpoint
+
+**⚠️ Important: For each changed directory, determine whether to load the skill**
+
+**For each changed directory, execute the following actions**:
+
+1. **Determine whether to load fw-code-analysis-doc**:
+
+   **Conditions requiring loading (any one is sufficient)**:
+
+   | Condition | Specific Check |
+   | --- | --- |
+   | Complex implementation relationships in the directory | Directory has > 5 files, or has multi-level nested structure |
+   | Missing documentation | No README.md or AGENTS.md in the directory |
+   | AI cannot analyze on its own | Directory logic is complex, dependency relationships are unclear |
+   | Involves a core module | Directory is a core business module of the project |
+
+2. If the above conditions are met:
+   - Load skill `fw-code-analysis-doc` to get analysis guidance
+   - Analyze the directory structure according to skill guidance
+
+3. If conditions are not met:
+   - Read the directory content directly for analysis
+
+4. Check whether documentation already exists in the directory (README.md or similar documentation)
+5. If yes → Update the document content
+6. If no → Create a new document using the template
+
+**⚠️ Prohibited**:
+- ❌ Prohibited: skipping skill loading and creating documentation directly
+
+#### 3.3 Output Processing Results
 
 ```
-**Task ID**: {Current Task ID}
+[Documentation Sync] The following directories have been processed:
+- src/pages/ → README.md updated
+- src/components/ → README.md created
+```
+
+---
+
+### Step 4: Output Auto-Transition Prompt and Auto-Transition to the Next Stage
+
+**After documentation sync is complete, output the auto-transition prompt**:
+
+```
+[Documentation Sync] Task ID: {current task ID}
+Documentation sync complete.
+
+Processing results:
+- Project skill: [updated / no update needed]
+- Directory documentation: [list of processed directories]
+
+Proceeding to the next stage: [Delivery].
+```
+
+---
+
+### Step 5: Update the State File to the Next Stage
+
+**Before entering stage8, update the state file**:
+
+```
+**Task ID**: {current task ID}
 **Currently Executing**: Delivery
-**Phase**: stage8
+**Stage**: stage8
 **Status**: in_progress
 **Next Step**: Output delivery results, wait for user confirmation
-**User Proposed Modifications**: Immediately switch to stage5 → loop
-**Loop Path**: stage5 → stage6 → stage7 → stage8 → loop
 ```
 
-### Prohibited Actions
+---
 
-- Prohibited from guessing paths without reading config file
-- **Prohibited from pausing in stage7 waiting for user confirmation** (directly execute to stage8)
+## Prohibited Actions
 
-## Task 1: Judge if Need to Update Project Skill
-
-**Must execute this task first, then execute Task 2**:
-
-### Step 2.1: Load Existing Project Skill ⚠️ Skill Loading Node
-
-**⚠️ Important: Must load skill to get project knowledge**
-
-**Execute Actions**:
-
-1. Load skill `fw-project-develop` to understand project structure and tech stack
-2. Get project's directory structure, tech stack, build rules etc. from skill
-
-**⚠️ Prohibited Actions**:
-- ❌ Prohibited from skipping skill loading directly judge whether to update
+- Prohibited: pausing in stage7 to wait for user confirmation
+- Prohibited: generating a single overall document (must process each directory individually)
 
 ---
 
-### Step 2.2: Analyze This Code Modification ⚠️ Skill Loading Node
+## Rollback Conditions
 
-**⚠️ Important: Need to judge whether to load fw-code-analysis-doc skill**
-
-**Execute Actions**:
-
-1. Extract code content actually modified in Stage 5
-
-2. **Judge whether need to load fw-code-analysis-doc**:
-   **Conditions for loading (satisfy any one)**:
-   | Condition | Specific Judgment |
-   | --- | --- |
-   | Modification involves new module | Added directory or file, existing project skill not recorded |
-   | Modification involves complex dependency | Module added new dependency relationship, need to update project skill |
-   | AI cannot self-analyze | Code modification complex, need skill guidance |
-   | Modification involves core architecture | Modified project's core structure or configuration |
-
-3. If satisfies above conditions:
-   - Load skill `fw-code-analysis-doc` to get analysis guidance
-   - Analyze module structure based on skill guidance
-
-4. If doesn't satisfy conditions:
-   - Directly analyze code modification content
-
----
-
-### Step 2.3: Judge if Need to Update
-
-**Conditions for needing update**:
-- Added long-term stable project knowledge (like new directory structure, new tech stack, new routing rules etc.)
-- Info recorded in project skill is outdated
-- Discovered new stable project constraints
-
-**Conditions for not needing update**:
-- Modifications only involve current task's temporary implementation, not project long-term knowledge
-
-### Step 2.4: Execute Update or Skip
-
-- **Need update**: Merge new stable knowledge into `fw-project-develop`, output: `Updated project skill fw-project-develop`
-- **No need update**: Output: `After analysis, this modification doesn't affect project skill long-term knowledge, no need to update`
-
-## Task 2: Generate/Update Directory Documentation (Mandatory Execution)
-
-**After Task 1 completes, must execute this task**:
-
-### Mandatory Rule: Must Process Per Directory
-
-**Prohibited from generating single total document, must process each directory following this flow**:
-
-### Step 3.1: Extract Modification Directory Set
-
-- Extract all involved directories from Stage 5's actual modified files
-- Example: Modified `src/pages/Home.tsx`, `src/components/Header.tsx` → Directory set is `src/pages/`, `src/components/`
-
-### Step 3.2: Process Per Directory ⚠️ Skill Loading Node
-
-**⚠️ Important: For each modification directory need to judge whether to load skill**
-
-**For each modification directory execute the following actions**:
-
-1. **Judge whether need to load fw-code-analysis-doc**:
-
-   **Conditions for loading (satisfy any one)**:
-   | Condition | Specific Judgment |
-   | --- | --- |
-   | Directory implementation relationship complex | File count under directory > 5, or exists multi-level nested structure |
-   | Lacks documentation | No README.md or AGENTS.md under directory |
-   | AI cannot self-analyze | Directory logic complex, dependency relationships unclear |
-   | Involves core module | Directory is project's core business module |
-
-2. If satisfies above conditions:
-   - Load skill `fw-code-analysis-doc` to get analysis guidance
-   - Analyze directory structure based on skill guidance
-
-3. If doesn't satisfy conditions:
-   - Directly read directory content to analyze
-
-4. Check if directory already has documentation (README.md or similar)
-5. If yes → Update that document content
-6. If no → Use `templates/docs/directory-readme-template.md` create new document
-
-**⚠️ Prohibited Actions**:
-- ❌ Prohibited from skipping skill loading directly create document
-
-3. **Directory Documentation Content Requirements**:
-   - Function purpose: What this directory is for
-   - Directory structure: Subdirectory and file descriptions
-   - Usage scenarios: When to use code in this directory
-   - Usage rules: Import methods, invocation rules
-   - Examples: Usage examples
-   - Notes: Special handling, constraint conditions
-
-4. **Output Example**:
-   ```
-   [Documentation Sync] Processed the following directories:
-   - src/pages/ → Updated README.md (added Home page description)
-   - src/components/ → Created README.md (Header component description)
-   - src/styles/ → No need update (this modification doesn't involve long-term knowledge)
-   ```
-
-5. After this phase completes directly enter Stage 8, no extra pause for confirmation.
-
-## Output
-
-This phase output includes two tasks' artifacts:
-
-**Task 1 Artifact**:
-- Updated project skill `fw-project-develop` (if needed)
-- Project skill update summary: `Updated project skill fw-project-develop, added content: [specific added items]` or `No need update fw-project-develop`
-
-**Task 2 Artifact**:
-- Updated directory documentation (README.md or similar under each modification directory)
-
-## Fallback Conditions
-
-- If implementation still frequently changing, can postpone this phase, wait for Stage 6 stable before executing.
-- If Stage 6 hasn't formed "pass" conclusion, or only gave environment fix suggestions but hasn't completed retry, cannot enter this phase.
+- If implementation is still changing frequently, this stage can be deferred until Stage 6 is stable
+- If Stage 6 has not reached a "passed" conclusion, do not enter this stage

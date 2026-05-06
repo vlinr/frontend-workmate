@@ -1,576 +1,416 @@
-# Stage 1: Scan Repository and Project
+# Stage 1: Repository and Project Scan
 
 ## ⚠️ Mandatory Rules (Must Follow)
 
-### 1. Single Phase Output Principle
+### 1. Single-Stage Output Principle
 
-**This phase output must only contain project scan content, prohibited from imagining future phases**:
+**This stage output must only contain project scan content — do not anticipate future stages**:
 
-| Prohibited Content | Description |
+| Prohibited Content | Explanation |
 | --- | --- |
-| "Page implementation plan" | Prohibited from outputting implementation phase content |
-| "Will develop xxx next" | Prohibited from outputting future phase plans |
-| Task breakdown list | Prohibited from creating task lists |
-| "Verification and optimization" | Prohibited from outputting verification phase content |
+| "Page implementation plan" | Prohibited: implementation-stage content |
+| "Next we will develop xxx" | Prohibited: future-stage plans |
+| Task breakdown lists | Prohibited: self-created task lists |
+| "Verification and optimization" | Prohibited: verification-stage content |
 
-**Correct Output**:
+**Correct output**:
 ```
 [Project Scan] Task ID: task_xxxxxxxx
 Scanning project...
-[Project Scan] Generated project skill fw-project-develop.
-Please confirm if we can proceed to next phase: [Scope Analysis].
+[Project Scan] Project skill fw-project-develop generated.
+Please confirm whether we can proceed to the next stage: [Scope Analysis].
 ```
 
 ### 2. Task ID Carrying Principle
 
-**This phase must carry Task ID**:
-- First line output must contain Task ID: `[Project Scan] Task ID: task_xxxxxxxx`
-- State file update must carry Task ID
-- Prohibited from executing operations outside task context
+**This stage must carry the Task ID**:
+- First line of output must include the Task ID: `[Project Scan] Task ID: task_xxxxxxxx`
+- State file updates must carry the Task ID
+- Prohibited: performing operations outside the task context
 
-### 3. Must Wait for User Confirmation
+### 3. Must Wait for User Confirmation ⚠️ Mandatory Rule
 
-**After project skill generation**:
-- Output project skill summary
-- Output confirmation prompt
-- End current reply
-- Wait for user to reply "continue" or propose modifications
+**⚠️ Important: After generating the project skill, must wait for user confirmation before proceeding to the next stage**
+
+After generating the project skill:
+- Output the project skill summary
+- Output the confirmation prompt
+- **End the current reply**
+- **Wait for the user to reply "continue" or request changes**
+
+**Prohibited**:
+- ❌ Prohibited: proceeding to the next stage immediately after outputting the summary
+- ❌ Prohibited: skipping the user confirmation step
 
 ---
 
-## Goal
+## Objective
 
-- Use fixed project skill name `fw-project-develop` as this phase's main artifact.
-- **Project Skill Location**: Stored in Skill Directory.
-- If project skills already exist, first check if still reusable, if needs refresh.
-- If no project skills yet, scan project and generate initial `fw-project-develop`.
-- If user supplements project skills, project documentation or project constraints, must first determine if they belong to "project long-term rules" or "current task constraints"; only project long-term rules are merged into project skill artifact, then decide if refresh needed.
+- Use the fixed project skill name `fw-project-develop` as the primary output of this stage
+- **Project skill location**: stored in the [Skills Directory]
+- If a project skill already exists, first check if it can still be reused or needs to be refreshed
+- If no project skill exists, scan the project and generate the first version of `fw-project-develop`
 
-## Step 1: Update State File
+---
 
-**After entering this phase, must immediately execute the following edit operations**:
+## Execution Flow
 
-### Edit When Entering This Phase
+**After entering this stage, execute in the following order**:
 
-**Find corresponding status block based on current Task ID (get `current_task_id` from context)**:
-- Find content between `<!-- TASK_{TASK_ID_UPPERCASE}_START -->` and `<!-- TASK_{TASK_ID_UPPERCASE}_END -->`
-- Use edit tool to replace that status block content with:
+---
+
+### Step 1: Update the State File
+
+**First, update the state file**:
+
+Find the state block corresponding to the current Task ID:
+- Search for content between `<!-- TASK_{TASK_ID_UPPERCASE}_START -->` and `<!-- TASK_{TASK_ID_UPPERCASE}_END -->`
+- Use the edit tool to replace the state block content with:
 
 ```
-**Task ID**: {Current Task ID}
+**Task ID**: {current task ID}
 **Currently Executing**: Project Scan
-**Phase**: stage1
+**Stage**: stage1
 **Status**: in_progress
-**Next Step**: Execute project scan, output project skill summary
-**User Proposed Modifications**: Status stays stage1 → merge user feedback → update fw-project-develop → re-output summary
-**Loop Path**: stage1 → stage1 → loop until user replies "continue"
+**Next Step**: Check if project skill exists
 ```
 
-### Edit Again After Outputting Summary
+---
 
-When waiting for user confirmation, use edit tool again to update that Task ID's status block to:
+### Step 2: Check Whether the Project Skill Exists
+
+**Perform the following checks first, then decide on the subsequent branch**:
+
+1. **Check whether the fixed project skill name** `fw-project-develop` already exists in the [Skills Directory]
+2. **Check whether there are any historical project skill candidates in the [Skills Directory]**
+
+---
+
+### Step 3: Flow When Project Skill Already Exists
+
+**When a project skill already exists, execute the following flow**:
+
+#### 2.1 Verify Whether the Skill Is Stale
+
+- Check whether the frontend project root directory under the [Work Directory] still exists (consistent with the skill record)
+- Check whether core entry files exist (e.g., `package.json`, `src/main.*`, `src/index.*`)
+- Check whether the technology stack identifier has changed (read the key fields of `dependencies`/`devDependencies` in `package.json`)
+
+**Decision**:
+- If all of the above anchors are unchanged → skill is reusable → output summary → output auto-transition prompt to enter the next stage
+- If any anchor has changed → skill needs to be refreshed → perform incremental scan → refresh the skill → output auto-transition prompt to enter the next stage
+
+---
+
+### Step 3: Flow When Project Skill Does Not Exist
+
+**⚠️ Important: When the project skill does not exist, the following flow must be executed — do not skip any decision point**
+
+---
+
+#### 3.1 Scan and Identify the Number of Frontend Projects
+
+**Execute the following actions**:
+
+1. Scan the [Work Directory] for frontend projects (detect `package.json`, `src/`, build configuration files, etc.)
+2. **Record the number and paths of identified frontend projects**
+3. **⚠️ After scanning, immediately enter the decision branch — do not continue with other operations**
+
+---
+
+#### 3.2 Enter the Corresponding Branch Based on Scan Results ⚠️ Decision Branch Point
+
+**⚠️ Important: After scanning, based on the number of identified projects, must enter one of the following branches**
+
+| Identified Result | Branch | Key Action |
+| --- | --- | --- |
+| 1 frontend project identified | → **Branch A (below)** | Lock project → Output prompt → **Wait for user reply** |
+| No frontend project identified | → **Branch B (below)** | Output prompt → **Wait for user reply** |
+| Multiple frontend projects identified | → **Branch C (below)** | List projects → Output prompt → **Wait for user reply** |
+
+**⚠️ Prohibited**:
+- ❌ Prohibited: reading project files directly after scanning
+- ❌ Prohibited: generating the project skill directly after scanning
+- ❌ Prohibited: skipping the decision branch and executing subsequent steps directly
+
+---
+
+##### Branch A: Only One Frontend Project Identified ⚠️ Must Wait for User Reply
+
+**⚠️ Important: This branch must ask the user first — do not scan the project content directly**
+
+When the only frontend project is identified, execute the following actions:
+
+1. Lock the project path
+2. **Immediately output the following prompt**:
+   ```
+   Frontend project locked: [project path].
+
+   You may directly reply with project skills, project documentation, or other project constraints,
+   and I will prioritize your materials when generating the project skill.
+   If you do not provide anything, I will analyze and generate based on the [Work Directory] content.
+   ```
+3. **End the current reply and wait for the user's response**
+
+**⚠️ Prohibited**:
+- ❌ Prohibited: continuing to analyze the project structure after outputting the prompt
+- ❌ Prohibited: scanning the project directly after outputting the prompt
+- ❌ Prohibited: generating the project skill after outputting the prompt
+- ❌ Prohibited: skipping the user inquiry step
+
+---
+
+###### Execute Project Scan After User Reply (Only Execute After User Replies)
+
+**⚠️ This step is only executed after the user replies — it is not a continuation of Step 3**
+
+After the user replies, handle as follows:
+
+| User Reply | Action |
+| --- | --- |
+| Provides project skills/docs/constraints | Prioritize reading user materials → Generate `fw-project-develop` |
+| Explicitly says "don't provide" / "skip" / "none" | Execute project scan flow → Generate `fw-project-develop` |
+| Empty reply or "continue" | Treat as "don't provide", execute project scan flow |
+
+**Project scan flow** (only execute after user replies):
+
+**⚠️ Important: The following steps must be executed in order — do not skip**
+
+1. **Read core project files**
+   - Read `package.json` for dependencies and scripts
+   - Read entry files (`src/main.tsx`, `src/index.tsx`, `src/App.tsx`, etc.)
+
+2. **Analyze project structure and technology stack**
+   - Load skill `fw-code-analysis-doc` to analyze the directory structure and get guidance
+   - Analyze the project directory structure based on skill guidance
+   - Extract technology stack information (framework, language, UI library, etc.)
+   - Analyze module relationships and dependencies
+
+3. **Generate the fw-project-develop skill file**
+   - Write the analysis results into `fw-project-develop/SKILL.md`
+   - Record key information: project structure, technology stack, entry files, etc.
+
+**After execution, proceed to Step 4**
+
+---
+
+##### Branch B: No Frontend Project Identified ⚠️ Must Wait for User Reply
+
+**⚠️ Important: This branch must ask the user about their intent first**
+
+When no frontend project is identified, execute the following actions:
+
+1. **Immediately output the following prompt**:
+   ```
+   [Project Scan] No frontend project identified in the [Work Directory].
+
+   Please reply with your intent:
+
+   1. If you want to create a new project, provide the technology stack:
+      - Framework: React / Vue / Angular / Svelte
+      - Language: TypeScript / JavaScript
+      - UI Library: Ant Design / Element Plus / Tailwind CSS, etc.
+      
+      Example: "Create project: React + TypeScript + Ant Design"
+
+   2. If you do not want to create a project, reply "don't create" or "skip"
+
+   3. If you have an existing project, provide the path: "path is: xxx"
+   ```
+2. **End the current reply and wait for the user's response**
+
+**⚠️ Prohibited**:
+- ❌ Prohibited: continuing to execute other operations after outputting the prompt
+- ❌ Prohibited: skipping the user inquiry step
+
+---
+
+###### Extract Content After User Reply (Only Execute After User Replies)
+
+**⚠️ This step is only executed after the user replies**
+
+**Extract two categories of information from the user's reply**:
+
+| Information Type | Extraction Rule | Handling |
+| --- | --- | --- |
+| **Initialization info** | Technology stack, framework, language, UI library, etc. | Handle in the current stage (stage1) immediately |
+| **Development requirement info** | Feature requirements, page descriptions, etc. | Record to task context, process in stage2 |
+
+**Execute based on user intent**:
+
+| User Reply | Action |
+| --- | --- |
+| Technology stack extracted | Execute project initialization → Execute project scan → Generate project skill → Output auto-transition prompt to the next stage |
+| Replies "exit" or "end" | Terminate the flow |
+| Replies "skip" or empty reply | Use default setup (React + TypeScript + Ant Design) → Execute initialization |
+| Provides an existing project path | Switch path and re-scan |
+| Only development requirement, no technology stack | Output prompt to supplement the technology stack |
+
+---
+
+##### Branch C: Multiple Frontend Projects Identified ⚠️ Must Wait for User Selection
+
+**⚠️ Important: This branch must ask the user to select a project — do not auto-select**
+
+When multiple frontend projects are identified, execute the following actions:
+
+1. List all identified frontend project paths
+2. **Immediately output the following prompt**:
+   ```
+   Multiple frontend projects identified:
+   1. [project path 1]
+   2. [project path 2]
+   ...
+
+   Please reply with which project to continue with (reply with the project path or number).
+   ```
+3. **End the current reply and wait for the user's response**
+
+**⚠️ Prohibited**:
+- ❌ Prohibited: auto-selecting a project after outputting the prompt
+- ❌ Prohibited: skipping the user inquiry step
+
+**After the user replies**: Lock the user-selected project → Enter Branch A's flow (output prompt asking if the user wants to provide materials)
+
+---
+
+### Step 4: Output Project Skill Summary and Wait for User Confirmation ⚠️ Must Wait for User Confirmation
+
+**⚠️ Important: After generating the project skill, must wait for user confirmation before proceeding to the next stage**
+
+**⚠️ This step is only executed after the project skill is generated — it is not a continuation of Step 3**
+
+After generating the project skill, execute the following actions:
+
+#### 4.1 Update the State File to Waiting for User
 
 ```
-**Task ID**: {Current Task ID}
+**Task ID**: {current task ID}
 **Currently Executing**: Project Scan
-**Phase**: stage1
+**Stage**: stage1
 **Status**: waiting_user
-**Next Step**: Wait for user to confirm if project skill is correct
-**User Proposed Modifications**: Status stays stage1 → execute merge update → re-output summary → wait for confirmation
-**Loop Path**: stage1 → stage1 → loop until user replies "continue"
+**Next Step**: Wait for user confirmation that the project skill is correct
 ```
 
-### Edit Again When User Proposes Modifications
-
-**Loop path when user proposes modifications/issues**:
-
-1. **Status stays stage1**:
-   ```
-   **Currently Executing**: Project Scan
-   **Phase**: stage1
-   **Status**: in_progress
-   **Next Step**: Merge user feedback, update fw-project-develop
-   **User Proposed Modifications**: Status stays stage1 → merge update → re-output summary
-   **Loop Path**: stage1 → stage1 → loop until user replies "continue"
-   ```
-
-2. **Execute Merge Update**: Read user feedback → merge into fw-project-develop
-
-3. **Re-output Summary**: Output updated project skill summary
-
-4. **Re-enter Wait State**:
-   ```
-   **Currently Executing**: Project Scan
-   **Phase**: stage1
-   **Status**: waiting_user
-   **Next Step**: Wait for user to confirm updated project skill
-   **User Proposed Modifications**: Status stays stage1 → merge update → re-output summary
-   **Loop Path**: stage1 → stage1 → loop until user replies "continue"
-   ```
-
-5. **Loop until user replies "continue"**, then proceed to next phase
-
-### Edit Again After User Confirmation
-
-Before proceeding to next phase, use edit tool again to update that Task ID's status block to:
+#### 4.2 Output Summary and Append Confirmation Prompt
 
 ```
-**Task ID**: {Current Task ID}
+The above is the conclusion of this stage: project skill fw-project-develop has been generated.
+
+Please confirm whether we can proceed to the next stage: [Scope Analysis].
+- If there are discrepancies or additions, please let me know directly.
+- If no changes are needed, reply "continue".
+```
+
+**End the current reply after outputting the prompt and wait for user confirmation**
+
+**⚠️ Prohibited**:
+- ❌ Prohibited: proceeding to the next stage immediately after outputting the summary
+- ❌ Prohibited: skipping the user confirmation step
+
+**End the current reply after outputting the prompt and wait for user confirmation**
+
+---
+
+### Step 5: User Confirmation Loop Mechanism
+
+**After the user replies, handle as follows**:
+
+| User Reply | Handling Action |
+| --- | --- |
+| Replies "continue" | Output auto-transition prompt to the next stage |
+| Raises changes or questions | Merge user feedback → Update fw-project-develop → Output summary again |
+
+#### 5.1 Flow When User Raises Changes
+
+1. Update status to in_progress
+2. Execute merge update: read user feedback → merge into `fw-project-develop`
+3. Output the summary again
+4. Enter the waiting state again
+5. Loop until the user replies "continue"
+
+---
+
+### Step 6: Output Auto-Transition Prompt to the Next Stage
+
+**After the user replies "continue"**:
+
+#### 6.1 Update the State File
+
+```
+**Task ID**: {current task ID}
 **Currently Executing**: Scope Analysis
-**Phase**: stage2
+**Stage**: stage2
 **Status**: in_progress
-**Next Step**: Execute stages/scope-analysis.md
-**User Proposed Modifications**: Status stays stage2 → merge user feedback → update analysis conclusion → re-output
-**Loop Path**: stage2 → stage2 → loop until user replies "continue"
+**Next Step**: Execute ./scope-analysis.md
 ```
 
-### Prohibited Actions
-
-- Prohibited from guessing paths without reading config file
-- Prohibited from not updating status to waiting_user when waiting for user
-
-See "Directory Concept Mapping" in `SKILL.md`.
-
-## Input
-
-- Working Directory
-- Existing project skill candidates in Skill Directory, including historical project skill candidates and generated project skill artifacts
-- Existing directory documentation, entry files, build files, script configurations
-- User-supplemented project skills, project documentation, UI framework documentation, UI framework skills
-
-## Project Skill Invalidity Determination
-
-- Frontend project root directory, core directory structure or entry files in Working Directory have significantly changed.
-- Tech stack, build method, routing scheme, permission model, state management solution changed.
-- UI framework type, version, component main entry or self-developed framework directory changed.
-- Existing project skill lacks critical directory routing or development constraints required for this task.
-- User provided new project skills, project documentation, UI framework documentation or UI framework skills, and have overridden old sources.
-- User explicitly stated project skill content is inaccurate or expired.
-- Working Directory added new frontend sub-project, but project skill hasn't covered it yet.
-
-## Execution Actions
-
-### General Scan Rules (All Branches Must Follow)
-
-**Before executing any project scan action, must follow these rules**:
-
-1. **Prioritize Reading Directory Documentation**:
-   - Before scanning any directory, first check if directory documentation exists (like `README.md`, `AGENTS.md`)
-   - If documentation exists → **Prioritize reading documentation to get directory info**, reduce code analysis workload
-   - Documentation info priority: higher than code analysis results
-   - **Prohibited**: Skip documentation and directly analyze code
-
-2. **Must Invoke Code Analysis Skill**:
-   - Project scan **must invoke** `fw-code-analysis-doc` skill for auxiliary analysis
-   - Invocation method: **First read config file** `{project_ide_dir}/.fw-session-config.json`, dynamically concatenate `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md`
-   - Invocation timing: When need to analyze directory structure, extract tech stack, understand module relationships
-   - Invocation purpose: Improve analysis accuracy, reduce omissions
-   - **Prohibited**: Skip skill invocation and directly analyze code
-
-### First Priority: Check if Project Skill Already Exists
-
-**Must execute the following actions first, then decide if need to scan project**:
-
-1. **Check if fixed project skill name `fw-project-develop` already exists in Skill Directory**
-2. **Check if historical project skill candidates already exist in Skill Directory** (like project-specific skills in old skill directories)
-
-### Branch A: Project Skill Already Exists
-
-**If reusable project skill exists, process in the following order**:
-
-3. **First quick verify if skill is expired** (don't scan whole project, only check key anchors):
-   - Check if frontend project root directory exists in Working Directory (consistent with skill record)
-   - Check if core entry files exist (like `package.json`, `src/main.*`, `src/index.*`)
-   - Check if tech stack identifiers changed (read `package.json` dependencies/devDependencies key fields)
-   - If all anchors unchanged → **Skill reusable, skip project scan**
-   - If any anchor changed → **Skill needs refresh, enter incremental scan**
-
-4. If skill reusable:
-   - Output: `Detected existing project skill [fw-project-develop], after quick verification skill content is consistent with project current state, no update needed. Please confirm if project skill is correct.`
-   - Wait for user confirmation
-   - After user confirmation → Skill as Stage 1 main artifact, proceed to Stage 2
-
-5. If skill needs refresh:
-   - Output: `Detected existing project skill [fw-project-develop], but project key anchors have changed (specific change points), need to update skill. I will execute incremental scan and refresh skill.`
-   - **Execute incremental scan flow**:
-     - 1) Prioritize reading documentation in changed directories
-     - 2) **Must first read config file** `{project_ide_dir}/.fw-session-config.json`, dynamically concatenate `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` analyze changed parts
-     - 3) Merge old and new info, refresh skill
-   - After refreshing skill, output summary, wait for user confirmation
-   - **User confirmation loop mechanism**: If user proposes modifications or issues → Understand and merge user feedback → Update skill → Re-output summary wait for confirmation → Until user replies "continue"
-
-### Branch B: Project Skill Does Not Exist
-
-**If no reusable project skill exists, process in the following order**:
-
-6. **Identify frontend project count** (three scenarios):
-   - No frontend project identified → Enter "whether to initialize frontend project" inquiry branch
-   - Single frontend project identified → Directly lock that project, continue execution
-   - Multiple frontend projects identified → Ask user which project to continue based on
-
-7. Only when multiple projects or no project, ask user branch selection question in first round; if already locked single frontend project, first round no extra inquiry.
-
-8. If user hasn't clearly answered "multiple project selection" or "whether to initialize" (pending), stay in this phase waiting, don't continue scanning.
-
----
-
-### Branch B-0: No Frontend Project Identified (Critical Branch)
-
-**Flow Description**:
-
-When no frontend project identified, execute in the following order:
-
-#### Step 1: Ask User Intent
-
-**Must first ask user intent, clarify subsequent flow**:
-
-**Recommendation: Inquiry prompt should be main content of this round reply, avoid outputting other analysis content simultaneously, ensure user can clearly understand current question to answer.**
-
-Output the following inquiry prompt:
+#### 6.2 Output Auto-Transition Prompt
 
 ```
-[Project Scan] No frontend project identified in Working Directory.
-
-Please reply your intent:
-
-1. If want to create new project, please provide tech stack:
-   - Framework: React / Vue / Angular / Svelte
-   - Language: TypeScript / JavaScript
-   - UI Library: Ant Design / Element Plus / Tailwind CSS etc.
-   
-   Example: "Create project: React + TypeScript + Ant Design"
-
-2. If don't want to create project, reply "no create" or "skip"
-
-3. If have existing project, please provide path: "Path is: xxx"
-
-You can also provide feature requirements, page descriptions etc., I will first complete project initialization, then process development requirements later.
-```
-
-**After asking must end current reply, wait for user response**
-
----
-
-#### Step 2: Content Extraction After User Response (Must Execute)
-
-**After receiving user response, must first extract content, then decide execution path**:
-
-### Content Extraction Rules
-
-**Extract two types of info from user response**:
-
-| Info Type | Extraction Rule | Handling Method |
-| --- | --- | --- |
-| **Initialization Info** | Tech stack, framework, language, UI library etc. | Current phase (stage1) immediately process |
-| **Development Requirement Info** | Feature requirements, page descriptions, bug descriptions etc. | Record to task context, wait for stage2 to process |
-
-### Extraction Example
-
-```
-User response: "Create project: React + TypeScript + Ant Design, need login page, user management, permission control"
-
-Extraction result:
-- Initialization info: React + TypeScript + Ant Design
-- Development requirement info: Login page, user management, permission control
-
-Handling method:
-1. Current phase: Use initialization info to execute project initialization
-2. Record development requirement info to task context (for stage2 use)
-3. After project initialization completes, proceed to stage2 to process development requirements
+[Project Scan] Execution complete. Proceeding to the next stage: [Scope Analysis].
 ```
 
 ---
 
-#### Step 3: Intent Judgment
+## General Scan Rules (All Branches Follow)
 
-**Based on extracted initialization info, judge intent type**:
+**When executing a project scan, follow these rules**:
 
-| Extraction Result | Intent Type | Execution Path |
-| --- | --- | --- |
-| Extracted tech stack (like React/Vue/Angular) | **Initialization Intent** | Enter project initialization flow |
-| User replied "exit" or "end" | **Terminate Intent** | Terminate flow |
-| Empty reply or "skip" | **Default Plan Intent** | Use default tech stack initialization (React + TypeScript + Ant Design) |
-| User provided existing project path | **Path Switch Intent** | Switch path and re-scan |
-| Only extracted development requirements, no tech stack info | **Need Supplement Tech Stack** | Ask for supplement |
+1. **Read directory documentation first**:
+   - Before scanning any directory, check whether documentation files exist (e.g., `README.md`, `AGENTS.md`)
+   - If documentation exists → Read it first to understand the directory
 
----
-
-#### Step 4: Record Development Requirement Info
-
-**If user provided development requirement info (like feature requirements, page descriptions), must record to task context**:
-
-```
-[Project Scan] Recorded your development requirements:
-- Login page
-- User management
-- Permission control
-
-These requirements will be processed in [Scope Analysis] phase after project initialization completes.
-```
-
-**Record Location**: Task context variable `pending_requirements`
+2. **Invoke the code analysis skill**:
+   - When analyzing directory structures, extracting the technology stack, or understanding module relationships, invoke skill `fw-code-analysis-doc` to analyze the directory and generate documentation
+   - Purpose: improve analysis accuracy and reduce omissions
 
 ---
 
-#### Step 5: When Need to Supplement Tech Stack
+## Project Skill Invalidation Criteria
 
-**If user only provided development requirements, didn't provide tech stack, must ask for supplement**:
+The following situations indicate that the project skill needs to be refreshed:
 
-**Recommendation: Inquiry prompt should be main content of this round reply, avoid outputting detailed analysis of development requirements simultaneously.**
-
-```
-[Project Scan] I understand you have development requirements, but currently need to create frontend project first.
-
-Please supplement tech stack info:
-- Framework: React / Vue / Angular / Svelte
-- Language: TypeScript / JavaScript  
-- UI Library: Ant Design / Element Plus / Tailwind CSS etc.
-
-Example: "React + TypeScript + Ant Design"
-
-After supplementing I will first complete project initialization, then process your development requirements.
-```
-
-**After asking must end current reply, wait for user supplement**
+- The frontend project root directory, core directory structure, or entry files under the [Work Directory] have changed significantly
+- The technology stack, build approach, routing strategy, permission model, or state management approach has changed
+- The UI framework type, framework version, component entry point, or custom framework directory has changed
+- The existing project skill is missing key directory routes or development constraints required for the current task
+- The user has provided new project skills, project documentation, UI framework documentation, or UI framework skills
+- The user explicitly indicates that the project skill content is inaccurate or outdated
 
 ---
 
-#### Step 6: Execute Project Initialization
+## General Rules (All Branches)
 
-**After user supplements complete tech stack, execute initialization**:
+1. In this stage, only "stable project knowledge" may be written into `fw-project-develop` — do not write temporary implementation approaches or implementation preferences for the current task
 
-1. **Output initialization prompt**:
-   ```
-   [Project Scan] Initializing project: [Framework] + [Language] + [UI Library]...
-   [Project Scan] Recorded development requirements: [Development requirements summary], will process in subsequent phases
-   ```
+2. The completion condition for Stage 1 is: `fw-project-develop` has been confirmed to exist, is reusable, has been refreshed, or has been newly generated, and has been confirmed by the user
 
-2. **Execute initialization command**
+3. If the skill has not been generated/refreshed or the user has not confirmed, do not proceed to Stage 2
 
-3. **After initialization success** → Execute project scan → Generate project skill → Wait for user confirmation
+4. If a UI library or custom component system is detected, determine whether it is a general library or a custom framework:
+   - General library: record the name and version
+   - Custom framework: determine whether to output a prompt asking the user for documentation/skills
 
-4. **After user confirmation** → Proceed to stage2 (process development requirements)
+5. If the user has not yet answered the UI framework materials question (`pending`), stay in this stage
 
----
+6. If the user corrects the project understanding or discovers the skill is stale, re-execute this stage and refresh the skill
 
-### Branch B-1: Locked Single Frontend Project, No Skill Exists
-
-**Flow Description**:
-
-When locked single frontend project and no project skill exists, execute in the following order:
-
-1. **Ask user if willing to provide project materials** (mid-way inquiry prompt)
-   - Prompt: `You can directly reply to provide project skills, project documentation or other project constraints, I will prioritize using your materials to generate project skill. If you don't provide, I will analyze based on Working Directory content and generate.`
-   - **After asking must end current reply, wait for user response**
-   - **Prohibited**: After asking continue analyzing, designing, implementing
-
-2. **After user response, must continue current phase (Project Scan), cannot jump to other phases**
-    - User provides materials → **Prioritize reading user materials**
-    - **First read config file** `{project_ide_dir}/.fw-session-config.json`, get three core directories, **dynamically concatenate path** `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` supplement analysis → Generate `fw-project-develop` based on materials and analysis results
-   - User explicitly says "not provide"/"skip" → **Execute project scan flow**:
-     - 1) Prioritize reading each directory's documentation
-     - 2) **First read config file** `{project_ide_dir}/.fw-session-config.json`, dynamically concatenate `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` and execute project structure analysis
-      - 3) Generate `fw-project-develop`
-   - **Prohibited**: After user response jump to scope analysis, implementation etc. phases
-
-3. **After generating project skill, output summary, wait for user confirmation**
-   - **Recommendation: Summary and confirmation prompt should be main content of this round reply**
-   - Output project skill summary
-   - Append prompt:
-     ```
-     Above is this phase conclusion: Generated project skill fw-project-develop.
-     
-     Please confirm if we can proceed to next phase: [Scope Analysis].
-     - If have deviation or supplement, please tell me directly.
-     - If no other modifications, reply "continue" is fine.
-     ```
-   - **After asking must end current reply, wait for user confirmation**
-
-4. **User Confirmation Loop Mechanism (Must Execute)**
-   - User replies "continue" → Output `[Project Scan] Completed. Proceeding to next phase: [Scope Analysis].` → Proceed to Stage 2
-   - User proposes modifications or issues → **Understand and merge user feedback** → Update `fw-project-develop` → Re-output summary wait for confirmation
-   - **Loop until user replies "continue"**
-   - **Prohibited**: Proceed to next phase before user explicitly replies "continue"
+7. Use the following templates as analysis scaffolding:
+   - `../templates/project/project-skill-template.md`
+   - `../templates/project/project-ui-skill-template.md`
 
 ---
-
-### Branch B-2: User Chooses to Initialize New Project
-
-**Flow Description**:
-
-When user explicitly chooses to initialize new frontend project, execute in the following order:
-
-#### Step 1: Parse User Initialization Intent
-
-**Parse initialization parameters from user response**:
-
-```
-User response examples:
-- "Create project: React + TypeScript + Ant Design"
-- "Initialize a Vue3 project"
-- "New Angular project, use Tailwind CSS"
-
-Parse rules:
-- Underlying framework: React / Vue / Angular / Svelte etc.
-- Language: TypeScript / JavaScript
-- UI Library: Ant Design / Element UI / Tailwind CSS etc.
-
-If user response incomplete (only says "create project" but didn't specify framework):
-→ Output inquiry prompt to supplement info, cannot infer by yourself
-```
-
-**Recommendation: Inquiry prompt should be main content of this round reply.**
-
-**If info incomplete, output inquiry prompt**:
-
-```
-[Project Scan] Please supplement initialization parameters:
-
-Please reply complete format:
-- "Create project: React/Vue/Angular + TypeScript/JavaScript + [UI Library]"
-
-Examples:
-- "Create project: React + TypeScript + Ant Design"
-- "Create project: Vue3 + TypeScript + Element Plus"
-```
-
-**After asking must end current reply, wait for user supplement**
-
----
-
-#### Step 2: Execute Project Initialization
-
-**After user supplements complete, execute initialization**:
-
-1. **Output initialization prompt**:
-   ```
-   [Project Scan] Initializing project: [Framework] + [Language] + [UI Library]...
-   ```
-
-2. **Execute initialization command** (choose corresponding command based on framework):
-   - React: `npm create vite@latest` or `npx create-react-app`
-   - Vue: `npm create vue@latest`
-   - Angular: `ng new`
-   - Other frameworks: Corresponding official initialization command
-
-3. **Initialization result handling**:
-   - Success → Output `[Project Scan] Project initialization complete.` → Continue
-   - Failure → Output error info, wait for user handling
-
----
-
-#### Step 3: Scan New Project Structure
-
-**After initialization success, must execute project scan** (cannot skip):
-
-1. **Output scan prompt**:
-   ```
-   [Project Scan] Scanning new project structure...
-   ```
-
-2. **Scan flow**:
-    - 1) Prioritize reading documentation under each directory
-    - 2) **First read config file** `{project_ide_dir}/.fw-session-config.json`, dynamically concatenate `{static_config_dir}/skills/fw-code-analysis-doc/SKILL.md` and execute project structure analysis
-    - 3) Extract: Directory structure, entry files, build commands, tech stack, UI library, coupling constraints
-
-3. **After scan completes**, generate project skill
-
----
-
-#### Step 4: Generate Project Skill
-
-**After scan completes, must generate project skill**:
-
-1. **Generate initial project skill `fw-project-develop` based on scan results**
-2. **Cannot skip skill generation**
-
----
-
-#### Step 5: Output Project Skill Summary and Wait for User Confirmation
-
-After outputting summary, append prompt:
-
-```
-Above is this phase conclusion: Initialized project and generated project skill fw-project-develop.
-
-Project info:
-- Framework: [Parsed framework]
-- Language: [Parsed language]
-- UI Library: [Parsed UI library]
-- Directory structure: [Summary]
-
-Please confirm if we can proceed to next phase: [Scope Analysis].
-- If have deviation or supplement, please tell me directly.
-- If no other modifications, reply "continue" is fine.
-```
-
-**After asking end current reply, wait for user confirmation**
-
----
-
-#### Step 6: User Confirmation Loop Mechanism
-
-- User replies "continue" → Output `[Project Scan] Completed. Proceeding to next phase: [Scope Analysis].` → Proceed to Stage 2
-- User proposes modifications or issues → Understand and merge user feedback → Update `fw-project-develop` → Re-output summary wait for confirmation
-- **Loop until user replies "continue"**
-
-**Note**:
-- Cannot treat "project created" or "dependencies installed" as Stage 1 complete
-- Must complete scan → generate skill → user confirmation, that counts as Stage 1 complete
-
----
-
-### Branch B-3: User Exits Skill
-
-- If user replies "exit" or "end" → **Terminate flow**, don't enter Stage 2 and subsequent phases
-- Output: `Recorded your exit from this skill. Task terminated.`
-
-### Branch B-4: User Skip/Empty Reply (Use Default Plan)
-
-- If user replies "skip" or empty reply → **Use default plan** (React + TypeScript + Ant Design)
-- Execute default tech stack project initialization flow
-- Output: `Using default plan: React + TypeScript + Ant Design. Initializing project...`
-
-### General Rules (All Branches)
-
-11. This phase only allows writing "stable project knowledge" to `fw-project-develop` (directory structure, tech stack, build method, routing mode, UI framework, long-term constraints), cannot write current task's temporary implementation methods or preferences.
-
-12. Stage 1 completion condition is: `fw-project-develop` confirmed to exist, reusable, refreshed or newly generated, and already user confirmed.
-
-13. If skill hasn't generated/refreshed or hasn't waited for user confirmation, cannot enter Stage 2.
-
-14. If identified UI library or self-developed component system, determine if common library or self-developed framework:
-    - Common library: Record name and version
-    - Self-developed framework: Determine if need to ask user for documentation/skills
-
-15. If user hasn't answered UI framework materials question (pending), stay in this phase, cannot jump to development implementation.
-
-16. Use the following templates as analysis scaffolding:
-    - `templates/project/project-skill-template.md`
-    - `templates/project/project-ui-skill-template.md`
-
-17. If user corrects project understanding or discovers skill expired, re-execute this phase and refresh skill.
 
 ## Output
 
-- Main artifact: `fw-project-develop`
-- Generated or refreshed project-level UI framework skill as needed
-- If user supplemented project skills / project documentation / project constraints, these contents have been merged into main artifact, or explicitly marked as pending source
+- Primary output: `fw-project-develop`
+- Project-level UI framework skill generated or refreshed as needed
 
-**User Confirmation Prompt** (Phase end confirmation):
+---
 
-After outputting project skill summary, must append the following prompt:
+## Rollback Conditions
 
-```
-Above is this phase conclusion: Generated project skill fw-project-develop.
-
-Please confirm if we can proceed to next phase: [Scope Analysis].
-- If have deviation or supplement, please tell me directly.
-- If no other modifications, reply "continue" is fine.
-```
-
-## Fallback Conditions
-
-- If implementation phase discovers project skill inconsistent with actual structure, fallback to this phase to re-scan and refresh project skill.
-- If later discovers initialization selection, project skill source or UI framework conclusion distorted, fallback to this phase to re-scan and refresh corresponding skill.
-- If this phase's dependent user input is missing, changed or withdrawn, return to this phase to re-ask and override old conclusion.
+- If the implementation stage discovers a mismatch between the project skill and the actual structure, roll back to this stage to re-scan and refresh the project skill
+- If the initialization selection, project skill source, or UI framework conclusion is found to be inaccurate later, roll back to this stage to re-scan and refresh the corresponding skill
+- If the user input that this stage depends on is missing, changed, or withdrawn, return to this stage and re-output the prompt

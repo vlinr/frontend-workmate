@@ -101,21 +101,6 @@ function parseArgs(argv) {
 }
 
 /**
- * Detect IDE directory name
- * Search for existing IDE directory name in the project directory
- */
-function detectIdeDirName(projectWorkDir) {
-  for (const ideName of IDE_DIR_NAMES) {
-    const idePath = path.resolve(projectWorkDir, ideName);
-    if (fs.existsSync(idePath)) {
-      return ideName;
-    }
-  }
-  // Default to .opencode
-  return ".opencode";
-}
-
-/**
  * Detect three core directories
  * Config file only stores these 3, other paths via concatenation
  */
@@ -126,12 +111,54 @@ function detectPaths(options) {
   const skillsDir = path.resolve(skillPackageDir, "..");                     // skills directory
   const staticConfigDir = path.resolve(skillsDir, "..");                     // IDE config root directory (e.g., ~/.qoder)
 
-  // 2. User project root directory: determined by options or process.cwd()
-  const projectWorkDir = options.workdir || process.cwd();
+  // 2. User project root directory: auto-derived from staticConfigDir parent directory
+  let projectWorkDir;
+  let projectIdeDir;
+  let ideDirName;
 
-  // 3. Project IDE config root directory: derived from project work directory
-  const ideDirName = options.ide || detectIdeDirName(projectWorkDir);
-  const projectIdeDir = path.resolve(projectWorkDir, ideDirName);
+  // Extract IDE directory name from staticConfigDir
+  ideDirName = path.basename(staticConfigDir);
+
+  // Auto-detect: staticConfigDir's parent directory is the project root
+  const autoDetectedWorkDir = path.resolve(staticConfigDir, "..");
+  
+  if (options.workdir) {
+    // User specified a directory - validate against auto-detected
+    const normalizedWorkDir = path.normalize(options.workdir);
+    const normalizedAutoDir = path.normalize(autoDetectedWorkDir);
+    
+    if (normalizedWorkDir !== normalizedAutoDir) {
+      console.error("");
+      console.error("[error] --workdir parameter value is incorrect!");
+      console.error("");
+      console.error(`Provided:        ${options.workdir}`);
+      console.error(`Correct value:   ${autoDetectedWorkDir} (user work directory)`);
+      console.error(`staticConfigDir: ${staticConfigDir}`);
+      console.error("");
+      console.error("Explanation:");
+      console.error("  - project_work_dir should be the user work directory, not the frontend project directory");
+      console.error("  - The frontend project may be in a subdirectory, but config is based on work directory");
+      console.error("  - Recommendation: omit --workdir and let the script auto-detect");
+      console.error("");
+      console.error("Correct usage:");
+      console.error(`  node scripts/init-skills.js`);
+      console.error("");
+      process.exit(1);
+    }
+    
+    // Validation passed, use auto-detected value
+    projectWorkDir = autoDetectedWorkDir;
+    projectIdeDir = staticConfigDir;
+    console.log("[detect] User-specified workdir matches auto-detected directory:");
+  } else {
+    // Auto-detect: staticConfigDir's parent directory is the project root
+    console.log("[detect] Auto-detected project root directory:");
+  }
+  
+  projectWorkDir = autoDetectedWorkDir;
+  projectIdeDir = staticConfigDir;
+  console.log(`  project_work_dir: ${projectWorkDir} (derived from staticConfigDir parent)`);
+  console.log(`  project_ide_dir: ${projectIdeDir} (equals staticConfigDir)`);
 
   // For internal processing (not stored in config)
   const staticSkillsSourceDir = path.resolve(skillPackageDir, "skills");     // Source skill directory
@@ -145,7 +172,7 @@ function detectPaths(options) {
   console.log(`  - Static skill: {static_config_dir}/skills/{skill_name}/`);
   console.log(`  - Static rule: {static_config_dir}/rules/{rule_name}`);
   console.log(`  - This skill pack: ${skillPackageDir}`);
-  console.log(`  - Project skill: ${projectIdeDir}/skills/fw-project-develop/`);
+  console.log(`  - Project skill: {project_ide_dir}/skills/fw-project-develop/`);
 
   return {
     // Three core directories (stored in config)
@@ -507,23 +534,70 @@ function createOrUpdateProjectRules(paths, dryRun) {
 }
 
 /**
- * Create project skill directory (fw-project-develop)
+ * Create project skill directory and initial SKILL.md (fw-project-develop)
  */
 function createProjectSkillsDir(paths, dryRun) {
   const projectSkillDir = path.resolve(paths.projectIdeDir, "skills", "fw-project-develop");
+  const skillMdPath = path.resolve(projectSkillDir, "SKILL.md");
+
+  // Initial SKILL.md content (placeholder, to be filled during Stage 1 project scan)
+  const initialSkillMd = `---
+name: fw-project-develop
+description: Project context skill containing tech stack, directory structure, routing rules, permission constraints, state management, build configuration, etc. Triggered when user asks about "project structure", "tech stack", "routing configuration", "permission handling", "state management", "build rules", and other project-related information. Also applies in workflow scenarios requiring "get project constraints", "understand project context", "confirm project rules".
+---
+
+# Project Context Skill (Pending Generation)
+
+## Status
+
+**Current Status**: Pending generation (initial)
+
+This skill directory has been created, but content needs to be populated during Stage 1 project scan.
+
+## Trigger Conditions
+
+Triggered when user asks about the following project-related information:
+- "project structure", "directory structure", "what is the tech stack"
+- "routing configuration", "routing rules", "permission handling"
+- "state management", "build rules", "build configuration"
+
+## Invocation Scenarios
+
+- User actively asks about project information
+- frontend-workmate workflow Stage 2 (Scope Analysis), Stage 5 (Implementation), Stage 6 (Verification)
+- When project constraints need to be understood (e.g., confirming tech stack, routing rules before modifying code)
+
+## Next Step
+
+Execute Stage 1 project scan to analyze the project and generate complete project skill content.
+
+---
+
+> This file was auto-generated by init-skills.js. Do not edit manually.
+`;
 
   if (!dryRun) {
+    // Create directory
     if (!fs.existsSync(projectSkillDir)) {
       fs.mkdirSync(projectSkillDir, { recursive: true });
       console.log(`[create] Project skill directory: ${projectSkillDir}`);
     } else {
       console.log(`[skip] Project skill directory already exists: ${projectSkillDir}`);
     }
+
+    // Create initial SKILL.md
+    if (!fs.existsSync(skillMdPath)) {
+      fs.writeFileSync(skillMdPath, initialSkillMd, "utf-8");
+      console.log(`[create] Initial SKILL.md: ${skillMdPath}`);
+    } else {
+      console.log(`[skip] SKILL.md already exists: ${skillMdPath}`);
+    }
   } else {
-    console.log(`[dry-run] Would ensure: ${projectSkillDir}`);
+    console.log(`[dry-run] Would create: ${projectSkillDir}`);
+    console.log(`[dry-run] Would create: ${skillMdPath}`);
   }
 
-  return { projectSkillDir };
+  return { projectSkillDir, skillMdPath };
 }
 
 function main() {
@@ -606,7 +680,6 @@ function main() {
   const copiedSkills = syncResults.filter(r => r.status === "copied");
   const updatedSkills = syncResults.filter(r => r.status === "updated");
   const skippedSkills = syncResults.filter(r => r.status === "no_update_needed");
-  const existingSkills = syncResults.filter(r => r.status === "target_exists");
   
   if (copiedSkills.length > 0) {
     console.log(`  Added (${copiedSkills.length}):`);

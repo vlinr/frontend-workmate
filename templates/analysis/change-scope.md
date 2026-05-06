@@ -2,83 +2,83 @@
 
 ## 1. Requirement Conclusion
 
-- Task Title:
-- Original Requirement Anchor:
-- Original Target Object:
-- Original Expected Result:
-- Original Screenshot/Attachment Summary:
-- Current Phase Added Constraints:
-- Current Phase Added Constraint Category: `Implementation Constraint Supplement | Original Requirement Correction | Project Long-term Rules | pending`
-- Confirmed "Added Constraints Won't Overwrite Original Requirement": `yes | no | pending`
-- Current Phase: `stage2_scope`
-- Current Phase Status: `pending | in_progress | waiting_user | completed | blocked`
-- Next Phase: `stage3_plan | stage4_supply | not_applicable`
-- Current Phase Goal:
-- Current Phase Entry Condition:
-- Current Phase Completion Condition:
-- Phase Block Reason:
-- Approved to Enter Next Phase: `yes | no | pending`
-- Next Phase User Confirmation Statement:
+- Task title:
+- Original requirement anchor:
+- Original target object:
+- Original expected result:
+- Original screenshot/attachment summary:
+- Constraints added in this stage:
+- Classification of constraints added in this stage: `implementation constraint supplement | original requirement correction | long-term project rule | pending`
+- Whether confirmed "new constraints will not overwrite the original requirement": `yes | no | pending`
+- Current stage: `stage2_scope`
+- Current stage status: `pending | in_progress | waiting_user | completed | blocked`
+- Next stage: `stage3_plan | stage4_supply | not_applicable`
+- Current stage goal:
+- Current stage entry conditions:
+- Current stage completion conditions:
+- Stage blocking reason:
+- Whether authorized to enter the next stage: `yes | no | pending`
+- Next stage user confirmation statement:
 - Type: `bug | feature | refactor`
-- Target Description:
-- User Confirmation Status: `approved | revise_needed | pending | not_applicable`
-- User Supplementary Request Merged: `yes | no | pending`
-- Post-Merge Echo Prompt:
-- Analysis Conclusion Summary (What I will do / Why this way / What not to do temporarily):
+- Goal description:
+- User confirmation status: `approved | revise_needed | pending | not_applicable`
+- Whether user-supplemented requirements have been merged: `yes | no | pending`
+- Post-merge re-display prompt:
+- Analysis conclusion summary (what I will do / why / what not to do for now):
 
-## 2. Modification Scope
+## 2. Change Scope
 
-- Scope analysis must use "Original Requirement Anchor" as main axis; if current phase added technical preferences, style plans, local limitations or implementation paths, only reflect in "Modification Reason/Expected Action", cannot rewrite task title and original goal.
-- If "Original Requirement Anchor" or "Original Screenshot/Attachment Summary" already can determine main requirement, this phase cannot re-require user to restate "what to do".
+- Scope analysis must be anchored on the "original requirement anchor"; if the constraints added in this stage are technical preferences, style approaches, local limitations, or implementation paths, they can only be reflected in "modification reason/expected action" — they must not rewrite the task title and original goal.
+- If the "original requirement anchor" or "original screenshot/attachment summary" can already determine the main requirement, this stage must not ask the user to restate "what to do".
 
 | Module | Directory/File | Modification Reason | Expected Action |
 | --- | --- | --- | --- |
 |  |  |  |  |
 
-## 3. Dependencies and Prerequisites
+## 3. Dependencies and Preconditions
 
-- Dependent Skills:
-- Dependent Documentation:
-- Dependent Interfaces or Design Specs:
-- Dependent Environment:
-- Stage 5 Execution Pre Material Supplement Strategy: `feature default supplement | bug as-needed supplement | refactor default skip | not_applicable`
+- Dependent skills:
+- Dependent documentation:
+- Dependent interfaces or design mockups:
+- Dependent environment:
+- Stage 5 prerequisite material supplementation strategy: `feature defaults to supplement | bug supplements as needed | refactor defaults to skip | not_applicable`
 
 ## 4. Skill Invocation Plan
 
-- Main Skill Route:
-- Before subsequent formal execution phases (Stage 3/4/5/6/7) start, must first check and consume confirmed skill routes here; if subsequent phase skips marked required skills, treat as flow violation.
-- Need Long Task:
+- Main skill route:
+- Before formally starting subsequent execution stages (Stage 3/4/5/6/7), must first check and consume the confirmed skill route here; if subsequent stages skip marked required skills, it should be treated as a process violation.
+- Whether long task is needed:
 - Notes:
 
 ## 5. Risk Analysis
 
-- Direct Risks:
-- Indirect Impact:
-- Historical Compatibility Risk:
-- Uncertainty Items:
+- Direct risks:
+- Indirect impacts:
+- Historical compatibility risks:
+- Uncertainties:
 
 ## 6. Regression Scope
 
-- Page Regression:
-- Component Regression:
-- Interface Regression:
-- Permission Regression:
-- Build Regression:
+- Page regression:
+- Component regression:
+- Interface regression:
+- Permission regression:
+- Build regression:
 
 ## 7. User Confirmation Points
 
-- [ ] Requirement Understanding Consistent
-- [ ] Modification Scope Consistent
-- [ ] Skill Route Consistent
-- [ ] Risk Accepted
-- [ ] Stage 5 Execution Pre Material Supplement Strategy Consistent
-- [ ] Can Enter Task Orchestration or Direct Development
+- [ ] Requirement understanding aligned
+- [ ] Change scope aligned
+- [ ] Skill route aligned
+- [ ] Risk accepted
+- [ ] Stage 5 prerequisite material supplementation strategy aligned
+- [ ] Can proceed to task orchestration or direct development
 
-## 8. Phase Switch Rules
+## 8. Stage Transition Rules
 
-- Stage 2 confirmation content only revolves around "requirement understanding and scope analysis correctness", don't extra show "Enter Stage 2 / Enter Next Step" etc. phase prompts.
-- Only when "User Confirmation Status = approved" and "Approved to Enter Next Phase = yes" and current phase status marked as `completed`, can enter next phase.
-- If user supplements or corrects request at confirmation point, must first merge request back to current phase conclusion, and echo updated analysis conclusion, then wait for next reply.
-- If user supplements implementation constraints, technical preferences or local limitations, must record to "Current Phase Added Constraints", cannot directly rewrite "Original Requirement Anchor".
-- If user explicitly states "original requirement wrong / now I want to change to another target", only then allowed to rewrite "Original Requirement Anchor", and write back to Stage 0 / request-brief.
-- If exists pending materials, private/self-developed UI library rules unclear, or user confirmation still `pending`, current phase status should stay `waiting_user` or `blocked`, cannot enter development.
+- Stage 2 confirmation content only revolves around "whether the requirement understanding and scope analysis are correct" — do not additionally display stage prompts like "enter Stage 2 / proceed to next step".
+- Only when "user confirmation status = approved" AND "whether authorized to enter the next stage = yes" AND the current stage status is marked as `completed` can we enter the next stage.
+- If the user supplements or corrects requirements at the confirmation point, must first merge the requirements back into the current stage conclusion, re-display the updated analysis conclusion, and then wait for the next reply.
+- If what the user supplements is implementation constraints, technical preferences, or local limitations, must record them in "constraints added in this stage" — cannot directly rewrite the "original requirement anchor" with that constraint.
+- Only if the user explicitly states "the original requirement was wrong / I now want to change to another goal" is it allowed to rewrite the "original requirement anchor" and write it back to Stage 0 / request-brief.
+- If there are materials pending supplementation, private/custom UI library rules that are still unclear, or user confirmation is still `pending`, the current stage status should remain `waiting_user` or `blocked` — must not enter development.

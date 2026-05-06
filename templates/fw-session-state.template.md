@@ -1,155 +1,177 @@
 ---
 alwaysApply: true
-description: "frontend-workmate session state (dynamic part)"
+description: "frontend-workmate task state record (multi-task data) - This file stores multiple task details by Task ID; AI must extract the Task ID from context before querying this file"
 ---
 
-# Session State
+# Task State Record
 
-<!-- CONFIG_FILE_PATH: Read {project_ide_dir}/.fw-session-config.json to get three core directories -->
+<!-- CONFIG_FILE_PATH: Read {project_ide_dir}/.fw-session-config.json to obtain the three core directories -->
 
-<!-- TASK_LIST_START -->
-## Active Tasks
+<!-- TASK_A1B2C3D4_START -->
+## Task Details: task_a1b2c3d4
 
-| Task ID | Status | Phase | Description |
-| --- | --- | --- | --- |
-| (Generated at initialization) |
+### Basic Information
+| **Task ID** | task_a1b2c3d4 |
+| **Task Summary** | (one-line description) |
+| **Detailed Description** | (full content of user's original request) |
+| **Created At** | (recorded at initialization) |
+| **Technology Stack** | (project technology stack) |
+| **Files Involved** | (list of modified files) |
 
----
+### Execution Status
+| **Current Stage** | stage0 |
+| **Stage Status** | in_progress |
+| **Next Step Plan** | Execute ../stages/init.md |
+| **Reset Stage** | none |
 
-<!-- TASK_XXX_START -->
-## Task Details: task_xxxxxxxx
-
-### Basic Info
-| **Task ID** | task_xxxxxxxx |
-| **Task Description** | (User's original request) |
-| **Created Time** | (Recorded at initialization) |
-
-### Current Status
-| **Currently Executing** | Initialization |
-| **Phase** | stage0 |
-| **Status** | in_progress |
-| **Next Step** | Execute stages/init.md |
-| **Reset Phases** | None |
-
-### Phase Progress
+### Stage Progress
 #### Completed
-(Appended after phase completion)
+(appended after stage completion)
 
 #### In Progress
 - [ ] Stage 0 — Initialization
 
-#### To Do
+#### Pending
 - [ ] Stage 1 — Project Scan
 - [ ] Stage 2 — Scope Analysis
-- [ ] Stage 3 — Execution Plan (long task)
+- [ ] Stage 3 — Execution Plan (long tasks)
 - [ ] Stage 4 — Material Supply
 - [ ] Stage 5 — Implementation
 - [ ] Stage 6 — Verification
 - [ ] Stage 7 — Documentation Sync
 - [ ] Stage 8 — Delivery
 
-#### To Re-execute
-(Appended on fallback)
+#### Pending Re-execution
+(appended when rolling back)
 
-<!-- TASK_XXX_END -->
+<!-- TASK_A1B2C3D4_END -->
+
+---
+
+<!-- TASK_E5F6G7H8_START -->
+## Task Details: task_e5f6g7h8
+
+### Basic Information
+| **Task ID** | task_e5f6g7h8 |
+| **Task Summary** | (one-line description) |
+| **Detailed Description** | (full content of user's original request) |
+| **Created At** | (recorded at initialization) |
+| **Technology Stack** | (project technology stack) |
+| **Files Involved** | (list of modified files) |
+
+### Execution Status
+| **Current Stage** | stage2 |
+| **Stage Status** | waiting_user |
+| **Next Step Plan** | Wait for user to confirm scope analysis |
+| **Reset Stage** | none |
+
+### Stage Progress
+#### Completed
+- [x] Stage 0 — Initialization
+- [x] Stage 1 — Project Scan
+
+#### In Progress
+- [ ] Stage 2 — Scope Analysis
+
+#### Pending
+- [ ] Stage 3 — Execution Plan
+- [ ] Stage 4 — Material Supply
+- [ ] Stage 5 — Implementation
+- [ ] Stage 6 — Verification
+- [ ] Stage 7 — Documentation Sync
+- [ ] Stage 8 — Delivery
+
+<!-- TASK_E5F6G7H8_END -->
 
 ---
 
 ## Completed Tasks
 
-| Task ID | Completion Time | Description |
-| --- | --- | --- |
-| (Appended after task completion) |
+<!-- TASK_I9J0K1L2_START -->
+## Task Details: task_i9j0k1l2 (Completed)
 
-<!-- TASK_LIST_END -->
+### Basic Information
+| **Task ID** | task_i9j0k1l2 |
+| **Task Summary** | (one-line description) |
+| **Detailed Description** | (user's original request) |
+| **Created At** | (recorded at initialization) |
+| **Completed At** | (recorded at completion) |
+<!-- TASK_I9J0K1L2_END -->
+
+---
+
+# Task ID Retrieval Mechanism (Core Rules)
+
+## ⚠️ Execution Principles
+
+**This file stores multiple task details by Task ID and does not decide which task to execute. AI must follow these steps**:
+
+### Step 1: Extract Task ID from Context (Mandatory)
+
+**Check methods**:
+| Check Item | Description |
+| --- | --- |
+| Previous AI output | Check whether the first line of the previous output contains `Task ID: task_xxxxxxxx` |
+| IDE session context | IDE automatically carries the Task ID from the previous output |
+| User input reference | Whether the user referenced historical output containing a Task ID |
+
+### Step 2: Handle Based on Extraction Result
+
+| Extraction Result | Handling |
+| --- | --- |
+| **No Task ID** (new session, or no Task ID in context) | → **Create a new task** |
+| Task ID found → Corresponding task details block exists in this file | → **Continue existing task** |
+| Task ID found → Corresponding task details block does not exist in this file | → **Create a new task** |
+
+### Step 3: Execute
+
+**Create a new task**:
+1. Generate a new Task ID `task_{new random ID}`
+2. Append a new task details block to this file: `<!-- TASK_{NEW_ID}_START --> ... <!-- TASK_{NEW_ID}_END -->`
+3. Start execution from Stage 0
+4. **First line of output must carry the Task ID**: `[Stage Name] Task ID: task_xxx`
+
+**Continue an existing task**:
+1. Find the corresponding task details block `<!-- TASK_{TASK_ID_UPPERCASE}_START -->`
+2. Read the execution status and stage progress
+3. Continue execution based on the stage
+4. **First line of output must carry the Task ID**: `[Stage Name] Task ID: task_xxx`
+
+## ⚠️ Prohibited Actions
+
+- **Prohibited**: reading this file and directly using a task without first extracting the Task ID from context
+- **Prohibited**: assuming the user wants to continue a certain task (must first check the context Task ID)
+- **Prohibited**: outputting without carrying the Task ID (every output's first line must have the Task ID)
 
 ---
 
 # State Update Guide
 
-## Update When Entering Phase
+## When Adding a New Task
 
-Find corresponding task's status block (`<!-- TASK_{TASK_ID}_START -->`), update:
-- `**Currently Executing**: {Phase Name}`
-- `**Phase**: stage{N}`
-- `**Status**: in_progress`
-- `**Next Step**: {Next Action}`
-- Phase progress: Move current phase to "In Progress"
+Append a new task details block to this file: copy the template, replace the Task ID with the new ID
 
-## Update After Phase Completion
+## When Entering a Stage
 
-- `**Status**: completed` (or `waiting_user`)
-- Phase progress: Move current phase to "Completed", next phase to "In Progress"
+Find the details block for the corresponding task (`<!-- TASK_{TASK_ID_UPPERCASE}_START -->`), update:
+- `**Currently Executing**: {stage name}`
+- `**Current Stage**: stage{N}`
+- `**Stage Status**: in_progress`
+- `**Next Step Plan**: {next action}`
+- Stage progress: move the current stage to "In Progress"
 
-## Update on Fallback
+## After Stage Completion
 
-- `**Phase**: stage{Target Phase}`
-- `**Status**: in_progress`
-- `**Reset Phases**: [stageX, stageY, ...] → To Re-execute`
-- Phase progress: Move subsequent phases to "To Re-execute"
+- `**Stage Status**: completed` (or `waiting_user`)
+- Stage progress: move the current stage to "Completed", the next stage to "In Progress"
 
-## Task Lookup Rules
+## When Rolling Back
 
-When updating status:
-1. Get `current_task_id` from context
-2. Find `<!-- TASK_{TASK_ID_UPPERCASE}_START -->`
-3. If found → Update that status block
-4. If not found → Create new task status block
+- `**Current Stage**: stage{target stage}`
+- `**Stage Status**: in_progress`
+- `**Reset Stage**: [stageX, stageY, ...] → Pending Re-execution`
+- Stage progress: move subsequent stages to "Pending Re-execution"
 
-## Task ID Carriage Mechanism
+## When Task Is Complete
 
-**User only inputs requirements, Task ID auto-carried via AI output**
-
-### Task ID Carriage Methods
-
-| Carriage Source | Description |
-| --- | --- |
-| Context reference | User referenced previous AI output (first line contains `Task ID: task_xxxxxxxx`) |
-| IDE auto-carriage | IDE session management auto-carries previous output's Task ID |
-| No carriage | First input in new session, no Task ID context |
-
-### Judgment Logic (Step 1)
-
-**After receiving user input, first check Task ID carriage status**:
-| Carriage Status | Next Action |
-| --- | --- |
-| Task ID carried | → Read state file → Find corresponding task → Continue |
-| **No Task ID carriage** | → **Create new task** (first input in new session) |
-
-**Important**:
-- User will not manually input Task ID, only inputs requirement content
-- Task ID carried via AI output first line, subsequent dialogue auto-transmits via reference/context
-- "No Task ID carriage" detected = first input in new session = create new task
-
-### Step 2 Branches
-
-**Branch A (Task ID carried)**:
-- Read state file → Find `<!-- TASK_{TASK_ID_UPPERCASE}_START -->`
-- Continue that task
-
-**Branch B (No Task ID carriage)**:
-- Generate new Task ID `task_{new_random_id}`
-- Read state file → Add new task block
-- Start from Stage 0
-- **First line output carries Task ID** `[Phase Name] Task ID: task_xxx`
-
-### Example Flow
-
-**First input in new session**:
-```
-User: "add user management module" (no Task ID carriage)
-AI: Step 1 check → No carriage → Create new task task_abc123 → Stage 0
-AI output first line: "[Initialization] Task ID: task_abc123"
-```
-
-**Continue existing session**:
-```
-User: "continue, need to modify this" (Task ID carried from previous round)
-AI: Step 1 check → Carriage task_abc123 → Continue task_abc123
-```
-
-### Design Points
-
-- **AI output first line carries Task ID**: Ensures task context is trackable
-- **IDE/reference auto-transmit**: Task ID auto-carried in dialogue, user no need to manually input
-- **No carriage = new task**: Simplest judgment logic
+Move the task details block to the "Completed Tasks" section and add the completion time

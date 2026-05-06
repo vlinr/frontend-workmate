@@ -2,46 +2,46 @@
 
 ## 1. Purpose and Function
 
-- Current directory purpose:
+- Current directory usage:
 - Core capabilities:
-- Relationship with other directories:
+- Relationship to other directories:
 
 ## 2. Applicable Scenarios
 
-- Suitable business scenarios to handle:
-- Content not suitable for this directory:
+- Business scenarios this directory is suitable for:
+- Content that should not be placed in this directory:
 
 ## 3. External Contracts
 
-- Main exports or entries:
-- Key parameters/configurations:
-- Dependency prerequisites:
+- Main exports or entry points:
+- Key parameters/configuration:
+- Prerequisite dependencies:
 
 ## 4. In-Project Reference Analysis
 
 ### Pattern A
 
 ```tsx
-// Place representative reference snippet here
+// Place representative reference snippets here
 ```
 
-Source scenario: Standard integration
+Source scenario: standard integration
 
 ### Pattern B
 
 ```tsx
-// Place representative reference snippet here
+// Place representative reference snippets here
 ```
 
-Source scenario: Variant integration
+Source scenario: variant integration
 
 ### Pattern C
 
 ```tsx
-// Place boundary or special usage snippet here
+// Place boundary or special usage snippets here
 ```
 
-Source scenario: Boundary usage
+Source scenario: boundary usage
 
 ## 5. Usage Rules
 

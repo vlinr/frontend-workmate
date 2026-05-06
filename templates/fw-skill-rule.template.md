@@ -1,104 +1,145 @@
 ---
 alwaysApply: true
-description: "frontend-workmate skill rules (static rules part)"
+description: "frontend-workmate skill rules (static rules section)"
 ---
 
 # ⚠️ Core Mandatory Rules (Must Follow)
 
-## 1. Single Phase Output Principle
+## 1. Single-Stage Output Principle
 
-**Each output only contains current phase content**, prohibited:
-- Outputting future phase plans
-- Creating own task lists (must use state file's task list)
+**Each output only contains the content of the current stage**, prohibited:
+- Outputting future stage plans
+- Self-creating task lists (must use the task list in the state file)
 - Imagining user feedback or future results
 
-**Correct Example**: `[Initialization] Task ID: task_xxx... [Initialization] Completed. Entering next phase: [Project Scan].`
+**Correct example**: `[Initialization] Task ID: task_xxx... [Initialization] Execution complete. Proceeding to the next stage: [Project Scan].`
 
 ## 2. Task ID Carrying Principle
 
-**Each AI output must carry Task ID at the beginning**:
-- First line of every output: `[Phase Name] Task ID: task_xxxxxxxx`
-- State update carries Task ID
-- Prohibited from executing operations outside task context
+**⚠️ Every AI output's first line must carry the Task ID**:
+- Format: `[Stage Name] Task ID: task_xxxxxxxx`
+- State updates must carry the Task ID
+- Prohibited: performing operations outside the task context
 
-**Why every output carries Task ID**:
-- Prevents context overflow causing task context loss
-- New session can determine whether to continue existing task by extracting Task ID from user-referenced content
-- User can explicitly reference Task ID to continue specific task
+**Why it must be carried**:
+- Task ID is passed through AI output, forming a context chain
+- In the next conversation round, IDE/context automatically carries the Task ID from the previous round
+- Prevents task loss due to context limits
 
-**New Session Task Association Logic**:
-1. New session starts → Read state file, check if active tasks exist
-2. Extract Task ID from user input/referenced AI output:
-   - User input explicitly contains `Task ID: task_xxxxxxxx` → Continue that task
-   - User input references AI output that contains Task ID → Continue that task
-   - User input does not contain Task ID reference → **Default: Create new task**
+**Task ID retrieval logic (core)**:
 
-## 3. Phase Confirmation Loop Principle
+### Step 1: Extract Task ID from Context (Mandatory)
 
-**Must wait for user confirmation before entering next phase**:
-| Phase End | Action |
+**Check methods**:
+| Check Item | Description |
 | --- | --- |
-| Has artifact output | Output summary + wait confirmation prompt |
-| User confirms "continue" | **First update state file** → enter next phase |
-| User proposes modifications | Stay current phase → merge feedback → wait again |
+| Previous AI output | Check the first line of the previous output `Task ID: task_xxxxxxxx` |
+| IDE session context | IDE automatically carries the Task ID from the previous output |
+| User input reference | User referenced historical output containing a Task ID |
 
-**Prohibited**: Enter next phase without confirmation, continuously output multi-phase content
+### Step 2: Handle Based on Extraction Result
+
+| Extraction Result | Handling |
+| --- | --- |
+| **No Task ID** (new session, or no Task ID in context) | → **Create a new task**, generate a new Task ID |
+| Task ID found → State file has the corresponding task | → **Continue existing task** |
+| Task ID found → State file does not have the corresponding task | → **Create a new task** (Task ID expired) |
+
+### Step 3: Carry Task ID During Execution
+
+**Create a new task**:
+- First line of output: `[Initialization] Task ID: task_{new ID}`
+- Add a new task block to the state file
+
+**Continue existing task**:
+- First line of output: `[Stage Name] Task ID: task_{existing ID}`
+- Read task details from the state file and continue
+
+### Prohibited Actions
+
+- **Prohibited**: reading the state file and directly using a task details block (must first extract Task ID from context)
+- **Prohibited**: assuming the user wants to continue a certain task (must first extract from context)
+- **Prohibited**: outputting without carrying the Task ID
+
+## 3. Stage Confirmation Loop Principle
+
+**Must wait for user confirmation before entering the next stage**:
+| Stage End | Action |
+| --- | --- |
+| Has output | Output summary + wait for confirmation prompt |
+| User confirms "continue" | **First update state file** → Enter the next stage |
+| User requests changes | Stay in current stage → Merge feedback → Wait again |
+
+**Auto-transition stages (no need to wait for user confirmation)**:
+| Stage | Auto-Transition Rule |
+| --- | --- |
+| stage5 → stage6 | **Forced auto-transition**, prohibited to wait for user |
+| stage6 → stage7 | **Forced auto-transition**, prohibited to wait for user |
+| stage7 → stage8 | **Forced auto-transition**, prohibited to wait for user |
+
+**Auto-transition execution**:
+- After stage5 completes: immediately output `[Implementation] Execution complete. Proceeding to the next stage: [Verification].` and execute stage6
+- After stage6 completes: immediately output `[Verification] Execution complete. Proceeding to the next stage: [Documentation Sync].` and execute stage7
+- After stage7 completes: immediately output `[Documentation Sync] Execution complete. Proceeding to the next stage: [Delivery].` and execute stage8
+- **Prohibited: waiting for user confirmation in auto-transition stages**
+
+**Prohibited**: entering the next stage without confirmation (explicit confirmation points), waiting for the user in auto-transition stages (auto-transition points), outputting multiple stages' content consecutively
 
 ## 4. State File Update Principle
 
-**Must read and update state file**:
-| Timing | Action |
+**Must read and update the state file**:
+| Time Point | Action |
 | --- | --- |
-| Before entering phase | `read` state file, get current phase and Task ID |
-| After phase completes | `edit` state file, update phase progress |
-| After user proposes modifications | `edit` state file, update status |
+| Before entering a stage | `read` the state file, obtain the current stage and Task ID |
+| After stage completion | `edit` the state file, update stage progress |
+| After user requests changes | `edit` the state file, update status |
 
-**Prohibited**: Infer phase without reading state file, enter next phase without updating state file
+**Prohibited**: inferring the stage without reading the state file, entering the next stage without updating the state file
 
 ## 5. Dynamic Path Reading Principle (Three Core Directories)
 
-**Config file only stores three core directories**, other paths via concatenation:
+**Config file only stores three core directories** — other paths are formed by concatenation:
 
 | Directory Concept | Config Field | Description |
 | --- | --- | --- |
-| User project root directory | `project_work_dir` | User-opened directory, development change reference |
+| User project root directory | `project_work_dir` | The directory opened by the user, reference basis for development changes |
 | Project IDE config root directory | `project_ide_dir` | Stores project config, skills, rules, state |
-| Static config root directory | `static_config_dir` | IDE config root directory (like ~/.qoder), stores static skills, static rules |
+| Static resource root directory | `static_config_dir` | IDE config root directory (e.g., ~/.qoder), stores static skills and static rules |
 
-**Path Concatenation Rules**:
+**Path concatenation rules**:
 
 | Reference Type | Concatenation Method |
 | --- | --- |
-| Static skill (fw-react-best-practices etc.) | `{static_config_dir}/skills/{skill_name}/SKILL.md` |
-| Static rule (frontend-implementation.md etc.) | `{static_config_dir}/rules/{rule_name}.md` |
+| Static skills (fw-react-best-practices, etc.) | `{static_config_dir}/skills/{skill name}/SKILL.md` |
+| Static rules (frontend-implementation.md, etc.) | `{static_config_dir}/rules/{rule name}.md` |
 | Project skill (fw-project-develop) | `{project_ide_dir}/skills/fw-project-develop/SKILL.md` |
-| Project rule (fw-skill-rule.md) | `{project_ide_dir}/rules/fw-skill-rule.md` |
+| Project rules (fw-skill-rule.md) | `{project_ide_dir}/rules/fw-skill-rule.md` |
 | Project state (fw-session-state.md) | `{project_ide_dir}/rules/fw-session-state.md` |
-| Modified code | `{project_work_dir}/src/...` |
+| Changed code | `{project_work_dir}/src/...` |
 
-**Reference Steps**:
+**Reference steps**:
 1. `read` `{project_ide_dir}/.fw-session-config.json`
-2. Get `project_work_dir`, `project_ide_dir`, `static_config_dir`
-3. Concatenate path based on reference type
+2. Obtain `project_work_dir`, `project_ide_dir`, `static_config_dir`
+3. Concatenate paths based on reference type
 
-**Prohibited**: Hardcoded paths (like `skills/curated/xxx/SKILL.md`)
+**Prohibited**: hardcoding paths (e.g., `skills/curated/xxx/SKILL.md`)
 
-## 6. Fallback Reset Principle
+## 6. Rollback Reset Principle
 
-**Must reset subsequent phases when fallback**:
-| Fallback Scenario | Reset Phases |
+**When rolling back, must reset subsequent stages**:
+| Rollback Scenario | Reset Stages |
 | --- | --- |
-| stage8 → stage5 | stage5-8 → pending re-execution |
-| stage8 → stage2 | stage2-8 → pending re-execution |
-| stage5 → stage2 | stage2-5 → pending re-execution |
+| stage8 → stage5 | stage5-8 → Pending Re-execution |
+| stage8 → stage2 | stage2-8 → Pending Re-execution |
+| stage5 → stage2 | stage2-5 → Pending Re-execution |
 
-**Prohibited**: Not resetting subsequent phases when fallback
+**Prohibited**: rolling back without resetting subsequent stages
 
 ---
 
 # Config File Structure
 
-Config file `.fw-session-config.json` stored in `{project_ide_dir}`, **only stores three core directories**:
+Config file `.fw-session-config.json` is stored in `{project_ide_dir}`, **stores only three core directories**:
 
 ```json
 {
@@ -109,45 +150,45 @@ Config file `.fw-session-config.json` stored in `{project_ide_dir}`, **only stor
 }
 ```
 
-**Other paths via concatenation**:
-- Static skill directory = `{static_config_dir}/skills/`
-- Static rule directory = `{static_config_dir}/rules/`
-- Project skill directory = `{project_ide_dir}/skills/`
-- Project rule directory = `{project_ide_dir}/rules/`
+**Other paths formed by concatenation**:
+- Static skills directory = `{static_config_dir}/skills/`
+- Static rules directory = `{static_config_dir}/rules/`
+- Project skills directory = `{project_ide_dir}/skills/`
+- Project rules directory = `{project_ide_dir}/rules/`
 
 ---
 
-# Phase Responsibility Boundary
+# Stage Responsibility Boundaries
 
-| Phase | Responsible | Not Responsible (Record to Context) |
+| Stage | Responsible For | Not Responsible For (record to context) |
 | --- | --- | --- |
 | stage0 | Initialization, Task ID generation | Project analysis, scope analysis |
 | stage1 | Project scan, skill generation | Development requirements, feature descriptions |
-| stage2 | Scope analysis, task type judgment | Specific implementation plans |
+| stage2 | Scope analysis, task type determination | Specific implementation plans |
 | stage3 | Execution plan, task breakdown | Development implementation |
 | stage4 | Material supply | Development implementation |
-| stage5 | Code modification, skill invocation | Verification, documentation update |
-| stage6 | Verification execution | Code modification (return to stage5) |
-| stage7 | Documentation sync | Verification, code modification |
+| stage5 | Code changes, skill invocations | Validation, documentation updates |
+| stage6 | Validation execution | Code changes (return to stage5) |
+| stage7 | Documentation sync | Validation, code changes |
 | stage8 | Delivery confirmation | Development implementation (return to stage5) |
 
-**Processing Principle**: User can provide any content, AI only processes what's needed for current phase, others record to context.
+**Processing principle**: users may provide any content; AI only processes what is needed for the current stage and records the rest to context.
 
 ---
 
 # Loop Path Summary
 
-| Phase | Next Phase | User Modification | Auto Link |
+| Stage | Next Stage | When User Requests Changes | Auto-Transition |
 | --- | --- | --- | --- |
-| stage0 | stage1 | None | ✅ |
-| stage1 | stage2 | Stay stage1 loop | ❌ Wait confirmation |
-| stage2 | stage3/4 | Stay stage2 loop | ❌ Wait confirmation |
-| stage3 | stage4 | Return stage2 | ✅ |
-| stage4 | stage5 | Can skip | ✅ |
-| stage5 | stage6 | stage8 unified handling | ✅ |
-| stage6 | stage7 | No pause | ✅ |
-| stage7 | stage8 | No pause | ✅ |
-| stage8 | Complete | Return stage5 reset | ❌ Wait confirmation |
+| stage0 | stage1 | none | ✅ |
+| stage1 | stage2 | stay stage1 loop | ❌ Wait for confirmation |
+| stage2 | stage3/4 | stay stage2 loop | ❌ Wait for confirmation |
+| stage3 | stage4 | return to stage2 | ✅ |
+| stage4 | stage5 | can skip | ✅ |
+| stage5 | stage6 | handled uniformly by stage8 | ✅ |
+| stage6 | stage7 | do not pause | ✅ |
+| stage7 | stage8 | do not pause | ✅ |
+| stage8 | complete | return to stage5 reset | ❌ Wait for confirmation |
 
 ---
 
@@ -155,51 +196,51 @@ Config file `.fw-session-config.json` stored in `{project_ide_dir}`, **only stor
 
 **After receiving user input**:
 
-### Step 1: Check Task ID Carriage (Highest Priority)
+### Step 1: Check Task ID Carrying Status (Highest Priority)
 
-**Task ID carriage methods**:
-| Carriage Source | Description |
+**Task ID carrying methods**:
+| Carrying Source | Description |
 | --- | --- |
-| Context reference | User referenced previous AI output (first line contains `Task ID: task_xxxxxxxx`) |
-| IDE auto-carriage | IDE session management auto-carries previous output's Task ID |
-| No carriage | First input in new session, no Task ID context |
+| Context reference | User referenced previous AI output (containing `Task ID: task_xxxxxxxx`) |
+| IDE auto-carry | IDE session management automatically carries the Task ID from the previous round |
+| No carrying | First input in a new session, no Task ID context |
 
-**Judgment logic**:
-| Carriage Status | Next Action |
+**Decision logic**:
+| Carrying Status | Next Action |
 | --- | --- |
 | Task ID carried | → Step 2A: Read state file → Find corresponding task → Continue |
-| **No Task ID carriage** | → **Step 2B: Create new task** (first input in new session) |
+| **No Task ID carried** | → **Step 2B: Create a new task** (first input in new session) |
 
 **Important**:
-- User only inputs requirements, will not manually input Task ID
-- Task ID carried via AI output first line, subsequent dialogue auto-transmits via reference/context
-- "No Task ID carriage" detected = first input in new session = create new task
+- Users only input requirements — they won't manually input a Task ID
+- Task ID is carried through AI output first lines, automatically passed through subsequent conversations via reference/context
+- If "no Task ID carried" is detected, it indicates the first input in a new session — create a new task directly
 
-### Step 2A: Continue Existing Task (Task ID carried)
+### Step 2A: Continue Existing Task (Task ID Carried)
 
 1. **Read config file** `{project_ide_dir}/.fw-session-config.json`
 2. **Read state file** `{project_ide_dir}/rules/fw-session-state.md`
 3. Find `<!-- TASK_{TASK_ID_UPPERCASE}_START -->` → Continue that task
-4. **Process input based on phase**:
-   | Phase | Status | Input Type | Handling |
+4. **Handle input based on stage**:
+   | Stage | Status | Input Type | Handling |
    | --- | --- | --- | --- |
-   | stage8 | waiting | Modification content | **First update status to stage5 + reset phases** |
+   | stage8 | waiting | Change content | **First update status to stage5 + reset stages** |
    | stage8 | waiting | "continue" | Mark complete |
-   | stage1-7 | waiting | Any content | Execute current phase reply handling |
+   | stage1-7 | waiting | Any content | Execute current stage reply handling |
 
-### Step 2B: Create New Task (No Task ID carriage)
+### Step 2B: Create New Task (No Task ID Carried)
 
-1. **Generate new Task ID** `task_{new_random_id}`
+1. **Generate a new Task ID** `task_{new random ID}`
 2. **Read state file** `{project_ide_dir}/rules/fw-session-state.md`
-3. **Add new task block** (do not modify existing active tasks)
-4. **Start from Stage 0**
-5. **First line output carries Task ID** `[Phase Name] Task ID: task_{new_random_id}`
+3. **Add a new task block** (do not modify existing active tasks)
+4. **Start execution from Stage 0**
+5. **First line of output carries the Task ID** `[Stage Name] Task ID: task_{new random ID}`
 
-### Prohibited Behavior
+### Prohibited Actions
 
-- **Prohibited**: Read state file active tasks before checking Task ID carriage
-- **Prohibited**: Assume user wants to continue existing task (must first check Task ID carriage)
-- **Prohibited**: Associate unrelated new request with active task in state file
+- **Prohibited**: reading active tasks from the state file before checking the Task ID carrying status
+- **Prohibited**: assuming the user wants to continue an existing task (must first check whether the Task ID is carried)
+- **Prohibited**: associating unrelated new requests with active tasks in the state file
 
 ---
 
@@ -207,7 +248,7 @@ Config file `.fw-session-config.json` stored in `{project_ide_dir}`, **only stor
 
 State file `fw-session-state.md` contains:
 - Active task list
-- Each task's current status (phase, status, next step)
-- Phase progress (completed/in-progress/to-do/to-re-execute)
+- Current status of each task (stage, status, next step)
+- Stage progress (completed/in progress/pending/pending re-execution)
 
-See state file template `fw-session-state.template.md`.
+See the state file template `fw-session-state.template.md` for details.

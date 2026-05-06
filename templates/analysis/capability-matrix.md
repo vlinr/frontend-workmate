@@ -2,56 +2,56 @@
 
 ## 1. Current Task
 
-- Task Name:
-- Task Type:
-- Belonging Project:
-- Inquiry Method When Need User Supplement Info: `text_reply | choice_ui | not_applicable`
+- Task name:
+- Task type:
+- Owning project:
+- How to ask when user needs to supplement information: `text_reply | choice_ui | not_applicable`
 
-## 2. Capability Judgment Rules
+## 2. Capability Determination Rules
 
-Before filling capability list, first judge whether capability truly exists, whether callable, whether belongs to current task critical path; if no such capability or this task doesn't need, mark as `not_applicable`, don't fabricate capability for completeness.
+Before filling in the capability checklist, first determine whether the capability truly exists, whether it can be invoked, and whether it belongs to the critical path of the current task; if this capability does not exist or is not needed for this task, mark it as `not_applicable` — do not add fictitious capabilities for the sake of completeness.
 
-| Judgment Item | Judgment Question | Fill Requirement |
+| Determination Item | Question | Filling Requirements |
 | --- | --- | --- |
-| Is Relevant | Does current task really need this capability domain | Mark `not_applicable` when not needed |
-| Already Possessed | Does Working Directory or environment already have directly usable capability | Record actual source, don't write guesses |
-| Can Encapsulate | Though not currently possessed, can directly access via skill | Only fill when has clear access path |
-| Is Missing | Is current task critical capability missing | If missing and blocking, enter to-install list |
-| Is Blocking | Does missing affect main flow progression | Must explicitly mark blocking or not |
+| Is it relevant? | Does the current task truly require this capability domain? | Mark `not_applicable` when not needed |
+| Is it available? | Does the [Work Directory] or environment already have a directly usable capability? | Record the actual source, not guesses |
+| Can it be encapsulated? | Not readily available now, but can it be integrated directly through a skill? | Only fill in when there is a clear integration path |
+| Is it missing? | Is a critical capability for the current task missing? | If missing and blocking, enter the install list |
+| Is it blocking? | If missing, does it affect the main flow's progression? | Must explicitly mark whether it is blocking |
 
-## 3. Capability List
+## 3. Capability Checklist
 
-| Capability Domain | Is Relevant | Target Capability | Current Status | Source | Trigger Skill | Missing Handling |
-| --- | --- | --- | --- | --- | --- | --- |
-| Documentation | `yes | no` |  | `Already Possessed | Can Encapsulate | Missing | not_applicable` | `Repository skill | MCP | External skill | Other` |  |  |
-| Browser | `yes | no` |  | `Already Possessed | Can Encapsulate | Missing | not_applicable` |  |  |  |
-| Design | `yes | no` |  | `Already Possessed | Can Encapsulate | Missing | not_applicable` |  |  |  |
-| Code Analysis | `yes | no` |  | `Already Possessed | Can Encapsulate | Missing | not_applicable` |  |  |  |
-| Test Verification | `yes | no` |  | `Already Possessed | Can Encapsulate | Missing | not_applicable` |  |  |  |
-| Production Issues | `yes | no` |  | `Already Possessed | Can Encapsulate | Missing | not_applicable` |  |  |  |
+| Capability Domain | Relevant | Target Capability | Current Status | Source | Trigger Skill | Missing Handling |
+| --- | --- | --- | --- | --- | --- |
+| Documentation | `yes | no` |  | `available | encapsulatable | missing | not_applicable` | `repo skill | MCP | external skill | other` |  |  |
+| Browser | `yes | no` |  | `available | encapsulatable | missing | not_applicable` |  |  |  |
+| Design | `yes | no` |  | `available | encapsulatable | missing | not_applicable` |  |  |  |
+| Code analysis | `yes | no` |  | `available | encapsulatable | missing | not_applicable` |  |  |  |
+| Testing & validation | `yes | no` |  | `available | encapsulatable | missing | not_applicable` |  |  |  |
+| Online issues | `yes | no` |  | `available | encapsulatable | missing | not_applicable` |  |  |  |
 
-## 4. Required Capability Judgment
+## 4. Required Capability Determination
 
-| Capability | Is Critical Path | Missing Is Blocking | Description |
+| Capability | Is It Critical Path? | Does Missing Block? | Notes |
 | --- | --- | --- | --- |
-|  | `Yes | No` | `Yes | No` |  |
+|  | `yes | no` | `yes | no` |  |
 
-## 5. To-Install List
+## 5. Install List
 
-| Name | Type | Purpose | Install Method | Is Required |
+| Name | Type | Purpose | Installation Method | Required? |
 | --- | --- | --- | --- | --- |
-|  | `skill | MCP | Other` |  |  | `Yes | No` |
+|  | `skill | MCP | other` |  |  | `yes | no` |
 
 ## 6. Execution Strategy
 
-- Directly executable capability combination:
-- Capabilities needing user to first install:
-- Capabilities can downgrade substitute:
+- Capability combinations that can be executed directly:
+- Capabilities the user needs to install first:
+- Capabilities that can be downgraded/replaced:
 - Main skill route:
-- Next step suggestion:
+- Next step recommendations:
 
-## 7. User Inquiry Rules
+## 7. User Question Rules
 
-- When capability judgment depends on user supplementing documentation, skills, paths, design descriptions, interface descriptions or environment constraints, default use plain text reply guide, don't make as selector.
-- When capability access has limited plan branches, can use numbers, letters or short tags list items, but still should explicitly tell user: can reply corresponding tag, can also directly input own thoughts or plan.
-- If user already gave UI library name, default can first continue by that name; if no version given can temporarily record as latest version, only go back to ask source or path when installation, import or build fails.
+- When capability determination depends on user supplementation of documentation, skills, paths, design descriptions, interface descriptions, or environment constraints, default to using plain text replies to guide the user — do not implement as selectors.
+- When capability integration has finite solution branches, numbered/lettered/short-labeled items may be used, but should clearly tell the user: they can reply with the corresponding mark, or directly input their own ideas or plan.
+- If the user has already provided a UI library name, default to continuing with that name first; treat missing versions as latest version — only if installation, import, or build fails, ask for the source or path.
